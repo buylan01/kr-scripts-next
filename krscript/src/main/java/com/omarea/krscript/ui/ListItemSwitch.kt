@@ -2,15 +2,19 @@ package com.omarea.krscript.ui
 
 import android.content.Context
 import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.omarea.krscript.R
 import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.SwitchNode
 import java.util.Locale
 import java.util.Locale.getDefault
 
-class ListItemSwitch(private val context: Context,
-                     private val config: SwitchNode) : ListItemClickable(context, R.layout.kr_switch_list_item, config) {
-    protected var switchView = layout.findViewById<Switch?>(R.id.kr_switch)
+class ListItemSwitch(
+    private val context: Context,
+    private val config: SwitchNode
+) : ListItemClickable(context, R.layout.kr_switch_list_item, config) {
+    private var switchView = layout.findViewById<MaterialSwitch?>(R.id.kr_switch)
 
     var checked: Boolean
         get() {

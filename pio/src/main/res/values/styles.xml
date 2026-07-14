@@ -57,7 +57,7 @@
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/krscript_item_ripple_inactive</item>
+        <item name="android:background">@drawable/krscript_item_bg</item>
         <item name="android:orientation">vertical</item>
         <item name="android:paddingTop">16dp</item>
         <item name="android:paddingBottom">16dp</item>

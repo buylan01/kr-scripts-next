@@ -17,7 +17,7 @@
         android:id="@android:id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/krscript_item_ripple_inactive"
+        android:background="@drawable/krscript_item_bg"
         android:clickable="false"
         android:focusable="false"
         android:orientation="vertical" />
