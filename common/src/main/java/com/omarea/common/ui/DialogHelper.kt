@@ -248,7 +248,7 @@ class DialogHelper {
             if (onCancel != null) {
                 btnCancel?.text = onCancel.text
             }
-            btnCancel.setOnClickListener {
+            btnCancel!!.setOnClickListener {
                 if (onCancel != null) {
                     if (onCancel.dismiss) {
                         dialog.dismiss()

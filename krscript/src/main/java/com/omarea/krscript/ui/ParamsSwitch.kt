@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.CompoundButton
 import com.omarea.krscript.R
 import com.omarea.krscript.model.ActionParamInfo
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class ParamsSwitch(private var actionParamInfo: ActionParamInfo, private var context: Context) {
     fun render(): View {
@@ -32,9 +34,11 @@ class ParamsSwitch(private var actionParamInfo: ActionParamInfo, private var con
      */
     private fun getCheckState(actionParamInfo: ActionParamInfo, defaultValue: Boolean): Boolean {
         if (actionParamInfo.valueFromShell != null) {
-            return actionParamInfo.valueFromShell == "1" || actionParamInfo.valueFromShell!!.toLowerCase() == "true"
+            return actionParamInfo.valueFromShell == "1" || actionParamInfo.valueFromShell!!.lowercase(
+                getDefault()
+            ) == "true"
         } else if (actionParamInfo.value != null) {
-            return actionParamInfo.value == "1" || actionParamInfo.value!!.toLowerCase() == "true"
+            return actionParamInfo.value == "1" || actionParamInfo.value!!.lowercase(getDefault()) == "true"
         }
         return defaultValue
     }

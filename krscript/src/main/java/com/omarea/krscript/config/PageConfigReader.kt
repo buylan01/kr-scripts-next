@@ -15,6 +15,8 @@ import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.*
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
+import java.util.Locale
+import java.util.Locale.getDefault
 
 /**
  * Created by Hello on 2018/04/01.
@@ -234,9 +236,10 @@ class PageConfigReader {
                     attrName == "title" -> actionParamInfo.title = attrValue
                     attrName == "desc" -> actionParamInfo.desc = attrValue
                     attrName == "value" -> actionParamInfo.value = attrValue
-                    attrName == "type" -> actionParamInfo.type = attrValue.toLowerCase().trim { it <= ' ' }
+                    attrName == "type" -> actionParamInfo.type =
+                        attrValue.lowercase(getDefault()).trim { it <= ' ' }
                     attrName == "suffix" -> {
-                        val suffix = attrValue.toLowerCase().trim { it <= ' ' }
+                        val suffix = attrValue.lowercase(getDefault()).trim { it <= ' ' }
 
                         if (actionParamInfo.mime.isEmpty()) {
                             actionParamInfo.mime = Suffix2Mime().toMime(suffix)
@@ -245,10 +248,10 @@ class PageConfigReader {
                         actionParamInfo.suffix = suffix
                     }
                     attrName == "mime" -> {
-                        actionParamInfo.mime = attrValue.toLowerCase()
+                        actionParamInfo.mime = attrValue.lowercase(getDefault())
                     }
                     attrName == "readonly" -> {
-                        val value = attrValue.toLowerCase().trim { it <= ' ' }
+                        val value = attrValue.lowercase(getDefault()).trim { it <= ' ' }
                         actionParamInfo.readonly = (value == "readonly" || value == "true" || value == "1")
                     }
                     attrName == "maxlength" -> actionParamInfo.maxLength = Integer.parseInt(attrValue)
@@ -340,7 +343,8 @@ class PageConfigReader {
                                 option.isFab = parser.getAttributeValue(i) == "fab"
                             }
                             "suffix" -> {
-                                val suffix = parser.getAttributeValue(i).toLowerCase().trim { it <= ' ' }
+                                val suffix = parser.getAttributeValue(i).lowercase(getDefault())
+                                    .trim { it <= ' ' }
 
                                 if (option.mime.isEmpty()) {
                                     option.mime = Suffix2Mime().toMime(suffix)
@@ -349,7 +353,7 @@ class PageConfigReader {
                                 option.suffix = suffix
                             }
                             "mime" -> {
-                                option.mime = parser.getAttributeValue(i).toLowerCase()
+                                option.mime = parser.getAttributeValue(i).lowercase(getDefault())
                             }
                         }
                     }
@@ -566,7 +570,9 @@ class PageConfigReader {
     private fun tagEndInSwitch(switchNode: SwitchNode?, parser: XmlPullParser) {
         if (switchNode != null) {
             val shellResult = executeResultRoot(context, switchNode.getState)
-            switchNode.checked = shellResult != "error" && (shellResult == "1" || shellResult.toLowerCase() == "true")
+            switchNode.checked = shellResult != "error" && (shellResult == "1" || shellResult.lowercase(
+                getDefault()
+            ) == "true")
             if (switchNode.setState == null) {
                 switchNode.setState = ""
             }
@@ -590,7 +596,7 @@ class PageConfigReader {
     private fun rowNode(textNode: TextNode, parser: XmlPullParser) {
         val textRow = TextNode.TextRow()
         for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i).toLowerCase()
+            val attrName = parser.getAttributeName(i).lowercase(getDefault())
             val attrValue = parser.getAttributeValue(i)
             try {
                 when (attrName) {
@@ -612,10 +618,10 @@ class PageConfigReader {
                     "align" -> {
                         when (attrValue) {
                             "left" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                textRow.align = Layout.Alignment.ALIGN_LEFT
+                                textRow.align = Layout.Alignment.ALIGN_NORMAL
                             }
                             "right" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                textRow.align = Layout.Alignment.ALIGN_RIGHT
+                                textRow.align = Layout.Alignment.ALIGN_OPPOSITE
                             }
                             "center" -> textRow.align = Layout.Alignment.ALIGN_CENTER
                             "normal" -> textRow.align = Layout.Alignment.ALIGN_NORMAL

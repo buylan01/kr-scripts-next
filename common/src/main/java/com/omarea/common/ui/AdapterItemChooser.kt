@@ -9,6 +9,8 @@ import android.widget.*
 import com.omarea.common.R
 import com.omarea.common.model.SelectItem
 import java.util.*
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class AdapterItemChooser(private val context: Context, private var items: ArrayList<SelectItem>, private val multiple: Boolean) : BaseAdapter(), Filterable {
     interface SelectStateListener {
@@ -42,7 +44,7 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
                 results.values = list
                 results.count = list.size
             } else {
-                val prefixString = prefix.toLowerCase()
+                val prefixString = prefix.lowercase(getDefault())
 
                 val values: ArrayList<SelectItem>
                 synchronized(adapter.mLock) {
@@ -58,7 +60,9 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
                     if (selected.contains(value)) {
                         newValues.add(value)
                     } else {
-                        val valueText = if (value.title == null) "" else value.title!!.toLowerCase()
+                        val valueText = if (value.title == null) "" else value.title!!.lowercase(
+                            getDefault()
+                        )
 
                         // First match against the whole, non-splitted value
                         if (valueText.contains(prefixString)) {
@@ -118,19 +122,19 @@ class AdapterItemChooser(private val context: Context, private var items: ArrayL
         return convertView
     }
 
-    fun updateRow(position: Int, listView: OverScrollGridView, SelectItem: SelectItem) {
-        try {
-            val visibleFirstPosi = listView.firstVisiblePosition
-            val visibleLastPosi = listView.lastVisiblePosition
-
-            if (position >= visibleFirstPosi && position <= visibleLastPosi) {
-                filterItems[position] = SelectItem
-                val view = listView.getChildAt(position - visibleFirstPosi)
-                updateRow(position, view)
-            }
-        } catch (ex: Exception) {
-        }
-    }
+//    fun updateRow(position: Int, listView: OverScrollGridView, SelectItem: SelectItem) {
+//        try {
+//            val visibleFirstPosi = listView.firstVisiblePosition
+//            val visibleLastPosi = listView.lastVisiblePosition
+//
+//            if (position >= visibleFirstPosi && position <= visibleLastPosi) {
+//                filterItems[position] = SelectItem
+//                val view = listView.getChildAt(position - visibleFirstPosi)
+//                updateRow(position, view)
+//            }
+//        } catch (ex: Exception) {
+//        }
+//    }
 
     fun updateRow(position: Int, convertView: View) {
         val item = getItem(position)

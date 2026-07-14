@@ -43,7 +43,7 @@ class TabIconHelper(private var tabHost: TabHost, private var activity: Activity
 
     fun getColorAccent(): Int {
         val typedValue = TypedValue()
-        this.activity.theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+        this.activity.theme.resolveAttribute(androidx.appcompat.R.attr.colorAccent, typedValue, true)
         return typedValue.data
     }
 

@@ -16,12 +16,15 @@ import android.view.View
 import android.widget.TextView
 import com.omarea.common.shell.ShellExecutor
 import com.omarea.krscript.executor.ScriptEnvironmen
+import com.projectkr.shell.databinding.ActivitySplashBinding
 import com.projectkr.shell.permissions.CheckRootStatus
-import kotlinx.android.synthetic.main.activity_splash.*
 import java.io.BufferedReader
 import java.io.DataOutputStream
 
 class SplashActivity : Activity() {
+
+    lateinit var binding: ActivitySplashBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,7 +35,8 @@ class SplashActivity : Activity() {
             return
         }
 
-        setContentView(R.layout.activity_splash)
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         updateThemeStyle()
 
         checkPermissions()
@@ -62,7 +66,7 @@ class SplashActivity : Activity() {
 
     private fun getColorAccent(): Int {
         val typedValue = TypedValue()
-        this.theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+        this.theme.resolveAttribute(androidx.appcompat.R.attr.colorAccent, typedValue, true)
         return typedValue.data
     }
 
@@ -70,9 +74,9 @@ class SplashActivity : Activity() {
      * 开始检查必需权限
      */
     private fun checkPermissions() {
-        start_logo.visibility = View.VISIBLE
+        binding.startLogo.visibility = View.VISIBLE
         checkRoot(Runnable {
-            start_state_text.text = getString(R.string.pio_permission_checking)
+            binding.startStateText.text = getString(R.string.pio_permission_checking)
             hasRoot = true
 
             /*
@@ -135,11 +139,11 @@ class SplashActivity : Activity() {
      * 启动完成
      */
     private fun startToFinish() {
-        start_state_text.text = getString(R.string.pop_started)
+        binding.startStateText.text = getString(R.string.pop_started)
 
         val config = KrScriptConfig().init(this)
         if (config.beforeStartSh.isNotEmpty()) {
-            BeforeStartThread(this, config, UpdateLogViewHandler(start_state_text, Runnable {
+            BeforeStartThread(this, config, UpdateLogViewHandler(binding.startStateText, Runnable {
                 gotoHome()
             })).start()
         } else {

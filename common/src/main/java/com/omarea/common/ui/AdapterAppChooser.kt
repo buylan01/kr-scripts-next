@@ -9,6 +9,8 @@ import android.widget.*
 import com.omarea.common.R
 import kotlinx.coroutines.*
 import java.util.*
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class AdapterAppChooser(
         private val context: Context,
@@ -73,7 +75,7 @@ class AdapterAppChooser(
                 results.values = list
                 results.count = list.size
             } else {
-                val prefixString = prefix.toLowerCase()
+                val prefixString = prefix.lowercase(getDefault())
 
                 val values: ArrayList<AppInfo>
                 synchronized(adapter.mLock) {
@@ -89,8 +91,8 @@ class AdapterAppChooser(
                     if (selected.contains(value)) {
                         newValues.add(value)
                     } else {
-                        val labelText = value.appName.toLowerCase()
-                        val valueText = value.packageName.toLowerCase()
+                        val labelText = value.appName.lowercase(getDefault())
+                        val valueText = value.packageName.lowercase(getDefault())
                         if (searchStr(labelText, prefixString)) {
                             newValues.add(value)
                         } else if (searchStr(valueText, prefixString)) {
@@ -141,7 +143,7 @@ class AdapterAppChooser(
                     val installInfo = context.packageManager.getPackageInfo(packageName, 0)
                     iconCaches.put(
                             packageName,
-                            installInfo.applicationInfo.loadIcon(context.packageManager)
+                            installInfo.applicationInfo!!.loadIcon(context.packageManager)
                     )
                 } catch (ex: Exception) {
                     app.notFound = true
@@ -167,19 +169,19 @@ class AdapterAppChooser(
         return convertView
     }
 
-    fun updateRow(position: Int, listView: OverScrollGridView, AppInfo: AppInfo) {
-        try {
-            val visibleFirstPosi = listView.firstVisiblePosition
-            val visibleLastPosi = listView.lastVisiblePosition
-
-            if (position >= visibleFirstPosi && position <= visibleLastPosi) {
-                filterApps[position] = AppInfo
-                val view = listView.getChildAt(position - visibleFirstPosi)
-                updateRow(position, view)
-            }
-        } catch (ex: Exception) {
-        }
-    }
+//    fun updateRow(position: Int, listView: OverScrollGridView, AppInfo: AppInfo) {
+//        try {
+//            val visibleFirstPosi = listView.firstVisiblePosition
+//            val visibleLastPosi = listView.lastVisiblePosition
+//
+//            if (position >= visibleFirstPosi && position <= visibleLastPosi) {
+//                filterApps[position] = AppInfo
+//                val view = listView.getChildAt(position - visibleFirstPosi)
+//                updateRow(position, view)
+//            }
+//        } catch (ex: Exception) {
+//        }
+//    }
 
     fun updateRow(position: Int, convertView: View) {
         val item = getItem(position)

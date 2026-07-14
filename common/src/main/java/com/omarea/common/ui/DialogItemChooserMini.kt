@@ -112,7 +112,7 @@ class DialogItemChooserMini(
 
     private fun updateTitle() {
         view?.run {
-                findViewById<TextView?>(R.id.dialog_title).run {
+                findViewById<TextView?>(R.id.dialog_title)!!.run {
                     text = title
                     visibility = if (title.isNotEmpty()) {
                         View.VISIBLE
@@ -125,7 +125,7 @@ class DialogItemChooserMini(
 
     private fun updateMessage() {
         view?.run {
-            findViewById<TextView?>(R.id.dialog_desc).run {
+            findViewById<TextView?>(R.id.dialog_desc)!!.run {
                 text = message
                 visibility = if (message.isNotEmpty()) {
                     View.VISIBLE

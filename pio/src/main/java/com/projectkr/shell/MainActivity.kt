@@ -31,21 +31,24 @@ import com.omarea.krscript.model.*
 import com.omarea.krscript.ui.ActionListFragment
 import com.omarea.krscript.ui.ParamsFileChooserRender
 import com.omarea.vtools.FloatMonitor
+import com.projectkr.shell.databinding.ActivityMainBinding
 import com.projectkr.shell.permissions.CheckRootStatus
 import com.projectkr.shell.ui.TabIconHelper
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)
     private var handler = Handler()
     private var krScriptConfig = KrScriptConfig()
 
+    lateinit var binding: ActivityMainBinding
+
     private fun checkPermission(permission: String): Boolean = PermissionChecker.checkSelfPermission(this, permission) == PermissionChecker.PERMISSION_GRANTED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ThemeModeState.switchTheme(this)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //supportActionBar!!.elevation = 0f
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
@@ -55,14 +58,14 @@ class MainActivity : AppCompatActivity() {
         krScriptConfig = KrScriptConfig()
 
 
-        main_tabhost.setup()
-        val tabIconHelper = TabIconHelper(main_tabhost, this)
+        binding.mainTabhost.setup()
+        val tabIconHelper = TabIconHelper(binding.mainTabhost, this)
         if (CheckRootStatus.lastCheckResult && krScriptConfig.allowHomePage) {
             tabIconHelper.newTabSpec(getString(R.string.tab_home), getDrawable(R.drawable.tab_home)!!, R.id.main_tabhost_cpu)
         } else {
-            main_tabhost_cpu.visibility = View.GONE
+            binding.mainTabhostCpu.visibility = View.GONE
         }
-        main_tabhost.setOnTabChangedListener {
+        binding.mainTabhost.setOnTabChangedListener {
             tabIconHelper.updateHighlight()
         }
 
@@ -80,14 +83,14 @@ class MainActivity : AppCompatActivity() {
                     updateFavoritesTab(favorites, favoritesConfig)
                     tabIconHelper.newTabSpec(getString(R.string.tab_favorites), ContextCompat.getDrawable(this, R.drawable.tab_favorites)!!, R.id.main_tabhost_2)
                 } else {
-                    main_tabhost_2.visibility = View.GONE
+                    binding.mainTabhost2.visibility = View.GONE
                 }
 
                 if (pages != null && pages.size > 0) {
                     updateMoreTab(pages, page2Config)
                     tabIconHelper.newTabSpec(getString(R.string.tab_pages), ContextCompat.getDrawable(this, R.drawable.tab_pages)!!, R.id.main_tabhost_3)
                 } else {
-                    main_tabhost_3.visibility = View.GONE
+                    binding.mainTabhost3.visibility = View.GONE
                 }
             }
         }).start()
@@ -217,7 +220,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseFilePath(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, getString(R.string.kr_write_external_storage), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(com.omarea.krscript.R.string.kr_write_external_storage), Toast.LENGTH_LONG).show()
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 2);
             return false
         } else {
@@ -285,7 +288,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
 
-        menu.findItem(R.id.action_graph).isVisible = (main_tabhost_cpu.visibility == View.VISIBLE)
+        menu.findItem(R.id.action_graph).isVisible = (binding.mainTabhostCpu.visibility == View.VISIBLE)
 
         return true
     }
@@ -301,7 +304,7 @@ class MainActivity : AppCompatActivity() {
                     val isChecked = (it as CompoundButton).isChecked
                     if (isChecked && !checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         it.isChecked = false
-                        Toast.makeText(this@MainActivity, R.string.kr_write_external_storage, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, com.omarea.krscript.R.string.kr_write_external_storage, Toast.LENGTH_SHORT).show()
                     } else {
                         themeConfig.setAllowTransparentUI(isChecked)
                     }

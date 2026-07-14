@@ -5,6 +5,8 @@ import android.widget.Switch
 import com.omarea.krscript.R
 import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.SwitchNode
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class ListItemSwitch(private val context: Context,
                      private val config: SwitchNode) : ListItemClickable(context, R.layout.kr_switch_list_item, config) {
@@ -23,7 +25,7 @@ class ListItemSwitch(private val context: Context,
 
         if (config.getState.isNotEmpty()) {
             val shellResult = ScriptEnvironmen.executeResultRoot(context, config.getState, config)
-            config.checked = shellResult == "1" || shellResult.toLowerCase() == "true"
+            config.checked = shellResult == "1" || shellResult.lowercase(getDefault()) == "true"
         }
         checked = config.checked
     }

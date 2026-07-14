@@ -36,7 +36,7 @@
             android:src="@drawable/kr_hide" />
     </RelativeLayout>
 
-    <com.omarea.common.ui.OverScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_actions"
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp" />
-    </com.omarea.common.ui.OverScrollView>
+    </ScrollView>
 
     <RelativeLayout
         android:id="@+id/bottom_actions"

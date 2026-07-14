@@ -29,7 +29,8 @@ import com.omarea.common.ui.ThemeMode
 import com.omarea.krscript.WebViewInjector
 import com.omarea.krscript.downloader.Downloader
 import com.omarea.krscript.ui.ParamsFileChooserRender
-import kotlinx.android.synthetic.main.activity_action_page_online.*
+import com.projectkr.shell.databinding.ActivityActionPageOnlineBinding
+import com.omarea.krscript.R
 import java.util.*
 
 class ActionPageOnline : AppCompatActivity() {
@@ -37,14 +38,17 @@ class ActionPageOnline : AppCompatActivity() {
 
     private lateinit var themeMode: ThemeMode
 
+    private lateinit var binding: ActivityActionPageOnlineBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         themeMode = ThemeModeState.switchTheme(this)
 
-        setContentView(R.layout.activity_action_page_online)
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        binding = ActivityActionPageOnlineBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val toolbar = findViewById<View>(com.projectkr.shell.R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
-        setTitle(R.string.app_name)
+        setTitle(com.projectkr.shell.R.string.app_name)
 
         // 显示返回按钮
         supportActionBar!!.setHomeButtonEnabled(true)
@@ -89,7 +93,7 @@ class ActionPageOnline : AppCompatActivity() {
         }
         getWindow().decorView.systemUiVisibility = flags
 
-        kr_online_root.fitsSystemWindows = true
+        binding.krOnlineRoot.fitsSystemWindows = true
     }
 
     private fun loadIntentData() {
@@ -128,7 +132,7 @@ class ActionPageOnline : AppCompatActivity() {
                 if (extras.containsKey("downloadUrl")) {
                     val downloader = Downloader(this)
                     val url = extras.getString("downloadUrl")!!
-                    val taskAliasId = if (extras.containsKey("taskId")) extras.getString("taskId") else UUID.randomUUID().toString()
+                    val taskAliasId = if (extras.containsKey("taskId")) extras.getString("taskId").toString() else UUID.randomUUID().toString()
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         downloader.saveTaskStatus(taskAliasId, 0)
@@ -138,7 +142,7 @@ class ActionPageOnline : AppCompatActivity() {
                     } else {
                         val downloadId = downloader.downloadBySystem(url, null, null, taskAliasId)
                         if (downloadId != null) {
-                            kr_download_url.text = url
+                            binding.krDownloadUrl.text = url
                             val autoClose = extras.containsKey("autoClose") && extras.getBoolean("autoClose")
 
                             downloader.saveTaskStatus(taskAliasId, 0)
@@ -153,8 +157,8 @@ class ActionPageOnline : AppCompatActivity() {
     }
 
     private fun initWebview(url: String?) {
-        kr_online_webview.visibility = View.VISIBLE
-        kr_online_webview.webChromeClient = object : WebChromeClient() {
+        binding.krOnlineWebview.visibility = View.VISIBLE
+        binding.krOnlineWebview.webChromeClient = object : WebChromeClient() {
             override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
                 DialogHelper.animDialog(
                         AlertDialog.Builder(this@ActionPageOnline)
@@ -184,7 +188,7 @@ class ActionPageOnline : AppCompatActivity() {
             }
         }
 
-        kr_online_webview.webViewClient = object : WebViewClient() {
+        binding.krOnlineWebview.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBarDialog.hideDialog()
@@ -195,7 +199,7 @@ class ActionPageOnline : AppCompatActivity() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                progressBarDialog.showDialog(getString(R.string.please_wait))
+                progressBarDialog.showDialog(getString(com.projectkr.shell.R.string.please_wait))
             }
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
@@ -214,9 +218,9 @@ class ActionPageOnline : AppCompatActivity() {
             }
         }
 
-        kr_online_webview.loadUrl(url)
+        binding.krOnlineWebview.loadUrl(url!!)
 
-        WebViewInjector(kr_online_webview,
+        WebViewInjector(binding.krOnlineWebview,
                 object : ParamsFileChooserRender.FileChooserInterface {
                     override fun openFileChooser(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
                         return chooseFilePath(fileSelectedInterface)
@@ -270,8 +274,8 @@ class ActionPageOnline : AppCompatActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && kr_online_webview.canGoBack()) {
-            kr_online_webview.goBack()
+        if (keyCode == KeyEvent.KEYCODE_BACK && binding.krOnlineWebview.canGoBack()) {
+            binding.krOnlineWebview.goBack()
             return true
         } else {
             return super.onKeyDown(keyCode, event)
@@ -295,20 +299,20 @@ class ActionPageOnline : AppCompatActivity() {
      * 监视下载进度
      */
     private fun watchDownloadProgress(downloadId: Long, autoClose: Boolean, taskAliasId: String) {
-        kr_download_state.visibility = View.VISIBLE
+        binding.krDownloadState.visibility = View.VISIBLE
 
         val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val query = DownloadManager.Query().setFilterById(downloadId)
 
-        kr_download_name_copy.setOnClickListener {
+        binding.krDownloadNameCopy.setOnClickListener {
             val myClipboard: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val myClip = ClipData.newPlainText("text", kr_download_name.text.toString())
+            val myClip = ClipData.newPlainText("text", binding.krDownloadName.text.toString())
             myClipboard.setPrimaryClip(myClip)
             Toast.makeText(this@ActionPageOnline, getString(R.string.copy_success), Toast.LENGTH_SHORT).show()
         }
-        kr_download_url_copy.setOnClickListener {
+        binding.krDownloadUrlCopy.setOnClickListener {
             val myClipboard: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val myClip = ClipData.newPlainText("text", kr_download_url.text.toString())
+            val myClip = ClipData.newPlainText("text", binding.krDownloadUrl.text.toString())
             myClipboard.setPrimaryClip(myClip)
             Toast.makeText(this@ActionPageOnline, getString(R.string.copy_success), Toast.LENGTH_SHORT).show()
         }
@@ -340,9 +344,9 @@ class ActionPageOnline : AppCompatActivity() {
                     }
 
                     handler.post {
-                        kr_download_name.text = fileName
-                        kr_download_progress.progress = ratio
-                        kr_download_progress.isIndeterminate = false
+                        binding.krDownloadName.text = fileName
+                        binding.krDownloadProgress.progress = ratio
+                        binding.krDownloadProgress.isIndeterminate = false
                         setTitle(R.string.kr_download_downloading)
                         downloader.saveTaskStatus(taskAliasId, ratio)
                     }
@@ -353,7 +357,7 @@ class ActionPageOnline : AppCompatActivity() {
 
                         handler.post {
                             setTitle(R.string.kr_download_completed)
-                            kr_download_progress.visibility = View.GONE
+                            binding.krDownloadProgress.visibility = View.GONE
                             stopWatchDownloadProgress()
 
                             val result = Intent()

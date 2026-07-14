@@ -410,13 +410,13 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                                 dialogView.findViewById<TextView>(R.id.warn).text = action.warning
                             }
 
-                            dialogView.findViewById<View>(R.id.btn_cancel).setOnClickListener {
+                            dialogView.findViewById<View>(com.omarea.common.R.id.btn_cancel).setOnClickListener {
                                 try {
                                     dialog!!.dismiss()
                                 } catch (ex: java.lang.Exception) {
                                 }
                             }
-                            dialogView.findViewById<View>(R.id.btn_confirm).setOnClickListener {
+                            dialogView.findViewById<View>(com.omarea.common.R.id.btn_confirm).setOnClickListener {
                                 try {
                                     val params = render.readParamsValue(actionParamInfos)
                                     actionExecute(action, script, onExit, params)
