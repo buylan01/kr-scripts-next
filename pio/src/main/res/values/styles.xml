@@ -1,15 +1,9 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.Material3.Light">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:statusBarColor">@color/status_bg_light</item>
-        <item name="android:navigationBarColor">@android:color/white</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:actionBarTheme">@style/AppTheme.AppBarOverlay.Light</item>
-        <item name="android:windowBackground">@color/window_bg_light</item>
         <item name="cardBg">@color/cardBgLight</item>
         <item name="android:switchStyle">@style/SceneSwitch</item>
         <item name="android:seekBarStyle">@style/SceneSeekBar</item>
@@ -18,12 +12,6 @@
     </style>
 
     <style name="AppThemeDark" parent="Theme.Material3.Dark">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:statusBarColor">@color/status_bg_dark</item>
-        <item name="android:windowBackground">@color/window_bg_dark</item>
-        <item name="android:navigationBarColor">@color/status_bg_dark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:actionBarTheme">@style/AppTheme.AppBarOverlay</item>
