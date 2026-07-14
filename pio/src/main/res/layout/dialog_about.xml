@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/appliction_desc"
-            android:textColor="@color/colorAccent"
+            android:textColor="?colorAccent"
             android:textSize="11dp" />
 
         <TextView
