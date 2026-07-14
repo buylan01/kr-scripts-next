@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.ui.DialogHelper
 import com.omarea.krscript.R
 import com.omarea.krscript.model.ActionParamInfo
@@ -104,7 +105,7 @@ class ParamsColorPicker(private val actionParamInfo: ActionParamInfo, private va
         greenBar.setOnSeekBarChangeListener(listener)
         blueBar.setOnSeekBarChangeListener(listener)
 
-        DialogHelper.animDialog(AlertDialog.Builder(context)
+        DialogHelper.animDialog(MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.kr_color_picker))
                 .setView(view)
                 .setPositiveButton(context.getString(R.string.btn_confirm)) { _, which ->

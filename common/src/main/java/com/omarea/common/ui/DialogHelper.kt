@@ -1,7 +1,6 @@
 package com.omarea.common.ui
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.UiModeManager
 import android.content.Context
 import android.content.DialogInterface
@@ -9,74 +8,70 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.R
 
 class DialogHelper {
-    class DialogButton(public val text: String, public val onClick: Runnable? = null, public val dismiss: Boolean = true) {
+    class DialogButton(val text: String, val onClick: Runnable? = null, val dismiss: Boolean = true) {
     }
 
     class DialogWrap(private val d: AlertDialog) {
-        public val context = dialog.context
+        val context = dialog.context
         private var mCancelable = true
-        public val isCancelable: Boolean
+        val isCancelable: Boolean
             get () {
                 return mCancelable
             }
 
-        public fun setCancelable(cancelable: Boolean): DialogWrap {
+        fun setCancelable(cancelable: Boolean): DialogWrap {
             mCancelable = cancelable
             d.setCancelable(cancelable)
 
             return this
         }
 
-        public fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener): DialogWrap {
+        fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener): DialogWrap {
             d.setOnDismissListener(onDismissListener)
 
             return this
         }
 
-        public val dialog: AlertDialog
+        val dialog: AlertDialog
             get() {
                 return d
             }
 
-        public fun dismiss() {
+        fun dismiss() {
             try {
                 d.dismiss()
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
             }
         }
 
-        public fun hide() {
+        fun hide() {
             try {
                 d.hide()
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
             }
         }
 
-        public val isShowing: Boolean
+        val isShowing: Boolean
             get() {
-                return d.isShowing()
+                return d.isShowing
             }
     }
 
     companion object {
         // 是否禁用模糊背景
-        public var disableBlurBg = false
+        var disableBlurBg = false
 
         fun animDialog(dialog: AlertDialog?): DialogWrap? {
-            if (dialog != null && !dialog.isShowing) {
-                dialog.window?.run {
-                    setWindowAnimations(R.style.windowAnim)
-                }
-                dialog.show()
-            }
+            dialog?.show()
             return if (dialog != null) DialogWrap(dialog) else null
         }
 
@@ -363,48 +358,33 @@ class DialogHelper {
             return dialog
         }
 
-        fun customDialog(context: Context, view: View, cancelable: Boolean = true): DialogWrap {
-            val useBlur = (
-                        context is Activity &&
-                        context.window.attributes.flags and WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER == 0
-                    )
+        fun customDialog(
+            context: Context,
+            view: View,
+            cancelable: Boolean = true,
+            onConfirm: DialogInterface.OnClickListener? = null
+        ): DialogWrap {
 
-            val dialog = (if (useBlur) {
-                AlertDialog.Builder(context, R.style.custom_alert_dialog)
-            } else {
-                AlertDialog.Builder(context)
-            }).setView(view).setCancelable(cancelable).create()
+            val dialog = MaterialAlertDialogBuilder(context)
+                .setView(view)
+                .setCancelable(cancelable)
+                .setNegativeButton("取消") { dialog, _ ->
+                    try {
+                        dialog!!.dismiss()
+                    } catch (_: java.lang.Exception) {
+                    }
+                }
+                .setPositiveButton("确定", onConfirm)
+                .create()
 
             if (context is Activity) {
                 dialog.show()
                 dialog.window?.run {
-                    setWindowBlurBg(this, context)
                     decorView.run {
                         systemUiVisibility = context.window.decorView.systemUiVisibility // View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                     }
-
-                    /*
-                    // 隐藏状态栏和导航栏
-                    decorView.run {
-                        systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        setOnSystemUiVisibilityChangeListener {
-                            var uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or  //布局位于状态栏下方
-                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or  //全屏
-                                    View.SYSTEM_UI_FLAG_FULLSCREEN or  //隐藏导航栏
-                                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            uiOptions = uiOptions or 0x00001000
-                            systemUiVisibility = uiOptions
-                        }
-                    }
-                    */
-
-                    // setWindowAnimations(R.style.windowAnim2)
                 }
             } else {
-                dialog.window?.run {
-                    setWindowAnimations(R.style.windowAnim2)
-                }
                 dialog.show()
                 dialog.window?.run {
                     setBackgroundDrawableResource(android.R.color.transparent)

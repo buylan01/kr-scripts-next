@@ -349,7 +349,7 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                         progressBarDialog.showDialog(this.context!!.getString(R.string.kr_params_render))
                     }
                     handler.post {
-                        val render = ActionParamsLayoutRender(linearLayout, activity!!)
+                        val render = ActionParamsLayoutRender(linearLayout, requireActivity())
                         render.renderList(actionParamInfos, object : ParamsFileChooserRender.FileChooserInterface {
                             override fun openFileChooser(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
                                 return if (krScriptActionHandler == null) {
@@ -363,15 +363,16 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
 
                         // 自定义参数输入界面
                         val customRunner = krScriptActionHandler?.openParamsPage(action,
-                                linearLayout,
-                                Runnable {
-                                    try {
-                                        val params = render.readParamsValue(actionParamInfos)
-                                        actionExecute(action, script, onExit, params)
-                                    } catch (ex: Exception) {
-                                        Toast.makeText(this.context!!, "" + ex.message, Toast.LENGTH_LONG).show()
-                                    }
-                                })
+                                linearLayout
+                        ) {
+                            try {
+                                val params = render.readParamsValue(actionParamInfos)
+                                actionExecute(action, script, onExit, params)
+                            } catch (ex: Exception) {
+                                Toast.makeText(this.requireContext(), "" + ex.message, Toast.LENGTH_LONG)
+                                    .show()
+                            }
+                        }
 
                         // 内置的参数输入界面
                         if (customRunner != true) {
@@ -383,7 +384,7 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
 
                             val darkMode = themeMode != null && themeMode!!.isDarkMode
 
-                            val dialog = (if (isLongList) {
+                            if (isLongList) {
                                 val builder = AlertDialog.Builder(this.context, if (darkMode) R.style.kr_full_screen_dialog_dark else R.style.kr_full_screen_dialog_light)
                                 builder.setView(dialogView).create().apply {
                                     show()
@@ -394,9 +395,15 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                                     }
                                 }
                             } else {
-                                // AlertDialog.Builder(this.context).create()
-                                DialogHelper.customDialog(activity!!, dialogView).dialog
-                            })
+                                DialogHelper.customDialog(requireActivity(), dialogView, onConfirm = { dialog, _ ->
+                                    try {
+                                        val params = render.readParamsValue(actionParamInfos)
+                                        actionExecute(action, script, onExit, params)
+                                    } catch (ex: Exception) {
+                                        Toast.makeText(this.context!!, "" + ex.message, Toast.LENGTH_LONG).show()
+                                    }
+                                })
+                            }
 
                             dialogView.findViewById<TextView>(R.id.title).text = action.title
                             if (action.desc.isEmpty()) {
@@ -408,22 +415,6 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                                 dialogView.findViewById<TextView>(R.id.warn).visibility = View.GONE
                             } else {
                                 dialogView.findViewById<TextView>(R.id.warn).text = action.warning
-                            }
-
-                            dialogView.findViewById<View>(com.omarea.common.R.id.btn_cancel).setOnClickListener {
-                                try {
-                                    dialog!!.dismiss()
-                                } catch (ex: java.lang.Exception) {
-                                }
-                            }
-                            dialogView.findViewById<View>(com.omarea.common.R.id.btn_confirm).setOnClickListener {
-                                try {
-                                    val params = render.readParamsValue(actionParamInfos)
-                                    actionExecute(action, script, onExit, params)
-                                    dialog!!.dismiss()
-                                } catch (ex: Exception) {
-                                    Toast.makeText(this.context!!, "" + ex.message, Toast.LENGTH_LONG).show()
-                                }
                             }
                         }
                     }

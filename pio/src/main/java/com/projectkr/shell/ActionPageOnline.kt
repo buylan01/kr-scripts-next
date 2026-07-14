@@ -22,6 +22,7 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.*
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
 import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.ProgressBarDialog
@@ -161,7 +162,7 @@ class ActionPageOnline : AppCompatActivity() {
         binding.krOnlineWebview.webChromeClient = object : WebChromeClient() {
             override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
                 DialogHelper.animDialog(
-                        AlertDialog.Builder(this@ActionPageOnline)
+                    MaterialAlertDialogBuilder(this@ActionPageOnline)
                                 .setMessage(message)
                                 .setPositiveButton(R.string.btn_confirm, { _, _ -> })
                                 .setOnDismissListener {
@@ -174,7 +175,7 @@ class ActionPageOnline : AppCompatActivity() {
 
             override fun onJsConfirm(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
                 DialogHelper.animDialog(
-                        AlertDialog.Builder(this@ActionPageOnline)
+                    MaterialAlertDialogBuilder(this@ActionPageOnline)
                                 .setMessage(message)
                                 .setPositiveButton(R.string.btn_confirm) { _, _ ->
                                     result?.confirm()

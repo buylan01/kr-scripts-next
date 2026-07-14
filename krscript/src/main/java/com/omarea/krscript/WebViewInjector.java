@@ -15,6 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.omarea.common.shell.KeepShellPublic;
 import com.omarea.common.shell.ShellExecutor;
 import com.omarea.common.ui.DialogHelper;
@@ -76,7 +77,7 @@ public class WebViewInjector {
                         activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
                         Toast.makeText(context, R.string.kr_write_external_storage, Toast.LENGTH_LONG).show();
                     } else {
-                        DialogHelper.Companion.animDialog(new AlertDialog.Builder(context)
+                        DialogHelper.Companion.animDialog(new MaterialAlertDialogBuilder(context)
                                 .setTitle(R.string.kr_download_confirm)
                                 .setMessage("" + url + "\n\n" + mimetype + "\n" + contentLength + "Bytes")
                                 .setPositiveButton(R.string.btn_confirm, new DialogInterface.OnClickListener() {
