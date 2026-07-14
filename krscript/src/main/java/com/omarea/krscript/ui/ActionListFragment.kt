@@ -400,7 +400,7 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                                         val params = render.readParamsValue(actionParamInfos)
                                         actionExecute(action, script, onExit, params)
                                     } catch (ex: Exception) {
-                                        Toast.makeText(this.context!!, "" + ex.message, Toast.LENGTH_LONG).show()
+                                        Toast.makeText(this.context!!, ex.message, Toast.LENGTH_LONG).show()
                                     }
                                 })
                             }

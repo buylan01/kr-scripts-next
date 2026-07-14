@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.omarea.common.model.SelectItem
 import com.omarea.krscript.R
 import com.omarea.krscript.model.ActionParamInfo
@@ -219,7 +220,7 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
                 actionParamInfo.value = text
             } else if (view is CheckBox) {
                 actionParamInfo.value = if (view.isChecked) "1" else "0"
-            } else if (view is Switch) {
+            } else if (view is MaterialSwitch) {
                 actionParamInfo.value = if (view.isChecked) "1" else "0"
             } else if (view is SeekBar) {
                 val text = (view.progress + actionParamInfo.min).toString()

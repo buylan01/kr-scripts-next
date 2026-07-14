@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
 import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.ProgressBarDialog
@@ -274,7 +275,7 @@ class MainActivity : AppCompatActivity() {
             R.id.option_menu_info -> {
                 val layoutInflater = LayoutInflater.from(this)
                 val layout = layoutInflater.inflate(R.layout.dialog_about, null)
-                DialogHelper.customDialog(this, layout)
+                MaterialAlertDialogBuilder(this).setView(layout).show()
             }
         }
         return super.onOptionsItemSelected(item)

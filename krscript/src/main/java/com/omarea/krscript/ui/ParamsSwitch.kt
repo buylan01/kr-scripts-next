@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.CompoundButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.omarea.krscript.R
 import com.omarea.krscript.model.ActionParamInfo
 import java.util.Locale
@@ -14,15 +15,11 @@ class ParamsSwitch(private var actionParamInfo: ActionParamInfo, private var con
         val layout = LayoutInflater.from(context).inflate(R.layout.kr_param_switch, null)
 
 
-        layout.findViewById<CompoundButton>(R.id.kr_param_switch).run {
+        layout.findViewById<MaterialSwitch>(R.id.kr_param_switch).run {
             tag = actionParamInfo.name
             isChecked = getCheckState(actionParamInfo, false)
             if (!actionParamInfo.label.isNullOrEmpty()) {
                 text = actionParamInfo.label
-            }
-
-            setOnClickListener {
-
             }
         }
 

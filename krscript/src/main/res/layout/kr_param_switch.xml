@@ -5,7 +5,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <Switch
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/kr_param_switch"
         android:textStyle="normal"
         android:textColor="?android:textColorPrimary"
