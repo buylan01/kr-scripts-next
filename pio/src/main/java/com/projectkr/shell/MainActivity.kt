@@ -313,9 +313,6 @@ class MainActivity : AppCompatActivity() {
 
                 DialogHelper.customDialog(this, layout)
             }
-            R.id.option_menu_reboot -> {
-                DialogPower(this).showPowerMenu()
-            }
             R.id.action_graph -> {
                 if (FloatMonitor.isShown == true) {
                     FloatMonitor(this).hidePopupWindow()
