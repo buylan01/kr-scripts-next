@@ -22,8 +22,8 @@ import java.io.File
 
 class ActivityFileSelector : AppCompatActivity() {
     companion object {
-        val MODE_FILE = 0
-        val MODE_FOLDER = 1
+        const val MODE_FILE = 0
+        const val MODE_FOLDER = 1
     }
 
     private var adapterFileSelector: AdapterFileSelector? = null

@@ -138,7 +138,8 @@ class SplashActivity : ComponentActivity() {
                         someIgnored = true
                     }
                     notificationMessageRows.add(log)
-                    logView.setText(notificationMessageRows.joinToString("\n", if (someIgnored) "……\n" else "").trim())
+                    logView.text =
+                        notificationMessageRows.joinToString("\n", if (someIgnored) "……\n" else "").trim()
                 }
             }
         }
@@ -149,7 +150,7 @@ class SplashActivity : ComponentActivity() {
     }
 
     private class BeforeStartThread(private var context: Context, private val config: KrScriptConfig, private var updateLogViewHandler: UpdateLogViewHandler) : Thread() {
-        val params = config.getVariables();
+        val params: HashMap<String, String> = config.variables
 
         override fun run() {
             try {

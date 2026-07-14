@@ -112,14 +112,6 @@ public class KrScriptConfig {
         return null;
     }
 
-    public boolean getAllowHomePage() {
-        if (configInfo != null && configInfo.containsKey(ALLOW_HOME_PAGE)) {
-            String value = configInfo.get(ALLOW_HOME_PAGE);
-            return value != null && value.equals("1");
-        }
-        return ALLOW_HOME_PAGE_DEFAULT.equals("1");
-    }
-
     public String getBeforeStartSh() {
         if (configInfo != null && configInfo.containsKey(BEFORE_START_SH)) {
             return configInfo.get(BEFORE_START_SH);

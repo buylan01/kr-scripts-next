@@ -265,12 +265,6 @@ class MainActivity : AppCompatActivity() {
         OpenPageHelper(this).openPage(pageNode)
     }
 
-    private fun getDensity(): Int {
-        val dm = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(dm)
-        return dm.densityDpi
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return true
@@ -281,19 +275,6 @@ class MainActivity : AppCompatActivity() {
             R.id.option_menu_info -> {
                 val layoutInflater = LayoutInflater.from(this)
                 val layout = layoutInflater.inflate(R.layout.dialog_about, null)
-                val transparentUi = layout.findViewById<CompoundButton>(R.id.transparent_ui);
-                val themeConfig = ThemeConfig(this)
-                transparentUi.setOnClickListener {
-                    val isChecked = (it as CompoundButton).isChecked
-                    if (isChecked && !checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        it.isChecked = false
-                        Toast.makeText(this@MainActivity, com.omarea.krscript.R.string.kr_write_external_storage, Toast.LENGTH_SHORT).show()
-                    } else {
-                        themeConfig.setAllowTransparentUI(isChecked)
-                    }
-                }
-                transparentUi.isChecked = themeConfig.getAllowTransparentUI()
-
                 DialogHelper.customDialog(this, layout)
             }
         }
