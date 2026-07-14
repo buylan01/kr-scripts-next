@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/option_menu_info"
-        android:icon="@drawable/info"
+        android:icon="@drawable/baseline_info_24"
         android:orderInCategory="100"
         android:title=""
         android:visible="true"
