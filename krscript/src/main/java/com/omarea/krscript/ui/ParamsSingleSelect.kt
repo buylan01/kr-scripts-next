@@ -69,7 +69,7 @@ class ParamsSingleSelect(
     }
 
     private fun openSingleSelectDialog(valueView: TextView, textView: TextView) {
-        DialogItemChooser(darkMode, ArrayList(options.mapIndexed{index, item->
+        DialogItemChooser(ArrayList(options.mapIndexed{ index, item->
             SelectItem().apply {
                 title = item.title
                 selected = index == selectedIndex

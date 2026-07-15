@@ -10,8 +10,6 @@ import com.omarea.common.R
 import com.omarea.common.model.SelectItem
 
 class DialogItemChooser(
-        // 是否深色模式
-        private val darkMode: Boolean,
         // 选择项以及选中状态
         private var items: ArrayList<SelectItem>,
         // 是否可多选

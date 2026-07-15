@@ -72,7 +72,7 @@ class ParamsMultipleSelect(private val actionParamInfo: ActionParamInfo, private
                 })
             }
             // TODO:深色模式、浅色模式
-            DialogItemChooser(true, ArrayList(items), true, object : DialogItemChooser.Callback {
+            DialogItemChooser(ArrayList(items), true, object : DialogItemChooser.Callback {
                 override fun onConfirm(selected: List<SelectItem>, result: BooleanArray) {
                     result.forEachIndexed { index, value ->
                         status[index] = value
