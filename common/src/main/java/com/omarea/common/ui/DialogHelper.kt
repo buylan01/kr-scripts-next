@@ -314,12 +314,7 @@ class DialogHelper {
                                       onCancel: Runnable? = null): DialogWrap {
             val view = getCustomDialogView(context, layout, title, message, null)
 
-            val dialog = customDialog(context, view)
-            view.findViewById<View?>(R.id.btn_cancel)?.setOnClickListener {
-                dialog.dismiss()
-                onCancel?.run()
-            }
-            view.findViewById<View?>(R.id.btn_confirm)?.setOnClickListener {
+            val dialog = customDialog(context, view) { dialog, _ ->
                 dialog.dismiss()
                 onConfirm?.run()
             }
