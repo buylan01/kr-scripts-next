@@ -1,6 +1,5 @@
 package com.omarea.krscript.ui
 
-import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +9,14 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.omarea.common.model.SelectItem
 import com.omarea.krscript.R
 import com.omarea.krscript.model.ActionParamInfo
+import androidx.core.graphics.toColorInt
 
 class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity: FragmentActivity) {
     companion object {
         /**
          * 获取当前选中项索引（单选）
-         * @param ActionParamInfo actionParamInfo 参数信息
-         * @param ArrayList<HashMap<String, Any>> options 使用getParamOptions获得的数据（不为空时）
+         * @param actionParamInfo 参数信息
+         * @param options 使用getParamOptions获得的数据（不为空时）
          */
         fun getParamOptionsCurrentIndex(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): Int {
             var selectedIndex = -1
@@ -28,15 +28,13 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
             if (actionParamInfo.value != null) {
                 valList.add(actionParamInfo.value!!)
             }
-            if (valList.size > 0) {
+            if (valList.isNotEmpty()) {
                 for (j in valList.indices) {
-                    var index = 0
-                    for (option in options) {
+                    for ((index, option) in options.withIndex()) {
                         if (option.value == valList[j]) {
                             selectedIndex = index
                             break
                         }
-                        index++
                     }
                     if (selectedIndex > -1)
                         break
@@ -47,31 +45,29 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
 
         /**
          * 获取当前选中项索引（多选）
-         * @param ActionParamInfo actionParamInfo 参数信息
-         * @param ArrayList<HashMap<String, Any>> options 使用getParamOptions获得的数据（不为空时）
+         * @param actionParamInfo 参数信息
+         * @param options 使用getParamOptions获得的数据（不为空时）
          */
         fun getParamOptionsSelectedStatus(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): BooleanArray {
             val status = BooleanArray(options.size)
             val values = getParamValues(actionParamInfo)
 
-            for (index in 0 until options.size) {
-                val option = options[index]
-                status[index] = (values != null && values.contains(option.value))
+            options.forEachIndexed { index, item ->
+                status[index] = (values != null && values.contains(item.value))
             }
             return status
         }
 
         /**
          * 设置列表的选中状态
-         * @param ActionParamInfo actionParamInfo 参数信息
-         * @param ArrayList<HashMap<String, Any>> options 使用getParamOptions获得的数据（不为空时）
+         * @param actionParamInfo 参数信息
+         * @param options 使用getParamOptions获得的数据（不为空时）
          */
         fun setParamOptionsSelectedStatus(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): ArrayList<SelectItem> {
             val values = getParamValues(actionParamInfo)
 
-            for (index in 0 until options.size) {
-                val option = options[index]
-                options[index].selected = (values != null && values.contains(option.value))
+            for (element in options) {
+                element.selected = (values != null && values.contains(element.value))
             }
             return options
         }
@@ -89,50 +85,56 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
     fun renderList(actionParamInfos: ArrayList<ActionParamInfo>, fileChooser: ParamsFileChooserRender.FileChooserInterface?) {
         for (actionParamInfo in actionParamInfos) {
             val options = actionParamInfo.optionsFromShell
-            // 下拉框渲染
-            if (options != null && !(actionParamInfo.type == "app" || actionParamInfo.type == "packages")) {
-                if (actionParamInfo.multiple) {
-                    val view = ParamsMultipleSelect(actionParamInfo, context).render()
-                    addToLayout(view, actionParamInfo)
-                } else {
-                    addToLayout(ParamsSingleSelect(actionParamInfo, context).render(), actionParamInfo)
+            when {
+                // 下拉框
+                options != null && !(actionParamInfo.type == "app" || actionParamInfo.type == "packages") -> {
+                    if (actionParamInfo.multiple) {
+                        val view = ParamsMultipleSelect(actionParamInfo, context).render()
+                        addToLayout(view, actionParamInfo)
+                    } else {
+                        addToLayout(
+                            ParamsSingleSelect(actionParamInfo, context).render(),
+                            actionParamInfo
+                        )
+                    }
                 }
-            }
-            // 选择框渲染
-            else if (actionParamInfo.type == "bool" || actionParamInfo.type == "checkbox") {
-                addToLayout(ParamsCheckbox(actionParamInfo, context).render(), actionParamInfo)
-            }
-            // 开关渲染
-            else if (actionParamInfo.type == "switch") {
-                addToLayout(ParamsSwitch(actionParamInfo, context).render(), actionParamInfo)
-            }
-            // 滑块
-            else if (actionParamInfo.type == "seekbar") {
-                val layout = ParamsSeekBar(actionParamInfo, context).render()
+                // 选择框
+                actionParamInfo.type == "bool" || actionParamInfo.type == "checkbox" -> {
+                    addToLayout(ParamsCheckbox(actionParamInfo, context).render(), actionParamInfo)
+                }
+                // 开关
+                actionParamInfo.type == "switch" -> {
+                    addToLayout(ParamsSwitch(actionParamInfo, context).render(), actionParamInfo)
+                }
+                // 滑块
+                actionParamInfo.type == "seekbar" -> {
+                    val layout = ParamsSeekBar(actionParamInfo, context).render()
 
-                addToLayout(layout, actionParamInfo)
-            }
-            // 文件选择
-            else if (actionParamInfo.type == "file" || actionParamInfo.type == "folder") {
-                val layout = ParamsFileChooserRender(actionParamInfo, context, fileChooser).render()
+                    addToLayout(layout, actionParamInfo)
+                }
+                // 文件选择
+                actionParamInfo.type == "file" || actionParamInfo.type == "folder" -> {
+                    val layout =
+                        ParamsFileChooserRender(actionParamInfo, context, fileChooser).render()
 
-                addToLayout(layout, actionParamInfo)
-            }
-            // 应用选择
-            else if (actionParamInfo.type == "app" || actionParamInfo.type == "packages") {
-                val layout = ParamsAppChooserRender(actionParamInfo, context).render()
+                    addToLayout(layout, actionParamInfo)
+                }
+                // 应用选择
+                actionParamInfo.type == "app" || actionParamInfo.type == "packages" -> {
+                    val layout = ParamsAppChooserRender(actionParamInfo, context).render()
 
-                addToLayout(layout, actionParamInfo)
-            }
-            // 颜色输入
-            else if (actionParamInfo.type == "color") {
-                val layout = ParamsColorPicker(actionParamInfo, context).render()
+                    addToLayout(layout, actionParamInfo)
+                }
+                // 颜色输入
+                actionParamInfo.type == "color" -> {
+                    val layout = ParamsColorPicker(actionParamInfo, context).render()
 
-                addToLayout(layout, actionParamInfo)
-            }
-            // 文本框渲染
-            else {
-                addToLayout(ParamsEditText(actionParamInfo, context).render(), actionParamInfo)
+                    addToLayout(layout, actionParamInfo)
+                }
+                // 文本框
+                else -> {
+                    addToLayout(ParamsEditText(actionParamInfo, context).render(), actionParamInfo)
+                }
             }
         }
     }
@@ -195,46 +197,65 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
                 continue
             }
 
-            val view = linearLayout.findViewWithTag<View>(actionParamInfo.name)
-            if (view is EditText) {
-                val text = view.text.toString()
-                if (text.isNotEmpty()) {
-                    if ((actionParamInfo.type == "int" || actionParamInfo.type == "number")) {
-                        try {
-                            val value = text.toInt()
-                            if (value < actionParamInfo.min) {
-                                throw Exception("${getFieldTips(actionParamInfo)} ${value} < ${actionParamInfo.min} !!!")
-                            } else if (value > actionParamInfo.max) {
-                                throw Exception("${getFieldTips(actionParamInfo)} ${value} > ${actionParamInfo.max} !!!")
+            when (
+                val view = linearLayout.findViewWithTag<View>(actionParamInfo.name)
+            ) {
+                is EditText -> {
+                    val text = view.text.toString()
+                    if (text.isNotEmpty()) {
+                        if ((actionParamInfo.type == "int" || actionParamInfo.type == "number")) {
+                            try {
+                                val value = text.toInt()
+                                if (value < actionParamInfo.min) {
+                                    throw Exception("${getFieldTips(actionParamInfo)} $value < ${actionParamInfo.min} !!!")
+                                } else if (value > actionParamInfo.max) {
+                                    throw Exception("${getFieldTips(actionParamInfo)} $value > ${actionParamInfo.max} !!!")
+                                }
+                            } catch (_: java.lang.NumberFormatException) {
+
                             }
-                        } catch (ex: java.lang.NumberFormatException) {
-                        }
-                    } else if (actionParamInfo.type == "color") {
-                        try {
-                            Color.parseColor(text)
-                        } catch (ex: java.lang.Exception) {
-                            throw Exception("" + getFieldTips(actionParamInfo) + "  \n" + context.getString(R.string.kr_invalid_color))
+                        } else if (actionParamInfo.type == "color") {
+                            try {
+                                text.toColorInt()
+                            } catch (_: java.lang.Exception) {
+                                throw Exception(
+                                    getFieldTips(actionParamInfo) + "  \n" + context.getString(
+                                        R.string.kr_invalid_color
+                                    )
+                                )
+                            }
                         }
                     }
+                    actionParamInfo.value = text
                 }
-                actionParamInfo.value = text
-            } else if (view is CheckBox) {
-                actionParamInfo.value = if (view.isChecked) "1" else "0"
-            } else if (view is MaterialSwitch) {
-                actionParamInfo.value = if (view.isChecked) "1" else "0"
-            } else if (view is SeekBar) {
-                val text = (view.progress + actionParamInfo.min).toString()
-                actionParamInfo.value = text
-            } else if (view is TextView) {
-                actionParamInfo.value = view.text.toString()
-            } else if (view is Spinner) {
-                val item = view.selectedItem
-                when {
-                    item is SelectItem -> {
-                        actionParamInfo.value = item.value
+
+                is CheckBox -> {
+                    actionParamInfo.value = if (view.isChecked) "1" else "0"
+                }
+
+                is MaterialSwitch -> {
+                    actionParamInfo.value = if (view.isChecked) "1" else "0"
+                }
+
+                is SeekBar -> {
+                    val text = (view.progress + actionParamInfo.min).toString()
+                    actionParamInfo.value = text
+                }
+
+                is TextView -> {
+                    actionParamInfo.value = view.text.toString()
+                }
+
+                is Spinner -> {
+                    val item = view.selectedItem
+                    when {
+                        item is SelectItem -> {
+                            actionParamInfo.value = item.value
+                        }
+
+                        item != null -> actionParamInfo.value = item.toString()
+                        else -> actionParamInfo.value = ""
                     }
-                    item != null -> actionParamInfo.value = item.toString()
-                    else -> actionParamInfo.value = ""
                 }
             }
 
@@ -242,28 +263,12 @@ class ActionParamsLayoutRender(private var linearLayout: LinearLayout, activity:
                 if (actionParamInfo.required) {
                     throw Exception(getFieldTips(actionParamInfo) + context.getString(R.string.do_not_empty))
                 } else {
-                    params.set(actionParamInfo.name!!, "")
+                    params[actionParamInfo.name!!] = ""
                 }
             } else {
-                params.set(actionParamInfo.name!!, actionParamInfo.value!!)
+                params[actionParamInfo.name!!] = actionParamInfo.value!!
             }
         }
         return params
-    }
-
-    /**
-     * TODO:刷新界面上的参数输入框显示
-     */
-    fun updateParamsView(actionParamInfos: ArrayList<ActionParamInfo>) {
-        for (actionParamInfo in actionParamInfos) {
-            if (actionParamInfo.name == null) {
-                continue
-            }
-
-            val view = linearLayout.findViewWithTag<View>(actionParamInfo.name)
-            if (view != null) {
-                // TODO:刷新界面显示
-            }
-        }
     }
 }
