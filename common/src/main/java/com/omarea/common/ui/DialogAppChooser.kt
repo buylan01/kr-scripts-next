@@ -16,7 +16,7 @@ class DialogAppChooser(
     private var packages: ArrayList<AdapterAppChooser.AppInfo>,
     private val multiple: Boolean = false,
     private var callback: Callback? = null
-) : DialogFullScreen(R.layout.dialog_app_chooser) {
+) : DialogFullScreen(R.layout.dialog_item_chooser) {
 
     private var allowAllSelect = true
     private var excludeApps: Array<String> = arrayOf()
@@ -24,7 +24,7 @@ class DialogAppChooser(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val absListView = view.findViewById<AbsListView>(R.id.app_list)
+        val absListView = view.findViewById<AbsListView>(R.id.item_list)
         setup(absListView)
 
         view.findViewById<View>(R.id.btn_cancel).setOnClickListener {

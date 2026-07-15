@@ -81,9 +81,9 @@ class DialogHelper {
 
         fun helpInfo(context: Context, title: String, message: String, onDismiss: Runnable? = null): DialogWrap {
             val layoutInflater = LayoutInflater.from(context)
-            val dialog = layoutInflater.inflate(R.layout.dialog_help_info, null)
+            val dialog = layoutInflater.inflate(R.layout.dialog_confirm, null)
 
-            (dialog.findViewById(R.id.confirm_title) as TextView).run {
+            (dialog.findViewById<TextView>(R.id.confirm_title)!!).run {
                 if (title.isNotEmpty()) {
                     text = title
                     visibility = View.VISIBLE
@@ -92,7 +92,7 @@ class DialogHelper {
                 }
             }
 
-            (dialog.findViewById(R.id.confirm_message) as TextView).run {
+            (dialog.findViewById<TextView>(R.id.confirm_message)!!).run {
                 if (message.isNotEmpty()) {
                     text = message
                     visibility = View.VISIBLE
@@ -102,16 +102,6 @@ class DialogHelper {
             }
 
             val d = customDialog(context, dialog, onDismiss == null)
-            (dialog.findViewById(R.id.btn_confirm) as View).run {
-                if (onDismiss != null) {
-                    d.setOnDismissListener {
-                        onDismiss.run()
-                    }
-                }
-                setOnClickListener {
-                    d.dismiss()
-                }
-            }
 
             return d
         }
@@ -264,7 +254,7 @@ class DialogHelper {
                   title: String = "",
                   message: String = "",
                   onConfirm: Runnable? = null): DialogWrap {
-            return openContinueAlert(context, R.layout.dialog_alert, title, message, onConfirm)
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
         }
 
         fun customDialog(

@@ -8,7 +8,7 @@
     <ImageButton
         android:id="@+id/kr_param_seekbar_minus"
         style="@style/SceneSeekbarIcon"
-        android:src="@drawable/kr_minus" />
+        android:src="@drawable/baseline_remove_circle_24" />
 
     <TextView
         android:id="@+id/kr_param_seekbar_value"
@@ -26,6 +26,6 @@
     <ImageButton
         android:id="@+id/kr_param_seekbar_plus"
         style="@style/SceneSeekbarIcon"
-        android:src="@drawable/kr_plus" />
+        android:src="@drawable/baseline_add_circle_24" />
 
 </LinearLayout>
