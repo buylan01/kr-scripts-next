@@ -11,15 +11,14 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
-import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.ProgressBarDialog
 import com.omarea.krscript.config.PageConfigReader
 import com.omarea.krscript.config.PageConfigSh
@@ -27,12 +26,13 @@ import com.omarea.krscript.model.*
 import com.omarea.krscript.ui.ActionListFragment
 import com.omarea.krscript.ui.ParamsFileChooserRender
 import com.projectkr.shell.databinding.ActivityMainBinding
-import com.projectkr.shell.ui.TabIconHelper
 
 class MainActivity : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)
     private var handler = Handler(Looper.getMainLooper())
     private var krScriptConfig = KrScriptConfig()
+    private lateinit var favoritesFragment: Fragment
+    private lateinit var pagesFragment: Fragment
 
     lateinit var binding: ActivityMainBinding
 
@@ -49,13 +49,6 @@ class MainActivity : AppCompatActivity() {
 
         krScriptConfig = KrScriptConfig()
 
-
-        binding.mainTabhost.setup()
-        val tabIconHelper = TabIconHelper(binding.mainTabhost, this)
-        binding.mainTabhost.setOnTabChangedListener {
-            tabIconHelper.updateHighlight()
-        }
-
         progressBarDialog.showDialog(getString(R.string.please_wait))
         Thread {
             val page2Config = krScriptConfig.pageListConfig
@@ -66,27 +59,38 @@ class MainActivity : AppCompatActivity() {
             handler.post {
                 progressBarDialog.hideDialog()
 
+                val menu = binding.bottomNavView.menu
+                menu.clear()
+
                 if (!favorites.isNullOrEmpty()) {
-                    updateFavoritesTab(favorites, favoritesConfig)
-                    tabIconHelper.newTabSpec(
-                        getString(R.string.tab_home),
-                        ContextCompat.getDrawable(this, R.drawable.baseline_home_24)!!,
-                        R.id.main_tabhost_2
-                    )
-                } else {
-                    binding.mainTabhost2.visibility = View.GONE
+                    createFavoritesTab(favorites, favoritesConfig)
+                    menu.add(getString(R.string.tab_home)).apply {
+                        icon = ContextCompat.getDrawable(
+                            this@MainActivity,
+                            R.drawable.baseline_home_24
+                        )!!
+                        setOnMenuItemClickListener {
+                            updateTab(favoritesFragment)
+                            return@setOnMenuItemClickListener false
+                        }
+                    }
                 }
 
                 if (!pages.isNullOrEmpty()) {
-                    updateMoreTab(pages, page2Config)
-                    tabIconHelper.newTabSpec(
-                        getString(R.string.tab_pages),
-                        ContextCompat.getDrawable(this, R.drawable.baseline_all_inbox_24)!!,
-                        R.id.main_tabhost_3
-                    )
-                } else {
-                    binding.mainTabhost3.visibility = View.GONE
+                    createMoreTab(pages, page2Config)
+                    menu.add(getString(R.string.tab_pages)).apply {
+                        icon = ContextCompat.getDrawable(
+                            this@MainActivity,
+                            R.drawable.baseline_all_inbox_24
+                        )!!
+                        setOnMenuItemClickListener {
+                            updateTab(pagesFragment)
+                            return@setOnMenuItemClickListener false
+                        }
+                    }
                 }
+
+                updateTab(favoritesFragment)
             }
         }.start()
 
@@ -108,14 +112,16 @@ class MainActivity : AppCompatActivity() {
         return items
     }
 
-    private fun updateFavoritesTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        val favoritesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, true), null, ThemeModeState.getThemeMode())
-        supportFragmentManager.beginTransaction().replace(R.id.list_favorites, favoritesFragment).commitAllowingStateLoss()
+    private fun updateTab(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commitAllowingStateLoss()
     }
 
-    private fun updateMoreTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        val allItemFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, false), null, ThemeModeState.getThemeMode())
-        supportFragmentManager.beginTransaction().replace(R.id.list_pages, allItemFragment).commitAllowingStateLoss()
+    private fun createFavoritesTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
+        favoritesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, true), null, ThemeModeState.getThemeMode())
+    }
+
+    private fun createMoreTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
+        pagesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, false), null, ThemeModeState.getThemeMode())
     }
 
     private fun reloadFavoritesTab() {
@@ -124,7 +130,7 @@ class MainActivity : AppCompatActivity() {
             val favorites = getItems(favoritesConfig)
             favorites?.run {
                 handler.post {
-                    updateFavoritesTab(this, favoritesConfig)
+                    createFavoritesTab(this, favoritesConfig)
                 }
             }
         }.start()
@@ -137,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
             pages?.run {
                 handler.post {
-                    updateMoreTab(this, page2Config)
+                    createMoreTab(this, page2Config)
                 }
             }
         }.start()
