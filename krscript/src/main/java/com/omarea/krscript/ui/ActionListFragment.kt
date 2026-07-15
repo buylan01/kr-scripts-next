@@ -525,7 +525,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             }
             val darkMode = themeMode != null && themeMode!!.isDarkMode
 
-            val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params, darkMode)
+            val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params)
             dialog.isCancelable = false
             dialog.show(parentFragmentManager, "")
         }

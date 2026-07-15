@@ -2,27 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="12dp"
     android:keepScreenOn="true"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:padding="26dp">
 
     <ProgressBar
         android:id="@+id/dialog_app_details_progress"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="30dp"
-        android:indeterminate="false"
-        android:max="100" />
+        android:indeterminate="true"
+        android:paddingEnd="16dp"/>
 
     <TextView
         android:id="@+id/dialog_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minLines="2"
         android:text="@string/execute_wait"
-        android:textAlignment="center"
         android:textSize="15sp" />
 </LinearLayout>

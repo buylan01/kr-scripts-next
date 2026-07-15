@@ -15,7 +15,6 @@
         android:layout_gravity="center" />
 
     <LinearLayout
-        android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/ItemIcon"
         android:layout_toStartOf="@id/ItemChecBox"
         android:layout_centerVertical="true"

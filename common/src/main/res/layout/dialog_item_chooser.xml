@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/dialogRoot"
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <RelativeLayout
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp">
+
         <EditText
             android:id="@+id/search_box"
             android:nextFocusDown="@id/search_box"
@@ -17,11 +22,7 @@
             android:singleLine="true"
             android:imeOptions="actionSearch"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:maxLength="30"
-            android:textSize="15dp"
+            android:layout_height="wrap_content"
             android:hint="@string/item_chooser_search_hint" />
 
         <ImageButton
@@ -32,16 +33,17 @@
             android:src="@drawable/dialog_search_clear"
             android:scaleType="centerInside"
             android:padding="15dp"
-            android:tint="?android:textColorPrimary"
             android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            app:tint="?android:textColorPrimary" />
     </RelativeLayout>
 
     <FrameLayout
         android:layout_marginBottom="8dp"
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp">
 
         <TextView
             style="@style/dialogTitle"
@@ -68,7 +70,8 @@
         android:id="@+id/select_all_block"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp">
 
         <CheckBox
             android:visibility="gone"

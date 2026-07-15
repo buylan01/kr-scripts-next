@@ -1,14 +1,11 @@
 package com.projectkr.shell
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -281,8 +278,8 @@ class ActionPage : AppCompatActivity() {
                 Runnable {  },
                 onDismiss,
                 currentPageConfig.pageHandlerSh,
-                params,
-                darkMode)
+                params
+        )
         dialog.show(supportFragmentManager, "")
         dialog.isCancelable = false
     }

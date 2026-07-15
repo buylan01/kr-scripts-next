@@ -3,11 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="6dp"
     android:paddingVertical="8dp">
 
     <LinearLayout
-        android:layout_marginStart="10dp"
         android:layout_toStartOf="@id/ItemChecBox"
         android:layout_centerVertical="true"
         android:orientation="vertical"
