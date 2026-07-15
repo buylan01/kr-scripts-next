@@ -67,8 +67,6 @@ class DialogHelper {
     }
 
     companion object {
-        // 是否禁用模糊背景
-        var disableBlurBg = false
 
         fun animDialog(dialog: AlertDialog?): DialogWrap? {
             dialog?.show()
@@ -79,10 +77,6 @@ class DialogHelper {
             val dialog = builder.create()
             animDialog(dialog)
             return DialogWrap(dialog)
-        }
-
-        fun helpInfo(context: Context, message: String, onDismiss: Runnable? = null): DialogWrap {
-            return helpInfo(context, context.getString(R.string.help_title), message, onDismiss)
         }
 
         fun helpInfo(context: Context, title: String, message: String, onDismiss: Runnable? = null): DialogWrap {
@@ -122,43 +116,31 @@ class DialogHelper {
             return d
         }
 
-        fun helpInfo(context: Context,
-                  title: String = "",
-                  message: String = "",
-                  contentView: View,
-                  onConfirm: Runnable? = null): DialogWrap {
-            val view = getCustomDialogView(context, R.layout.dialog_help_info, title, message, contentView)
-
-            val dialog = customDialog(context, view)
-            view.findViewById<View>(R.id.btn_confirm).setOnClickListener {
-                dialog.dismiss()
-                onConfirm?.run()
-            }
-
-            return dialog
+        fun confirm(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
         }
 
-        fun confirm(context: Context,
-                    title: String = "",
-                    message: String = "",
-                    onConfirm: Runnable? = null,
-                    onCancel: Runnable? = null): DialogWrap {
-            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm, onCancel)
+        fun warning(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
         }
 
-        fun warning(context: Context,
-                    title: String = "",
-                    message: String = "",
-                    onConfirm: Runnable? = null,
-                    onCancel: Runnable? = null): DialogWrap {
-            return openContinueAlert(context, R.layout.dialog_warning, title, message, onConfirm, onCancel)
-        }
-
-        private fun getCustomDialogView(context: Context,
-                                        layout: Int,
-                                        title: String = "",
-                                        message: String = "",
-                                        contentView: View? = null): View {
+        private fun getCustomDialogView(
+            context: Context,
+            layout: Int,
+            title: String = "",
+            message: String = "",
+            contentView: View? = null
+        ): View {
 
             val view = LayoutInflater.from(context).inflate(layout, null)
             view.findViewById<TextView?>(R.id.confirm_title)?.run {
@@ -184,42 +166,16 @@ class DialogHelper {
             return view
         }
 
-        fun confirm(context: Context,
-                    title: String = "",
-                    message: String = "",
-                    contentView: View? = null,
-                    onConfirm: Runnable? = null,
-                    onCancel: Runnable? = null): DialogWrap {
-            val view = getCustomDialogView(context, R.layout.dialog_confirm, title, message, contentView)
-
-            val dialog = customDialog(context, view)
-            view.findViewById<View>(R.id.btn_cancel).setOnClickListener {
-                dialog.dismiss()
-                onCancel?.run()
-            }
-            view.findViewById<View>(R.id.btn_confirm).setOnClickListener {
-                dialog.dismiss()
-                onConfirm?.run()
-            }
-
-            return dialog
-        }
-
-        fun confirm(context: Context,
-                    title: String = "",
-                    message: String = "",
-                    onConfirm: DialogButton? = null,
-                    onCancel: DialogButton? = null): DialogWrap {
-            return confirm(context, title, message, null, onConfirm, onCancel)
-        }
-
-        fun confirm(context: Context,
-                    title: String = "",
-                    message: String = "",
-                    contentView: View? = null,
-                    onConfirm: DialogButton? = null,
-                    onCancel: DialogButton? = null): DialogWrap {
-            val view = getCustomDialogView(context, R.layout.dialog_confirm, title, message, contentView)
+        fun confirm(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            contentView: View? = null,
+            onConfirm: DialogButton? = null,
+            onCancel: DialogButton? = null
+        ): DialogWrap {
+            val view =
+                getCustomDialogView(context, R.layout.dialog_confirm, title, message, contentView)
 
             val dialog = customDialog(context, view)
 
@@ -237,7 +193,6 @@ class DialogHelper {
                     dialog.dismiss()
                 }
             }
-
 
             val btnCancel = view.findViewById<TextView?>(R.id.btn_cancel)
             if (onCancel != null) {
@@ -259,15 +214,6 @@ class DialogHelper {
 
         fun confirm(context: Context, contentView: View? = null, onConfirm: DialogButton? = null, onCancel: DialogButton? = null): DialogWrap {
             return this.confirm(context, "", "", contentView, onConfirm, onCancel)
-        }
-
-        private fun getWindowBackground(context: Context, defaultColor: Int = Color.TRANSPARENT): Int {
-            // val attrsArray = intArrayOf(android.R.attr.windowBackground)
-            val attrsArray = intArrayOf(android.R.attr.background)
-            val typedArray = context.obtainStyledAttributes(attrsArray)
-            val color = typedArray.getColor(0, defaultColor)
-            typedArray.recycle()
-            return color
         }
 
         // 设置点击空白区域关闭弹窗
@@ -297,21 +243,13 @@ class DialogHelper {
             return dialogWrap
         }
 
-        private fun getStatusBarColor(context: Context): Int {
-            val defaultColor = Color.WHITE
-            val attrsArray = intArrayOf(android.R.attr.statusBarColor)
-            val typedArray = context.obtainStyledAttributes(attrsArray)
-            val color = typedArray.getColor(0, defaultColor)
-            typedArray.recycle()
-            return color
-        }
-
-        private fun openContinueAlert(context: Context,
-                                      layout: Int,
-                                      title: String = "",
-                                      message: String = "",
-                                      onConfirm: Runnable? = null,
-                                      onCancel: Runnable? = null): DialogWrap {
+        private fun openContinueAlert(
+            context: Context,
+            layout: Int,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
             val view = getCustomDialogView(context, layout, title, message, null)
 
             val dialog = customDialog(context, view) { dialog, _ ->
@@ -322,35 +260,11 @@ class DialogHelper {
             return dialog
         }
 
-        fun confirmBlur(context: Activity,
-                        title: String = "",
-                        message: String = "",
-                        onConfirm: Runnable? = null,
-                        onCancel: Runnable? = null): DialogWrap {
-            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm, onCancel)
-        }
-
         fun alert(context: Context,
                   title: String = "",
                   message: String = "",
                   onConfirm: Runnable? = null): DialogWrap {
-            return openContinueAlert(context, R.layout.dialog_alert, title, message, onConfirm, null)
-        }
-
-        fun alert(context: Context,
-                  title: String = "",
-                  message: String = "",
-                  contentView: View,
-                  onConfirm: Runnable? = null): DialogWrap {
-            val view = getCustomDialogView(context, R.layout.dialog_alert, title, message, contentView)
-
-            val dialog = customDialog(context, view)
-            view.findViewById<View>(R.id.btn_confirm).setOnClickListener {
-                dialog.dismiss()
-                onConfirm?.run()
-            }
-
-            return dialog
+            return openContinueAlert(context, R.layout.dialog_alert, title, message, onConfirm)
         }
 
         fun customDialog(
@@ -387,76 +301,6 @@ class DialogHelper {
             }
 
             return setOutsideTouchDismiss(view, DialogWrap(dialog).setCancelable(cancelable))
-        }
-
-        private fun isNightMode(context: Context): Boolean {
-            val nightMode = AppCompatDelegate.getDefaultNightMode()
-            if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-                return true
-            } else if (
-                    nightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM ||
-                    nightMode == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
-            ) {
-                val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-                return uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
-            } else {
-                return false
-            }
-        }
-
-        fun setWindowBlurBg(window: Window, activity: Activity) {
-            // 是否使用了动态壁纸
-            val wallpaperMode = activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER != 0
-
-            window.run {
-                // TODO:处理模糊背景
-                // BlurBackground(activity).setScreenBgLight(dialog)
-
-                // val attrs = attributes
-                // attrs.alpha = 0.1f
-                // attributes =attrs
-                // decorView.setPadding(0, 0, 0, 0)
-
-                val blurBitmap = if (disableBlurBg || wallpaperMode) {
-                    null
-                } else {
-                    FastBlurUtility.getBlurBackgroundDrawer(activity)
-                }
-
-                // window.setDimAmount(0f)
-                if (blurBitmap != null) {
-                    setBackgroundDrawable(BitmapDrawable(activity.resources, blurBitmap))
-                } else {
-                    // setBackgroundDrawableResource(android.R.color.transparent)
-                    try {
-                        val bg = getWindowBackground(activity)
-                        if (bg == Color.TRANSPARENT) {
-
-                            if (isFloating) {
-                                val d = ColorDrawable(bg)
-                                setBackgroundDrawable(d)
-                                setDimAmount(0.9f)
-                                return
-                            } else {
-                                if (wallpaperMode || isNightMode(context)) {
-                                    val d = ColorDrawable(Color.argb(255, 18, 18, 18))
-                                    setBackgroundDrawable(d)
-                                } else {
-                                    val d = ColorDrawable(Color.argb(255, 245, 245, 245))
-                                    setBackgroundDrawable(d)
-                                }
-                            }
-
-                        } else {
-                            val d = ColorDrawable(bg)
-                            setBackgroundDrawable(d)
-                        }
-                    } catch (ex: java.lang.Exception) {
-                        val d = ColorDrawable(Color.argb(255, 245, 245, 245))
-                        setBackgroundDrawable(d)
-                    }
-                }
-            }
         }
     }
 }

@@ -388,11 +388,6 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                                 val builder = AlertDialog.Builder(this.context, if (darkMode) R.style.kr_full_screen_dialog_dark else R.style.kr_full_screen_dialog_light)
                                 builder.setView(dialogView).create().apply {
                                     show()
-                                    val window = this.window
-                                    val activity = activity
-                                    if (window != null && activity != null) {
-                                        DialogHelper.setWindowBlurBg(window, activity)
-                                    }
                                 }
                             } else {
                                 DialogHelper.customDialog(requireActivity(), dialogView, onConfirm = { dialog, _ ->

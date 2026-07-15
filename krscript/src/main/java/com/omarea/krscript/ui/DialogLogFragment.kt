@@ -45,17 +45,6 @@ class DialogLogFragment : androidx.fragment.app.DialogFragment() {
         return Dialog(requireActivity(), if (themeResId != 0) themeResId else R.style.kr_full_screen_dialog_light)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val activity = this.activity
-        if (activity != null) {
-            dialog?.window?.run {
-                DialogHelper.setWindowBlurBg(this, activity)
-            }
-        }
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (nodeInfo != null) {

@@ -189,17 +189,14 @@ public class AdapterFileSelector extends BaseAdapter {
                 });
                 if (folderChooserMode) {
                     view.setOnLongClickListener(v -> {
-                        DialogHelper.Companion.confirm(view.getContext(), "选定目录？", file.getAbsolutePath(), new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!file.exists()) {
-                                    Toast.makeText(view.getContext(), "所选的目录已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                selectedFile = file;
-                                fileSelected.run();
+                        DialogHelper.Companion.confirm(view.getContext(), "选定目录？", file.getAbsolutePath(), (Runnable) () -> {
+                            if (!file.exists()) {
+                                Toast.makeText(view.getContext(), "所选的目录已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
+                                return;
                             }
-                        }, () -> {});
+                            selectedFile = file;
+                            fileSelected.run();
+                        });
                         return true;
                     });
                 }
@@ -227,7 +224,6 @@ public class AdapterFileSelector extends BaseAdapter {
                             }
                             selectedFile = file;
                             fileSelected.run();
-                        }, () -> {
                         })
                 );
             }

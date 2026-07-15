@@ -47,25 +47,6 @@ open class DialogFullScreen(private val layout: Int, private val darkMode: Boole
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val activity = this.activity
-        if (activity != null) {
-            dialog?.window?.run {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    setWindowAnimations(android.R.style.Animation_Translucent)
-                }
-
-                DialogHelper.setWindowBlurBg(this, activity)
-            }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
-
     public fun closeView() {
         try {
             dismiss()
