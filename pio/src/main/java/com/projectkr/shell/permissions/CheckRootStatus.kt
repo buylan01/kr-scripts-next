@@ -1,7 +1,6 @@
 package com.projectkr.shell.permissions
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Build
 import android.os.Handler
@@ -16,18 +15,19 @@ import kotlin.system.exitProcess
 /**
  * 检查获取root权限
  * Created by helloklf on 2017/6/3.
+ * Edited by buylan on 2026/07/15
  */
 
-public class CheckRootStatus(var context: Context, private var next: Runnable? = null) {
+class CheckRootStatus(var context: Context, private var next: Runnable? = null) {
     var myHandler: Handler = Handler(Looper.getMainLooper())
 
-    var therad: Thread? = null
-    public fun forceGetRoot() {
+    var thread: Thread? = null
+    fun forceGetRoot() {
         if (lastCheckResult) {
             next?.let { myHandler.post(it) }
         } else {
             var completed = false
-            therad = Thread {
+            thread = Thread {
                 rootStatus = KeepShellPublic.checkRoot()
                 if (completed) {
                     return@Thread
@@ -44,9 +44,9 @@ public class CheckRootStatus(var context: Context, private var next: Runnable? =
                                 .setTitle(R.string.error_root)
                                 .setPositiveButton(R.string.btn_retry) { _, _ ->
                                     KeepShellPublic.tryExit()
-                                    if (therad != null && therad!!.isAlive && !therad!!.isInterrupted) {
-                                        therad!!.interrupt()
-                                        therad = null
+                                    if (thread != null && thread!!.isAlive && !thread!!.isInterrupted) {
+                                        thread!!.interrupt()
+                                        thread = null
                                     }
                                     forceGetRoot()
                                 }
@@ -63,30 +63,32 @@ public class CheckRootStatus(var context: Context, private var next: Runnable? =
                     }
                 }
             }
-            therad!!.start()
-            Thread(Runnable {
+            thread!!.start()
+            Thread {
                 Thread.sleep(1000 * 15)
 
                 if (!completed) {
                     KeepShellPublic.tryExit()
                     myHandler.post {
-                        DialogHelper.confirm(context,
-                        context.getString(R.string.error_root),
-                        context.getString(R.string.error_su_timeout),
-                        null,
-                        DialogHelper.DialogButton(context.getString(R.string.btn_retry), {
-                            if (therad != null && therad!!.isAlive && !therad!!.isInterrupted) {
-                                therad!!.interrupt()
-                                therad = null
-                            }
-                            forceGetRoot()
-                        }),
-                        DialogHelper.DialogButton(context.getString(R.string.btn_exit), {
-                            exitProcess(0)
-                        }))
+                        DialogHelper.confirm(
+                            context,
+                            context.getString(R.string.error_root),
+                            context.getString(R.string.error_su_timeout),
+                            null,
+                            DialogHelper.DialogButton(context.getString(R.string.btn_retry), {
+                                if (thread != null && thread!!.isAlive && !thread!!.isInterrupted) {
+                                    thread!!.interrupt()
+                                    thread = null
+                                }
+                                forceGetRoot()
+                            }),
+                            DialogHelper.DialogButton(context.getString(R.string.btn_exit), {
+                                exitProcess(0)
+                            })
+                        )
                     }
                 }
-            }).start()
+            }.start()
         }
     }
 
@@ -112,18 +114,12 @@ public class CheckRootStatus(var context: Context, private var next: Runnable? =
             }
             */
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!checkPermission(context, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-                    cmds.append("dumpsys deviceidle whitelist +${context.packageName};\n")
-                }
+            if (!checkPermission(context, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+                cmds.append("dumpsys deviceidle whitelist +${context.packageName};\n")
             }
             KeepShellPublic.doCmdSync(cmds.toString())
         }
 
-        // 最后的ROOT检测结果
-        val lastCheckResult: Boolean
-            get() {
-                return rootStatus
-            }
+        val lastCheckResult: Boolean get() = rootStatus
     }
 }

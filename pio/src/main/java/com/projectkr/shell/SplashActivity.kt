@@ -50,12 +50,9 @@ class SplashActivity : ComponentActivity() {
         checkRoot {
             binding.startStateText.text = getString(R.string.pio_permission_checking)
             hasRoot = true
-
-            /*
-            checkFileWrite(Runnable {
-                startToFinish()
-            })
-            */
+//            checkFileWrite {
+//                startToFinish()
+//            }
             startToFinish()
         }
     }
