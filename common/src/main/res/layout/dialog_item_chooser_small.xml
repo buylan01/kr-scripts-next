@@ -81,6 +81,7 @@
         android:id="@+id/bottom_buttons"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
+        android:gravity="end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
