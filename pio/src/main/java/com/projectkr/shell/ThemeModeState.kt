@@ -20,7 +20,7 @@ object ThemeModeState {
             if (nightMode) {
                 themeMode.isDarkMode = true
                 themeMode.isLightStatusBar = false
-                activity.setTheme(R.style.AppThemeDark)
+                //activity.setTheme(R.style.AppThemeDark)
             } else {
                 themeMode.isDarkMode = false
             }
