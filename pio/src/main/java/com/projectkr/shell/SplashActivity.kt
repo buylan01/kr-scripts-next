@@ -4,26 +4,36 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.View
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shell.ShellExecutor
 import com.omarea.krscript.executor.ScriptEnvironmen
 import com.projectkr.shell.databinding.ActivitySplashBinding
 import com.projectkr.shell.permissions.CheckRootStatus
+import com.projectkr.shell.util.PermissionUtil.checkManageFile
+import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
 import java.io.BufferedReader
 import java.io.DataOutputStream
+import kotlin.system.exitProcess
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
     lateinit var binding: ActivitySplashBinding
+
+    private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        checkFileManage { startToFinish() }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,38 +60,22 @@ class SplashActivity : ComponentActivity() {
         checkRoot {
             binding.startStateText.text = getString(R.string.pio_permission_checking)
             hasRoot = true
-//            checkFileWrite {
-//                startToFinish()
-//            }
-            startToFinish()
+            checkFileManage {
+                startToFinish()
+            }
         }
     }
 
-    private fun checkPermission(permission: String): Boolean = PermissionChecker.checkSelfPermission(this.applicationContext, permission) == PermissionChecker.PERMISSION_GRANTED
-
-    /**
-     * 检查权限 主要是文件读写权限
-     */
-    private fun checkFileWrite(next: Runnable) {
+    private fun checkFileManage(next: Runnable) {
         Thread {
             CheckRootStatus.grantPermission(this)
-            if (!(checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE) && checkPermission(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ))
-            ) {
-                ActivityCompat.requestPermissions(
-                    this@SplashActivity,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,
-                        Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                        Manifest.permission.WAKE_LOCK
-                    ),
-                    0x11
-                )
-            }
-            myHandler.post {
+            if (!checkManageFile(this)) {
+                myHandler.post {
+                    showManageFileDialog(this, manageFileRequester) {
+                        next.run()
+                    }
+                }
+            } else {
                 next.run()
             }
         }.start()

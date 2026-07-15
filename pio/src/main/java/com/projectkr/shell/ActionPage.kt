@@ -322,36 +322,31 @@ class ActionPage : AppCompatActivity() {
     }
 
     private fun chooseFilePath(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(READ_EXTERNAL_STORAGE), 2);
-            Toast.makeText(this, getString(R.string.kr_write_external_storage), Toast.LENGTH_LONG).show()
-            return false
-        } else {
-            return try {
-                if (fileSelectedInterface.type() == ParamsFileChooserRender.FileSelectedInterface.TYPE_FOLDER) {
-                    chooseFolderPath()
+        return try {
+            if (fileSelectedInterface.type() == ParamsFileChooserRender.FileSelectedInterface.TYPE_FOLDER) {
+                chooseFolderPath()
+            } else {
+                val suffix = fileSelectedInterface.suffix()
+                if (!suffix.isNullOrEmpty()) {
+                    chooseFilePath(suffix)
                 } else {
-                    val suffix = fileSelectedInterface.suffix()
-                    if (!suffix.isNullOrEmpty()) {
-                        chooseFilePath(suffix)
+                    val intent = Intent(Intent.ACTION_GET_CONTENT);
+                    val mimeType = fileSelectedInterface.mimeType()
+                    if (mimeType != null) {
+                        intent.type = mimeType
                     } else {
-                        val intent = Intent(Intent.ACTION_GET_CONTENT);
-                        val mimeType = fileSelectedInterface.mimeType()
-                        if (mimeType != null) {
-                            intent.type = mimeType
-                        } else {
-                            intent.type = "*/*"
-                        }
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER);
+                        intent.type = "*/*"
                     }
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER);
                 }
-                this.fileSelectedInterface = fileSelectedInterface
-                true;
-            } catch (ex: java.lang.Exception) {
-                false
             }
+            this.fileSelectedInterface = fileSelectedInterface
+            true;
+        } catch (ex: java.lang.Exception) {
+            false
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

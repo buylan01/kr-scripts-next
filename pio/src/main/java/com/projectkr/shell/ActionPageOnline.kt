@@ -2,7 +2,6 @@ package com.projectkr.shell
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -232,21 +231,15 @@ class ActionPageOnline : AppCompatActivity() {
     private var fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface? = null
     private val ACTION_FILE_PATH_CHOOSER = 65400
     private fun chooseFilePath(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), 2);
-            Toast.makeText(this, getString(R.string.kr_write_external_storage), Toast.LENGTH_LONG).show()
+        try {
+            val intent = Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*")
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER);
+            this.fileSelectedInterface = fileSelectedInterface
+            return true;
+        } catch (_: java.lang.Exception) {
             return false
-        } else {
-            try {
-                val intent = Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("*/*")
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER);
-                this.fileSelectedInterface = fileSelectedInterface
-                return true;
-            } catch (ex: java.lang.Exception) {
-                return false
-            }
         }
     }
 

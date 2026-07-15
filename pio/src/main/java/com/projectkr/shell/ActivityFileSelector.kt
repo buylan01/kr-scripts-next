@@ -1,23 +1,18 @@
 package com.projectkr.shell
 
-import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
 import com.omarea.common.ui.ProgressBarDialog
 import com.projectkr.shell.databinding.ActivityFileSelectorBinding
 import com.projectkr.shell.ui.AdapterFileSelector
+import com.projectkr.shell.util.PermissionUtil.checkManageFile
+import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
 import java.io.File
 
 class ActivityFileSelector : AppCompatActivity() {
@@ -32,18 +27,18 @@ class ActivityFileSelector : AppCompatActivity() {
 
     private lateinit var binding: ActivityFileSelectorBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        // TODO:ThemeSwitch.switchTheme(this)
+    private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        loadData()
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFileSelectorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        // setTitle(R.string.app_name)
 
-        // 显示返回按钮
         supportActionBar!!.setHomeButtonEnabled(true)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { _ ->
@@ -51,16 +46,16 @@ class ActivityFileSelector : AppCompatActivity() {
         }
 
         intent.extras?.run {
-            if (containsKey("extension") == true) {
-                extension = "" + intent.extras!!.getString("extension")
+            if (containsKey("extension")) {
+                extension = intent.extras!!.getString("extension").toString()
                 if (!extension.startsWith(".")) {
                     extension = ".$extension"
                 }
                 if (extension.isNotEmpty()) {
-                    title = title.toString() + "($extension)"
+                    title = "$title($extension)"
                 }
             }
-            if (containsKey("mode") == true) {
+            if (containsKey("mode")) {
                 mode = getInt("mode")
                 if (mode == MODE_FOLDER) {
                     title = getString(R.string.title_activity_folder_selector)
@@ -73,33 +68,9 @@ class ActivityFileSelector : AppCompatActivity() {
         if (keyCode == KeyEvent.KEYCODE_BACK && adapterFileSelector != null && adapterFileSelector!!.goParent()) {
             return true
         } else {
-            setResult(Activity.RESULT_CANCELED, Intent())
+            setResult(RESULT_CANCELED, Intent())
         }
         return super.onKeyDown(keyCode, event)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        var grant = true
-        for (result in grantResults) {
-            if (result == PackageManager.PERMISSION_DENIED) {
-                grant = false;
-            }
-        }
-
-        if (requestCode == 111) {
-            if (grant == false) {
-                Toast.makeText(applicationContext, "没有读取文件的权限！", Toast.LENGTH_LONG).show()
-            } else {
-                loadData()
-            }
-        }
-    }
-
-    private fun checkPermission(permission: String): Boolean = PermissionChecker.checkSelfPermission(this, permission) == PermissionChecker.PERMISSION_GRANTED
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), 111);
     }
 
     override fun onResume() {
@@ -108,7 +79,7 @@ class ActivityFileSelector : AppCompatActivity() {
     }
 
     private fun loadData() {
-        if (checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE) && checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (checkManageFile(this)) {
             val sdcard = File(Environment.getExternalStorageDirectory().absolutePath)
             if (sdcard.exists() && sdcard.isDirectory) {
                 val list = sdcard.listFiles()
@@ -119,7 +90,7 @@ class ActivityFileSelector : AppCompatActivity() {
                 val onSelected =  Runnable {
                     val file: File? = adapterFileSelector!!.selectedFile
                     if (file != null) {
-                        this.setResult(Activity.RESULT_OK, Intent().putExtra("file", file.absolutePath))
+                        this.setResult(RESULT_OK, Intent().putExtra("file", file.absolutePath))
                         this.finish()
                     }
                 }
@@ -132,7 +103,9 @@ class ActivityFileSelector : AppCompatActivity() {
                 binding.fileSelectorList.adapter = adapterFileSelector
             }
         } else {
-            requestPermissions()
+            showManageFileDialog(this, manageFileRequester) {
+                this.finish()
+            }
         }
     }
 }

@@ -211,31 +211,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chooseFilePath(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, getString(com.omarea.krscript.R.string.kr_write_external_storage), Toast.LENGTH_LONG).show()
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 2)
-            return false
-        } else {
-            return try {
-                val suffix = fileSelectedInterface.suffix()
-                if (!suffix.isNullOrEmpty()) {
-                    chooseFilePath(suffix)
+        return try {
+            val suffix = fileSelectedInterface.suffix()
+            if (!suffix.isNullOrEmpty()) {
+                chooseFilePath(suffix)
+            } else {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                val mimeType = fileSelectedInterface.mimeType()
+                if (mimeType != null) {
+                    intent.type = mimeType
                 } else {
-                    val intent = Intent(Intent.ACTION_GET_CONTENT)
-                    val mimeType = fileSelectedInterface.mimeType()
-                    if (mimeType != null) {
-                        intent.type = mimeType
-                    } else {
-                        intent.type = "*/*"
-                    }
-                    intent.addCategory(Intent.CATEGORY_OPENABLE)
-                    startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER)
+                    intent.type = "*/*"
                 }
-                this.fileSelectedInterface = fileSelectedInterface
-                true
-            } catch (_: java.lang.Exception) {
-                false
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER)
             }
+            this.fileSelectedInterface = fileSelectedInterface
+            true
+        } catch (_: java.lang.Exception) {
+            false
         }
     }
 
