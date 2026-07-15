@@ -62,7 +62,7 @@ public class AdapterFileSelector extends BaseAdapter {
     }
 
     private void loadDir(final File dir) {
-        progressBarDialog.showDialog("加载中...");
+        progressBarDialog.showDialog("加载中...", 300L);
         new Thread(new Runnable() {
             @Override
             public void run() {
