@@ -400,7 +400,7 @@ class ActionPage : AppCompatActivity() {
     private fun loadPageConfig() {
         val activity = this
 
-        Thread(Runnable {
+        Thread {
             currentPageConfig.run {
                 if (beforeRead.isNotEmpty()) {
                     showDialog(getString(R.string.kr_page_before_load))
@@ -415,7 +415,11 @@ class ActionPage : AppCompatActivity() {
                 }
 
                 if (items == null && pageConfigPath.isNotEmpty()) {
-                    items = PageConfigReader(applicationContext, pageConfigPath, pageConfigDir).readConfigXml()
+                    items = PageConfigReader(
+                        applicationContext,
+                        pageConfigPath,
+                        pageConfigDir
+                    ).readConfigXml()
                 }
 
                 if (afterRead.isNotEmpty()) {
@@ -423,7 +427,7 @@ class ActionPage : AppCompatActivity() {
                     ScriptEnvironmen.executeResultRoot(activity, afterRead, this)
                 }
 
-                if (items != null && items.size != 0) {
+                if (!items.isNullOrEmpty()) {
                     if (loadSuccess.isNotEmpty()) {
                         showDialog(getString(R.string.kr_page_load_success))
                         ScriptEnvironmen.executeResultRoot(activity, loadSuccess, this)
@@ -434,13 +438,24 @@ class ActionPage : AppCompatActivity() {
                             override val key = autoRunItemId
                             override fun onCompleted(result: Boolean?) {
                                 if (result != true) {
-                                    Toast.makeText(this@ActionPage, getString(R.string.kr_auto_run_item_losted), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@ActionPage,
+                                        getString(R.string.kr_auto_run_item_losted),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         }
 
-                        val fragment = ActionListFragment.create(items, actionShortClickHandler, autoRunTask, ThemeModeState.getThemeMode())
-                        supportFragmentManager.beginTransaction().replace(com.projectkr.shell.R.id.main_list, fragment).commitAllowingStateLoss()
+                        val fragment = ActionListFragment.create(
+                            items,
+                            actionShortClickHandler,
+                            autoRunTask,
+                            ThemeModeState.getThemeMode()
+                        )
+                        supportFragmentManager.beginTransaction()
+                            .replace(com.projectkr.shell.R.id.main_list, fragment)
+                            .commitAllowingStateLoss()
                         hideDialog()
                         actionsLoaded = true
                     }
@@ -452,13 +467,17 @@ class ActionPage : AppCompatActivity() {
                     }
 
                     handler.post {
-                        Toast.makeText(this@ActionPage, getString(R.string.kr_page_load_fail), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ActionPage,
+                            getString(R.string.kr_page_load_fail),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     hideDialog()
                     finish()
                 }
             }
-        }).start()
+        }.start()
     }
 
     fun _openPage(pageNode: PageNode) {

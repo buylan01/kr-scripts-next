@@ -1,21 +1,16 @@
 package com.projectkr.shell
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.view.View
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shell.ShellExecutor
 import com.omarea.krscript.executor.ScriptEnvironmen
 import com.projectkr.shell.databinding.ActivitySplashBinding
@@ -24,7 +19,6 @@ import com.projectkr.shell.util.PermissionUtil.checkManageFile
 import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
 import java.io.BufferedReader
 import java.io.DataOutputStream
-import kotlin.system.exitProcess
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
