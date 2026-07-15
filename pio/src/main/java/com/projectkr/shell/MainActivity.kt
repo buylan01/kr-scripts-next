@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -265,8 +266,17 @@ class MainActivity : AppCompatActivity() {
         OpenPageHelper(this).openPage(pageNode)
     }
 
+    private fun getThemeColor(attrRes: Int): Int {
+        val typedValue = TypedValue()
+        this.theme.resolveAttribute(attrRes, typedValue, true)
+        return typedValue.data
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        menu.findItem(R.id.option_menu_info)?.icon?.setTint(
+            getThemeColor(com.google.android.material.R.attr.colorOnSurface)
+        )
         return true
     }
 
