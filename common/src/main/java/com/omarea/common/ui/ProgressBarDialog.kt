@@ -2,6 +2,7 @@ package com.omarea.common.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Build
 import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +17,13 @@ open class ProgressBarDialog(private var context: Activity) {
         hideDialog()
     }
 
+    private fun isActivityUsable(): Boolean {
+        if (context.isFinishing) return false
+        if (context.isDestroyed) return false
+        return true
+    }
+
+
     fun hideDialog() {
         try {
             if (alert != null) {
@@ -29,6 +37,11 @@ open class ProgressBarDialog(private var context: Activity) {
 
     @SuppressLint("InflateParams")
     fun showDialog(text: String = "加载中…"): ProgressBarDialog {
+
+        if (!isActivityUsable()) {
+            return this
+        }
+
         if (textView != null && alert != null) {
             textView!!.text = text
         } else {
