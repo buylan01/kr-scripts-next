@@ -1,9 +1,12 @@
 package com.projectkr.shell.ui;
 
+import static android.view.View.GONE;
+
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -161,100 +164,76 @@ public class AdapterFileSelector extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final View view;
+        view = View.inflate(parent.getContext(), R.layout.file_list_item, null);
+        ImageView imageView = view.findViewById(R.id.ItemIcon);
         if (hasParent && position == 0) {
-            view = View.inflate(parent.getContext(), R.layout.list_item_dir, null);
-            ((TextView) (view.findViewById(R.id.ItemTitle))).setText("...");
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    goParent();
-                }
-            });
-            return view;
+            imageView.setImageResource(R.drawable.baseline_folder_24);
+            ((TextView) (view.findViewById(R.id.ItemTitle))).setText("..");
+            view.setOnClickListener(v -> goParent());
         } else {
             final File file = (File) getItem(position);
             if (file.isDirectory()) {
-                view = View.inflate(parent.getContext(), R.layout.list_item_dir, null);
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!file.exists()) {
-                            Toast.makeText(view.getContext(), "所选的文件已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        File[] files = file.listFiles();
-                        if (files != null && files.length > 0) {
-                            loadDir(file);
-                        } else {
-                            Snackbar.make(view, "该目录下没有文件！", Snackbar.LENGTH_SHORT).show();
-                        }
+                imageView.setImageResource(R.drawable.baseline_folder_24);
+                view.findViewById(R.id.ItemText).setVisibility(GONE);
+                view.setOnClickListener(v -> {
+                    if (!file.exists()) {
+                        Toast.makeText(view.getContext(), "所选的文件已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    File[] files = file.listFiles();
+                    if (files != null && files.length > 0) {
+                        loadDir(file);
+                    } else {
+                        Snackbar.make(view, "该目录下没有文件！", Snackbar.LENGTH_SHORT).show();
                     }
                 });
                 if (folderChooserMode) {
-                    view.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            DialogHelper.Companion.confirm(view.getContext(), "选定目录？", file.getAbsolutePath(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!file.exists()) {
-                                        Toast.makeText(view.getContext(), "所选的目录已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    selectedFile = file;
-                                    fileSelected.run();
-                                }
-                            }, new Runnable() {
-                                @Override
-                                public void run() {
-
-                                }
-                            });
-                            return true;
-                        }
-                    });
-                }
-            } else {
-                view = View.inflate(parent.getContext(), R.layout.list_item_file, null);
-                long fileLength = file.length();
-                String fileSize;
-                if (fileLength < 1024) {
-                    fileSize = fileLength + "B";
-                } else if (fileLength < 1048576) {
-                    fileSize = String.format("%sKB", String.format("%.2f", (file.length() / 1024.0)));
-                } else if (fileLength < 1073741824) {
-                    fileSize = String.format("%sMB", String.format("%.2f", (file.length() / 1048576.0)));
-                } else {
-                    fileSize = String.format("%sGB", String.format("%.2f", (file.length() / 1073741824.0)));
-                }
-
-                ((TextView) (view.findViewById(R.id.ItemText))).setText(fileSize);
-
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        DialogHelper.Companion.confirm(view.getContext(), "选定文件？", file.getAbsolutePath(), new Runnable() {
+                    view.setOnLongClickListener(v -> {
+                        DialogHelper.Companion.confirm(view.getContext(), "选定目录？", file.getAbsolutePath(), new Runnable() {
                             @Override
                             public void run() {
                                 if (!file.exists()) {
-                                    Toast.makeText(view.getContext(), "所选的文件已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(view.getContext(), "所选的目录已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 selectedFile = file;
                                 fileSelected.run();
                             }
-                        }, new Runnable() {
-                            @Override
-                            public void run() {
+                        }, () -> {});
+                        return true;
+                    });
+                }
+            } else {
+                imageView.setImageResource(R.drawable.baseline_insert_drive_file_24);
+                long fileLength = file.length();
+                String fileSize;
+                if (fileLength < 1024) {
+                    fileSize = fileLength + "B";
+                } else if (fileLength < 1024 * 1024) {
+                    fileSize = String.format("%.2fKB",file.length() / 1024.0);
+                } else if (fileLength < 1024 * 1024 * 1024) {
+                    fileSize = String.format("%.2fMB", file.length() / 1024.0 * 1024.0);
+                } else {
+                    fileSize = String.format("%.2fGB", file.length() / 1024.0 * 1024.0 * 1024.0);
+                }
 
+                ((TextView) (view.findViewById(R.id.ItemText))).setText(fileSize);
+
+                view.setOnClickListener(v ->
+                        DialogHelper.Companion.confirm(view.getContext(), "选定文件？", file.getAbsolutePath(), () -> {
+                            if (!file.exists()) {
+                                Toast.makeText(view.getContext(), "所选的文件已被删除，请重新选择！", Toast.LENGTH_SHORT).show();
+                                return;
                             }
-                        });
-                    }
-                });
+                            selectedFile = file;
+                            fileSelected.run();
+                        }, () -> {
+                        })
+                );
             }
             ((TextView) (view.findViewById(R.id.ItemTitle))).setText(file.getName());
-            return view;
         }
+        return view;
     }
 
     public File getSelectedFile() {
