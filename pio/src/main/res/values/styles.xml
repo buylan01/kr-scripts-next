@@ -1,11 +1,7 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="cardBg">@color/cardBgLight</item>
-        <item name="android:switchStyle">@style/SceneSwitch</item>
-        <item name="android:seekBarStyle">@style/SceneSeekBar</item>
-        <item name="android:checkboxStyle">@style/SceneCheckBox</item>
-        <item name="android:radioButtonStyle">@style/SceneRadioBox</item>
+
     </style>
 
     <style name="textTitle">
@@ -17,26 +13,5 @@
     <style name="textSmall">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textSize">11dp</item>
-    </style>
-
-    <style name="ListCardItem">
-        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/krscript_item_bg</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-    </style>
-    <style name="ListCardItemSmall" parent="ListCardItem">
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
     </style>
 </resources>

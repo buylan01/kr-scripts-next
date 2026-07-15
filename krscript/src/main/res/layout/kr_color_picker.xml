@@ -32,7 +32,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/alpha_gradient"
+                android:background="@drawable/gradient_alpha"
                 android:max="255"
                 android:progressDrawable="@android:color/transparent" />
         </LinearLayout>
@@ -55,7 +55,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/red_gradient"
+                android:background="@drawable/gradient_red"
                 android:max="255"
                 android:progressDrawable="@android:color/transparent" />
         </LinearLayout>
@@ -78,7 +78,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/green_gradient"
+                android:background="@drawable/gradient_green"
                 android:max="255"
                 android:progressDrawable="@android:color/transparent" />
         </LinearLayout>
@@ -101,7 +101,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/blue_gradient"
+                android:background="@drawable/gradient_blue"
                 android:max="255"
                 android:progressDrawable="@android:color/transparent" />
         </LinearLayout>

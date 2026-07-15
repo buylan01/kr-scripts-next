@@ -7,13 +7,12 @@
 
     <ImageButton
         android:id="@+id/btn_hide"
-        android:scaleX="0.8"
-        android:scaleY="0.8"
-        style="@style/SceneButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="8dp"
         android:scaleType="centerInside"
-        android:padding="7dp"
+        android:padding="8dp"
         android:src="@drawable/kr_hide" />
 
     <LinearLayout

@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#98AEFF</color>
-    <color name="cardBgDark">#222222</color>
-    <color name="cardBgDarkTransparent">#a0000000</color>
-    <color name="cardBgLight">#ffffff</color>
-    <color name="cardBgLightTransparent">#c0ffffff</color>
 </resources>
