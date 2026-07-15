@@ -19,8 +19,7 @@ class DialogItemChooser2(
             R.layout.dialog_item_chooser
         } else {
             R.layout.dialog_item_chooser_small
-        }),
-        darkMode
+        })
 ) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

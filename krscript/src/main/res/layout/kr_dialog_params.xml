@@ -49,12 +49,12 @@
 
             <Button
                 android:id="@id/btn_cancel"
-                style="@style/dialogCancelBtn"
+                style="@style/dialogLargeBtn"
                 android:text="@string/btn_cancel" />
 
             <Button
                 android:id="@id/btn_confirm"
-                style="@style/dialogConfirmBtn"
+                style="@style/dialogLargeBtn"
                 android:text="@string/btn_confirm" />
         </LinearLayout>
     </RelativeLayout>

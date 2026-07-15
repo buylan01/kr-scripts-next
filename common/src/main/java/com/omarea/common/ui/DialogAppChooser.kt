@@ -13,10 +13,10 @@ import android.widget.Filterable
 import com.omarea.common.R
 
 class DialogAppChooser(
-        private val darkMode: Boolean,
-        private var packages: ArrayList<AdapterAppChooser.AppInfo>,
-        private val multiple: Boolean = false,
-        private var callback: Callback? = null) : DialogFullScreen(R.layout.dialog_app_chooser, darkMode) {
+    private var packages: ArrayList<AdapterAppChooser.AppInfo>,
+    private val multiple: Boolean = false,
+    private var callback: Callback? = null
+) : DialogFullScreen(R.layout.dialog_app_chooser) {
 
     private var allowAllSelect = true
     private var excludeApps: Array<String> = arrayOf()

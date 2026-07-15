@@ -16,7 +16,7 @@ import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import com.omarea.common.ui.DialogHelper
+import androidx.fragment.app.DialogFragment
 import com.omarea.krscript.R
 import com.omarea.krscript.databinding.KrDialogLogBinding
 import com.omarea.krscript.executor.ShellExecutor
@@ -24,29 +24,13 @@ import com.omarea.krscript.model.RunnableNode
 import com.omarea.krscript.model.ShellHandlerBase
 
 
-class DialogLogFragment : androidx.fragment.app.DialogFragment() {
+class DialogLogFragment : DialogFragment() {
     private var _binding: KrDialogLogBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = KrDialogLogBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
-    private var running = false
-    private var nodeInfo: RunnableNode? = null
-    private lateinit var onExit: Runnable
-    private lateinit var script: String
-    private var params: HashMap<String, String>? = null
-    private var themeResId: Int = 0
-    private lateinit var currentView: View
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return Dialog(requireActivity(), if (themeResId != 0) themeResId else R.style.kr_full_screen_dialog_light)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         if (nodeInfo != null) {
             nodeInfo?.run {
                 // 如果执行完以后需要刷新界面，那么就不允许隐藏日志窗口到后台执行
@@ -63,6 +47,19 @@ class DialogLogFragment : androidx.fragment.app.DialogFragment() {
         } else {
             dismiss()
         }
+
+        return binding.root
+    }
+
+    private var running = false
+    private var nodeInfo: RunnableNode? = null
+    private lateinit var onExit: Runnable
+    private lateinit var script: String
+    private var params: HashMap<String, String>? = null
+    private var themeResId: Int = 0
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return Dialog(requireActivity(), com.omarea.common.R.style.dialog_full_screen)
     }
 
     private fun openExecutor(nodeInfo: RunnableNode): ShellHandlerBase? {
@@ -265,7 +262,7 @@ class DialogLogFragment : androidx.fragment.app.DialogFragment() {
             fragment.onExit = onExit
             fragment.script = script
             fragment.params = params
-            fragment.themeResId = if (darkMode) R.style.kr_full_screen_dialog_dark else R.style.kr_full_screen_dialog_light
+            fragment.themeResId = com.omarea.common.R.style.dialog_full_screen
             fragment.onDismissRunnable = onDismiss
 
             return fragment

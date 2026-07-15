@@ -385,7 +385,7 @@ class ActionListFragment : androidx.fragment.app.Fragment(), PageLayoutRender.On
                             val darkMode = themeMode != null && themeMode!!.isDarkMode
 
                             if (isLongList) {
-                                val builder = AlertDialog.Builder(this.context, if (darkMode) R.style.kr_full_screen_dialog_dark else R.style.kr_full_screen_dialog_light)
+                                val builder = AlertDialog.Builder(this.context, com.omarea.common.R.style.dialog_full_screen)
                                 builder.setView(dialogView).create().apply {
                                     show()
                                 }

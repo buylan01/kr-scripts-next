@@ -86,13 +86,13 @@
 
         <Button
             android:id="@+id/btn_cancel"
-            style="@style/dialogCancelBtn"
+            style="@style/dialogLargeBtn"
             android:layout_marginEnd="8dp"
             android:text="取消">
         </Button>
         <Button
             android:id="@+id/btn_confirm"
-            style="@style/dialogConfirmBtn"
+            style="@style/dialogLargeBtn"
             android:text="确定">
         </Button>
     </LinearLayout>

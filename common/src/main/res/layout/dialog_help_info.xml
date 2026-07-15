@@ -44,7 +44,7 @@
 
             <Button
                 android:id="@+id/btn_confirm"
-                style="@style/dialogCancelBtn"
+                style="@style/dialogLargeBtn"
                 android:text="我知道了">
             </Button>
         </LinearLayout>
