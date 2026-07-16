@@ -202,7 +202,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                             val result = ActionShortcutManager(context!!)
                                 .addShortcut(
                                     intent,
-                                    IconPathAnalysis().loadLogo(context!!, clickableNode),
+                                    IconPathAnalysis().loadLogo(context!!, clickableNode)!!,
                                     clickableNode
                                 )
                             if (!result) {

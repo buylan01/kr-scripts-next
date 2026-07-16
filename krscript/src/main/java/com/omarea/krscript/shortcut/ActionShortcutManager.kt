@@ -1,6 +1,5 @@
 package com.omarea.krscript.shortcut
 
-import android.annotation.TargetApi
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -11,32 +10,43 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.omarea.common.shared.ObjectStorage
 import com.omarea.krscript.model.NodeInfoBase
 import com.omarea.krscript.model.PageNode
+import java.io.Serializable
 import java.util.*
 
 class ActionShortcutManager(private var context: Context) {
-    @TargetApi(Build.VERSION_CODES.O)
-    public fun addShortcut(intent: Intent, drawable: Drawable, config: NodeInfoBase): Boolean {
+
+    inline fun <reified T : Serializable> Intent.getSerializableExtraCompat(key: String): T? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getSerializableExtra(key, T::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getSerializableExtra(key) as? T
+        }
+    }
+
+    fun addShortcut(intent: Intent, drawable: Drawable, config: NodeInfoBase): Boolean {
         // 因为添加快捷方式时无法处理SerializableExtra，所以不得不通过应用本身存储pageNode信息
         if (intent.hasExtra("page")) {
-            val pageNode = intent.getSerializableExtra("page") as PageNode
+            val pageNode = intent.getSerializableExtraCompat<PageNode>("page") as PageNode
             intent.putExtra("shortcutId", saveShortcutTarget(pageNode))
             intent.removeExtra("page")
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return createShortcutOreo(intent, drawable, config)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createShortcutOreo(intent, drawable, config)
         } else {
-            return addShortcutNougat(intent, drawable, config)
+            addShortcutNougat(intent, drawable, config)
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun addShortcutNougat(intent: Intent, drawable: Drawable, config: NodeInfoBase): Boolean {
         try {
             val shortcut = Intent("com.android.launcher.action.INSTALL_SHORTCUT")
-            val id = "addin_" + config.index
 
             //快捷方式的名称
             shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, config.title)//快捷方式的名字
@@ -46,7 +56,7 @@ class ActionShortcutManager(private var context: Context) {
             shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON, (drawable as BitmapDrawable).bitmap)
 
             val shortcutIntent = Intent(Intent.ACTION_MAIN)
-            shortcutIntent.setClassName(context.getApplicationContext(), intent.component!!.className)
+            shortcutIntent.setClassName(context.applicationContext, intent.component!!.className)
             shortcutIntent.putExtras(intent)
 
             shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent)
@@ -55,7 +65,7 @@ class ActionShortcutManager(private var context: Context) {
             context.sendBroadcast(shortcut)
 
             return true
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             return false
         }
 
@@ -69,19 +79,19 @@ class ActionShortcutManager(private var context: Context) {
     }
 
     // 读取快捷方式的页面信息对象
-    public fun getShortcutTarget(shortcutId: String): PageNode? {
+    fun getShortcutTarget(shortcutId: String): PageNode? {
         return ObjectStorage<PageNode>(context).load(shortcutId)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    public fun createShortcutOreo(intent: Intent, drawable: Drawable, config: NodeInfoBase): Boolean {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createShortcutOreo(intent: Intent, drawable: Drawable, config: NodeInfoBase): Boolean {
         try {
             val shortcutManager = context.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
 
             if (shortcutManager.isRequestPinShortcutSupported) {
                 val id = "addin_" + config.index
                 val shortcutIntent = Intent(Intent.ACTION_MAIN)
-                shortcutIntent.setClassName(context.getApplicationContext(), intent.component!!.className)
+                shortcutIntent.setClassName(context.applicationContext, intent.component!!.className)
                 shortcutIntent.putExtras(intent)
                 shortcutIntent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
 
@@ -89,10 +99,10 @@ class ActionShortcutManager(private var context: Context) {
                         .setIcon(Icon.createWithBitmap((drawable as BitmapDrawable).bitmap))
                         .setShortLabel(config.title)
                         .setIntent(shortcutIntent)
-                        .setActivity(intent.component!!) // 只有“主要”活动 - 定义过滤器Intent#ACTION_MAIN 和Intent#CATEGORY_LAUNCHER意图过滤器的活动 - 才能成为目标活动
+                        .setActivity(intent.component!!)
                         .build()
 
-                val shortcutCallbackIntent = PendingIntent.getBroadcast(context, 0, Intent(), PendingIntent.FLAG_UPDATE_CURRENT)
+                val shortcutCallbackIntent = PendingIntent.getBroadcast(context, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
                 if (shortcutManager.isRequestPinShortcutSupported) {
                     val items = shortcutManager.pinnedShortcuts
                     for (item in items) {
@@ -114,7 +124,6 @@ class ActionShortcutManager(private var context: Context) {
             return true
         } catch (ex: Exception) {
             Log.e("ActionShortcutManager", "" + ex.message)
-            // Toast.makeText(context, "处理快捷方式失败" + ex.getMessage(), Toast.LENGTH_LONG).show();
             return false
         }
     }
