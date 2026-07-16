@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <page>
-    <group title="开发文档">
-        <!--html属性不支持省略file:///android_asset/前缀-->
-        <page html="file:///android_asset/docs/index.html#/document-library" title="查看PIO的详细文档" />
+    <group title="文档">
+        <page html="https://buylan01.github.io/kr-scripts-next" title="Kr Scripts Next 开发文档" />
     </group>
 
     <group title="无关紧要的测试代码">

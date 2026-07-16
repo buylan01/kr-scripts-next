@@ -1,5 +1,6 @@
+# 其他属性
 
-### visible 属性
+## visible 属性
 - 如果你有一个功能选项，只有在满足特定条件的手机上才显示
 - 那你一定用的上`visible`属性
 - `visible`可以用于 `功能节点`、`外观节点`、`资源节点`，以及action的`param 节点`
@@ -15,7 +16,7 @@
 </group>
 ```
 
-### 系统版本限制（target-sdk、min-sdk、max-sdk）
+## 系统版本限制（target-sdk、min-sdk、max-sdk）
 - 这三个属性可以定义在 `功能节点`和`页面节点`上，即 Action、Switch、Picker、Page 节点上
 - 示例
 
@@ -40,7 +41,7 @@
 ```
 
 
-### 操作确认（confirm）和警告（warning）
+## 操作确认（confirm）和警告（warning）
 - 操作确认 [confirm="true"]，操作警告 [warning="警告内容"]
 - 是指点击功能时弹出的二次确认对话框，二者的区别是 `confirm` 默认使用功能标题和描述作为提示内容，`warning`则需要自定义提示内容
 
@@ -56,7 +57,7 @@
 > **注意**：如果Action具有一个或多个参数(param)，则`warning`的内容不会单独弹窗提示，而是显示在参数输入界面的顶部
 
 
-### 功能锁定（locked、lock）
+## 功能锁定（locked、lock）
 - 这三个属性可以定义在 `功能节点`和`页面节点`上，即 Action、Switch、Picker、Page 节点上
 - 使用`locked`属性可将一个功能设为不可运行，点击后会弹出提示告知用户
 ```xml
@@ -89,7 +90,7 @@
 
 
 
-### 相关说明
+## 相关说明
 
 - 由于在xml中写大量的shell代码非常不方便，也不美观，
 - 建议参考 [`Script`](#/doc?doc=/docs/Script.md) 中的说明，

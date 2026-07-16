@@ -1,10 +1,8 @@
-## Action
-
-### 用途
+# Action
 - 点击后执行一段代码
 - 允许通过参数定义，在执行代码前，让用户进行一些选择
 
-### 入门 Hello world！
+## 入门
 - 先从最简单的开始
 - 点击后执行一段脚本（输出Hello world！）
 
@@ -21,57 +19,22 @@
 </page>
 ```
 
-### 属性
+## 属性
 
 - 公共属性（Action、Switch、Picker共有）
 
-| 属性 | 作用 | 有效值 | 示例 |
-| - | - | - | :- |
-| id | 如果允许长按添加到桌面快捷，必需设置ID | 当前配置文件中必需唯一 | `a0001` |
-| desc | 显示在标题下的小字，可以不设置 | 文本内容 | `这是描述` |
-| desc-sh | 动态设置desc内容的脚本 | `脚本代码` | `echo '自定义的说明信息'` |
-| summary | 高亮显示的摘要信息 | 文本内容 | `这是摘要` |
-| summary-sh | 动态设置summary内容的脚本 | `脚本代码` | `echo '自定义的摘要信息'` |
-| confirm | 点击时是否弹出确认框，默认`false` | `true`、`false` | `false` |
-| visible | 自定义脚本，输出1或0，决定该功能项是否显示 | 脚本代码 | `echo '1'` |
-| interruptible | 是否允许中断执行，默认`true` | `true`、`false` | `false` |
-| auto-off | 执行完脚本后是否自动关闭日志界面，默认`false` | `true`、`false` | `false` |
-| auto-finish | 是否在关闭日志界面后关闭当前页面 | `true`、`false` | `false` |
-| logo | 作为快捷方式添加到桌面时使用的图标 | 文件路径 |  |
-| icon | 显示在功能左侧的图标。如果未设置logo属性，它也同时会被作为logo使用 | 文件路径 |  |
-| reload | 执行完脚本后要执行的刷新操作 | `page` 、具体体功能`id` | `page` |
-| bg-task | 后台运行而不是显示日志输出界面，默认`false` | `true` `false` | `true` |
+
 
 > `id` 属性建议配合 `auto-off`、`auto-finish`、`logo` 使用
 
 > `logo`和`icon`除了支持assets文件路径，也支持磁盘文件路径
 
-#### Action 定义参数
+### Action 定义参数
 - 用于需要用户“输入内容” 或 “作出选择”的场景
 
-##### param 属性
+#### param 属性
 
-| 属性 | 用途 | 示例 |
-| - | - | - |
-| name | 参数名，不可重复`必需！` | `param0` |
-| value | 初始值 | ` ` |
-| value-sh | 使用脚本通过echo输出设置参数初始值 | ` ` |
-| options-sh | 使用脚本通过echo输出来生成 option | ` ` |
-| title | 参数的标题，显示在输入框顶部 | `任意提示文字` |
-| label | 参数的标题，显示在输入框左侧 | `任意提示文字` |
-| placeholder | 显示在文本输入框的水印文字，可用作输入为空时的提示 | `请在此处输入文字` |
-| desc | 参数的描述，显示在输入框下方 | `任意提示文字` |
-| type | 输入类型，具体见下文 | `int` |
-| readonly | 设为readonly表示只读，阻止输入 | `readonly` | 
-| maxlength | 输入长度限制（位）适用于文本输入 | `10` |
-| min | 输入的最小值，适用于数字输入和seekbar | `10` |
-| max | 输入的最大值，适用于数字输入和seekbar | `100` |
-| required | 是否为必填参数，可配置为`true`、`false` | `true` |
-| suffix | 限制可选择的文件后缀，仅限`type=file`时使用 | `zip` |
-| mime | 限制可选择的文件MIME类型，仅限`type=file`时使用 | `application/zip` |
-| multiple | 是否允许多选(设置了options或type=app时可用) | `true` |
-| separator | 多选模式下多个值的分隔符，默认为换行符 | `,` |
-| editable | 是否允许用户手动输入路径（type为`file`或`folder`可用） | `true` |
+<!-- @include: ./common-props.md -->
 
 - type设为`file` `folder` 时，用户只能调用路径选择器进行选择，
 - 此时你可以通过将`editable`属性设为`true`来允许用户手动输入路径，
@@ -109,7 +72,7 @@
 </action>
 ```
 
-##### param 的 value-sh属性
+#### param 的 value-sh属性
 - 例如，你需要在用户输入前动态获取当前已设置的值
 
 ```xml
@@ -125,7 +88,7 @@
 ```
 
 
-##### param > option
+#### param > option
 - 通过在param 下定义 option，实现下拉框候选列表
 
 ```xml
@@ -154,7 +117,7 @@
 ```
 
 
-##### param 输入长度限制
+#### param 输入长度限制
 
 ```xml
 <action>
@@ -172,7 +135,7 @@
 </action>
 ```
 
-##### param > option 动态列表
+#### param > option 动态列表
 - 现在允许更灵活的定义Param的option列表了，通过使用脚本代码输出内，即可实现
 - 脚本的执行过程中的输出内容，每一个each将作为一个选项，如 echo '很小'; echo '适中';
 - 如果你需要将选项的value（值）和label（显示文字）分开
@@ -193,7 +156,7 @@
 </action>
 ```
 
-##### param 多选列表
+#### param 多选列表
 - 设置了`option`或`option-sh`的情况下，在`param`节点添加`multiple="true"`属性
 - 即可将原来的单选模式切换为多选模式，例如：
 
@@ -228,7 +191,7 @@
     </action>
     ```
 
-##### param 选择应用
+#### param 选择应用
 - 参数类型`type=app`是在3.9版本中新增加的类型
 
 - 像下面这个例子，是它最简单的用法：
@@ -270,7 +233,7 @@
     </action>
     ```
 
-#
+
 
 ---
 

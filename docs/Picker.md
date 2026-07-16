@@ -1,30 +1,14 @@
-
-## Picker (3.4.5+)
-- `picker`是在3.4.5版本后增加的一个新功能，即加强版的`switch`
+# Picker
+- `picker`即加强版的`switch`
 - `picker`和`switch`一样，通过`get`读取当前状态，通过`set`保存状态
 - 其它配置项也和`switch`一致
-- `picker`需要你自己定义选项(`option`)，就像这样
+- `picker`需要自己定义选项(`option`)
 
 ### 属性
 
 - 公共属性（Action、Switch、Picker共有）
 
-| 属性 | 作用 | 有效值 | 示例 |
-| - | - | - | :- |
-| id | 如果允许长按添加到桌面快捷，必需设置ID | 当前配置文件中必需唯一 | `a0001` |
-| desc | 显示在标题下的小字，可以不设置 | 文本内容 | `这是描述` |
-| desc-sh | 动态设置desc内容的脚本 | `脚本代码` | `echo '自定义的说明信息'` |
-| summary | 高亮显示的摘要信息 | 文本内容 | `这是摘要` |
-| summary-sh | 动态设置summary内容的脚本 | `脚本代码` | `echo '自定义的摘要信息'` |
-| confirm | 点击时是否弹出确认框，默认`false` | `true`、`false` | `false` |
-| visible | 自定义脚本，输出1或0，决定该功能项是否显示 | 脚本代码 | `echo '1'` |
-| interruptible | 是否允许中断执行，默认`true` | `true`、`false` | `false` |
-| auto-off | 执行完脚本后是否自动关闭日志界面，默认`false` | `true`、`false` | `false` |
-| auto-finish | 是否在关闭日志界面后关闭当前页面 | `true`、`false` | `false` |
-| logo | 作为快捷方式添加到桌面时使用的图标 | 文件路径 |  |
-| icon | 显示在功能左侧的图标。如果未设置logo属性，它也同时会被作为logo使用 | 文件路径 |  |
-| reload | 执行完脚本后要执行的刷新操作 | `page` 、具体体功能`id` | `page` |
-| bg-task | 后台运行而不是显示日志输出界面，默认`false` | `true` `false` | `true` |
+<!-- @include: ./common-props.md -->
 
 - 特有属性
 

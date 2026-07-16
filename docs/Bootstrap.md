@@ -1,4 +1,4 @@
-### 应用启动过程
+# 应用启动过程
 - 在检测完ROOT权限之后，显示功能列表之前
 - 应用会先读取 `assets` 下的 `kr-script.conf`
 - 读取`kr-script.conf`的过程中，会完成 `toolkit_dir` 的提取处理
@@ -23,7 +23,7 @@
   allow_home_page="1"
   ```
 
-### 可配置属性
+## 可配置属性
 
 | 属性 | 说明 | 配置内容 |
 | - | - | - |
@@ -36,11 +36,11 @@
 | page_list_config_sh | 输出 **全部** 页配置路径的脚本 | `file:///android_asset/`开头的路径 |
 | favorite_config_sh | 输出 **收藏夹** 页配置路径的脚本 | `file:///android_asset/`开头的路径 |
 
-### before_start_sh
+## before_start_sh
 - 在解析完`kr-script.conf`之后，会立即执行`before_start_sh` 配置的脚本
 - 执行过程中输出的内容和错误信息，会显示在启动屏上
 - 你可以利用此脚本，完成在线检查更新
 
-### page_list_config_sh、favorite_config_sh
+## page_list_config_sh、favorite_config_sh
 - 这两个属性的存在意义，是为了动态指定 **收藏夹** 和 **全部** 两个页面的配置文件所在路径
 - 就像 `<page config-sh="echo 页面路径;" />` 那样
