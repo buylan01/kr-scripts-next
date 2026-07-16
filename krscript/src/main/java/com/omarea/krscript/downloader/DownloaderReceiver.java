@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.omarea.common.shared.FilePathResolver;
 import com.omarea.common.ui.DialogHelper;
 import com.omarea.krscript.R;
@@ -21,7 +23,7 @@ public class DownloaderReceiver extends BroadcastReceiver {
             downloaderReceiver = new DownloaderReceiver();
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-            context.registerReceiver(downloaderReceiver, intentFilter);
+            ContextCompat.registerReceiver(context, downloaderReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
         }
     }
 
@@ -53,14 +55,14 @@ public class DownloaderReceiver extends BroadcastReceiver {
                     */
                     String path = new FilePathResolver().getPath(context, uri);
                     if (path != null && !path.isEmpty()) {
-                        new Downloader(context, null).saveTaskCompleted(downloadId, path);
+                        new Downloader(context).saveTaskCompleted(downloadId, path);
                         try {
                             DialogHelper.Companion.helpInfo(context, context.getString(R.string.kr_download_completed), "" + path, null);
                         } catch (Exception ex) {
                             Toast.makeText(context, context.getString(R.string.kr_download_completed) + "\n" + path, Toast.LENGTH_LONG).show();
                         }
                     }
-                } catch (Exception ex) {
+                } catch (Exception ignored) {
                 }
             }
         }

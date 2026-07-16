@@ -21,6 +21,7 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
 import com.omarea.common.ui.DialogHelper
@@ -31,6 +32,8 @@ import com.omarea.krscript.downloader.Downloader
 import com.omarea.krscript.ui.ParamsFileChooserRender
 import com.projectkr.shell.databinding.ActivityActionPageOnlineBinding
 import com.omarea.krscript.R
+import com.projectkr.shell.util.PermissionUtil.checkManageFile
+import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
 import java.util.*
 
 class ActionPageOnline : AppCompatActivity() {
@@ -39,6 +42,10 @@ class ActionPageOnline : AppCompatActivity() {
     private lateinit var themeMode: ThemeMode
 
     private lateinit var binding: ActivityActionPageOnlineBinding
+
+    private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,13 +141,11 @@ class ActionPageOnline : AppCompatActivity() {
                     val url = extras.getString("downloadUrl")!!
                     val taskAliasId = if (extras.containsKey("taskId")) extras.getString("taskId").toString() else UUID.randomUUID().toString()
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (!checkManageFile(this)) {
                         downloader.saveTaskStatus(taskAliasId, 0)
-
-                        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), 2);
-                        DialogHelper.helpInfo(this, "", getString(R.string.kr_write_external_storage))
+                        showManageFileDialog(this, manageFileRequester, onSkip = { })
                     } else {
-                        val downloadId = downloader.downloadBySystem(url, null, null, taskAliasId)
+                        val downloadId = downloader.download(url, null, null, taskAliasId)
                         if (downloadId != null) {
                             binding.krDownloadUrl.text = url
                             val autoClose = extras.containsKey("autoClose") && extras.getBoolean("autoClose")

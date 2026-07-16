@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <group>
     <group>
-        <page html="https://www.lanzous.com/b838135" title="远程网页加载测试" />
+        <page html="https://www.example.com" title="远程网页加载测试" />
         <!--html属性不支持省略file:///android_asset/前缀-->
         <page html="file:///android_asset/samples/html-test/index.html" title="本地网页加载测试" />
     </group>
@@ -17,7 +17,7 @@
                 # --es 字符串参数【extra string】
                 # --ez Boolean【extra boolean】
 
-                url="https://cn.bing.com"
+                url="https://www.example.com"
                 activity="$PACKAGE_NAME/com.projectkr.shell.ActionPageOnline"
                 am start -a android.intent.action.MAIN -n "$activity" --es url "$url"
 
@@ -36,7 +36,7 @@
                 # --es downloadUrl 【url】下载路径
                 # --ez autoClose autoClose 【true/false】 是否下载完成后自动关闭界面
 
-                downloadUrl="https://hugeota.d.miui.com/9.8.28/miui-blockota-sagit-9.8.27-9.8.28-cfa9921c33-9.0.zip"
+                downloadUrl="https://github.com/termux/termux-app/releases/download/v0.118.3/termux-app_v0.118.3+github-debug_sha256sums"
                 activity="$PACKAGE_NAME/com.projectkr.shell.ActionPageOnline"
                 am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl "$downloadUrl"
             </script>
@@ -49,8 +49,8 @@
             <script>
                 source $START_DIR/samples/common/downloader.sh
 
-                md5="cfa9921c332d7d07335ddba75399c74d" # 预期的文件md5(小写,可选)
-                downloadUrl="https://hugeota.d.miui.com/9.8.28/miui-blockota-sagit-9.8.27-9.8.28-cfa9921c33-9.0.zip"
+                md5="a45ed6360f2bd56bd9cbcda1693bc237"
+                downloadUrl="https://github.com/termux/termux-app/releases/download/v0.118.3/termux-app_v0.118.3+github-debug_sha256sums"
                 downloader "$downloadUrl" $md5
 
                 if [[ ! "$downloader_result" = "" ]]; then

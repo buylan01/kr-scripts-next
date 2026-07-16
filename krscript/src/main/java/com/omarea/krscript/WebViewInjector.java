@@ -3,7 +3,6 @@ package com.omarea.krscript;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -83,7 +82,7 @@ public class WebViewInjector {
                                 .setPositiveButton(R.string.btn_confirm, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                    new Downloader(context, null).downloadBySystem(url, contentDisposition, mimetype, UUID.randomUUID().toString(), null);
+                                    new Downloader(context).download(url, contentDisposition, mimetype, UUID.randomUUID().toString(), null);
                                     }
                                 })
                                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
