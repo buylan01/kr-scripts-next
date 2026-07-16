@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: 22.22.1
           cache: npm
+          cache-dependency-path: docs/package-lock.json
 
       - name: Setup npm
         run: npm ci
