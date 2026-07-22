@@ -19,8 +19,7 @@
     <string name="appliction_author">作者：嘟嘟ski, buylan</string>
     <string name="engine_version_name">基于[Kr-Script-Next 0.1.0]创作</string>
 
-    <string name="tab_home">首页</string>
-    <string name="tab_pages">其他</string>
+    <string name="tab_pages">页面</string>
 
     <string name="copy_success">复制成功</string>
     <string name="btn_retry">重试</string>

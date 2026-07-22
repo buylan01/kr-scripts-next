@@ -32,9 +32,6 @@ class MainActivity : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)
     private var handler = Handler(Looper.getMainLooper())
     private var krScriptConfig = KrScriptConfig()
-    private lateinit var favoritesFragment: Fragment
-    private lateinit var pagesFragment: Fragment
-
     lateinit var binding: ActivityMainBinding
 
     private fun checkPermission(permission: String): Boolean = PermissionChecker.checkSelfPermission(this, permission) == PermissionChecker.PERMISSION_GRANTED
@@ -52,46 +49,28 @@ class MainActivity : AppCompatActivity() {
 
         progressBarDialog.showDialog(getString(R.string.please_wait))
         Thread {
-            val page2Config = krScriptConfig.pageListConfig
-            val favoritesConfig = krScriptConfig.favoriteConfig
-
-            val pages = getItems(page2Config)
-            val favorites = getItems(favoritesConfig)
+            val pageConfigs = krScriptConfig.pageListConfig
             handler.post {
                 progressBarDialog.hideDialog()
 
                 val menu = binding.bottomNavView.menu
                 menu.clear()
 
-                if (!favorites.isNullOrEmpty()) {
-                    createFavoritesTab(favorites, favoritesConfig)
-                    menu.add(getString(R.string.tab_home)).apply {
+                pageConfigs.forEach { page ->
+                    val pageItems = getItems(page)
+                    val tabFragment = createTab(pageItems!!, page)
+                    menu.add(getString(R.string.tab_pages)).apply {
                         icon = ContextCompat.getDrawable(
                             this@MainActivity,
                             R.drawable.baseline_home_24
                         )!!
                         setOnMenuItemClickListener {
-                            updateTab(favoritesFragment)
+                            updateTab(tabFragment)
                             return@setOnMenuItemClickListener false
                         }
                     }
+                    updateTab(tabFragment)
                 }
-
-                if (!pages.isNullOrEmpty()) {
-                    createMoreTab(pages, page2Config)
-                    menu.add(getString(R.string.tab_pages)).apply {
-                        icon = ContextCompat.getDrawable(
-                            this@MainActivity,
-                            R.drawable.baseline_all_inbox_24
-                        )!!
-                        setOnMenuItemClickListener {
-                            updateTab(pagesFragment)
-                            return@setOnMenuItemClickListener false
-                        }
-                    }
-                }
-
-                updateTab(favoritesFragment)
             }
         }.start()
 
@@ -117,51 +96,32 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commitAllowingStateLoss()
     }
 
-    private fun createFavoritesTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        favoritesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, true), null)
+    private fun createTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode): Fragment {
+        return ActionListFragment.create(items, getKrScriptActionHandler(pageNode), null)
     }
 
-    private fun createMoreTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        pagesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, false), null)
-    }
-
-    private fun reloadFavoritesTab() {
+    private fun reloadTab() {
         Thread {
-            val favoritesConfig = krScriptConfig.favoriteConfig
-            val favorites = getItems(favoritesConfig)
-            favorites?.run {
-                handler.post {
-                    createFavoritesTab(this, favoritesConfig)
+            val pageConfigs = krScriptConfig.pageListConfig
+            pageConfigs.forEach { page ->
+                val pageItems = getItems(page)
+
+                pageItems?.run {
+                    handler.post {
+                        createTab(this, page)
+                    }
                 }
             }
         }.start()
     }
 
-    private fun reloadMoreTab() {
-        Thread {
-            val page2Config = krScriptConfig.pageListConfig
-            val pages = getItems(page2Config)
-
-            pages?.run {
-                handler.post {
-                    createMoreTab(this, page2Config)
-                }
-            }
-        }.start()
-    }
-
-    private fun getKrScriptActionHandler(pageNode: PageNode, isFavoritesTab: Boolean): KrScriptActionHandler {
+    private fun getKrScriptActionHandler(pageNode: PageNode): KrScriptActionHandler {
         return object : KrScriptActionHandler {
             override fun onActionCompleted(runnableNode: RunnableNode) {
                 if (runnableNode.autoFinish ) {
                     finishAndRemoveTask()
                 } else if (runnableNode.reloadPage) {
-                    // TODO:多线程优化
-                    if (isFavoritesTab) {
-                        reloadFavoritesTab()
-                    } else {
-                        reloadMoreTab()
-                    }
+                    reloadTab()
                 }
             }
 

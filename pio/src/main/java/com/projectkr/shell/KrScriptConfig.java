@@ -7,7 +7,9 @@ import com.omarea.krscript.model.PageNode;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class KrScriptConfig {
     private static final String ASSETS_FILE = "file:///android_asset/";
@@ -18,13 +20,10 @@ public class KrScriptConfig {
     private final static String EXECUTOR_CORE = "executor_core";
     private final static String PAGE_LIST_CONFIG = "page_list_config";
     private final static String PAGE_LIST_CONFIG_SH = "page_list_config_sh";
-    private final static String FAVORITE_CONFIG = "favorite_config";
-    private final static String FAVORITE_CONFIG_SH = "favorite_config_sh";
     private final static String BEFORE_START_SH = "before_start_sh";
     private static HashMap<String, String> configInfo;
     private final String EXECUTOR_CORE_DEFAULT = "file:///android_asset/kr-script/executor.sh";
-    private final String PAGE_LIST_CONFIG_DEFAULT = "file:///android_asset/kr-script/pages/more.xml";
-    private final String FAVORITE_CONFIG_DEFAULT = "file:///android_asset/kr-script/pages/favorites.xml";
+    private final String PAGE_LIST_CONFIG_DEFAULT = "file:///android_asset/kr-script/pages/more.xml, file:///android_asset/kr-script/pages/favorites.xml";
     private final String BEFORE_START_SH_DEFAULT = ""; //"file:///android_asset/kr-script/before_start.sh";
 
     public KrScriptConfig init(Context context) {
@@ -32,7 +31,6 @@ public class KrScriptConfig {
             configInfo = new HashMap<>();
             configInfo.put(EXECUTOR_CORE, EXECUTOR_CORE_DEFAULT);
             configInfo.put(PAGE_LIST_CONFIG, PAGE_LIST_CONFIG_DEFAULT);
-            configInfo.put(FAVORITE_CONFIG, FAVORITE_CONFIG_DEFAULT);
             configInfo.put(TOOLKIT_DIR, TOOLKIT_DIR_DEFAULT);
             configInfo.put(BEFORE_START_SH, BEFORE_START_SH_DEFAULT);
 
@@ -81,32 +79,28 @@ public class KrScriptConfig {
         return TOOLKIT_DIR_DEFAULT;
     }
 
-    public PageNode getPageListConfig() {
+    public List<PageNode> getPageListConfig() {
+        List<PageNode> pageNodes = new ArrayList<>();
         if (configInfo != null) {
-            PageNode pageInfo = new PageNode("");
-            if (configInfo.containsKey(PAGE_LIST_CONFIG_SH)) {
-                pageInfo.setPageConfigSh(configInfo.get(PAGE_LIST_CONFIG_SH));
+            String shConfig = configInfo.get(PAGE_LIST_CONFIG_SH);
+            String pathConfig = configInfo.get(PAGE_LIST_CONFIG);
+            if (shConfig != null || pathConfig != null) {
+                String[] shArray = shConfig != null ? shConfig.split(", ") : new String[0];
+                String[] pathArray = pathConfig != null ? pathConfig.split(", ") : new String[0];
+                int maxLen = Math.max(shArray.length, pathArray.length);
+                for (int i = 0; i < maxLen; i++) {
+                    PageNode pageInfo = new PageNode("");
+                    if (i < shArray.length) {
+                        pageInfo.setPageConfigSh(shArray[i]);
+                    }
+                    if (i < pathArray.length) {
+                        pageInfo.setPageConfigPath(pathArray[i]);
+                    }
+                    pageNodes.add(pageInfo);
+                }
             }
-            if (configInfo.containsKey(PAGE_LIST_CONFIG)) {
-                pageInfo.setPageConfigPath(configInfo.get(PAGE_LIST_CONFIG));
-            }
-            return pageInfo;
         }
-        return null;
-    }
-
-    public PageNode getFavoriteConfig() {
-        if (configInfo != null) {
-            PageNode pageInfo = new PageNode("");
-            if (configInfo.containsKey(FAVORITE_CONFIG_SH)) {
-                pageInfo.setPageConfigSh(configInfo.get(FAVORITE_CONFIG_SH));
-            }
-            if (configInfo.containsKey(FAVORITE_CONFIG)) {
-                pageInfo.setPageConfigPath(configInfo.get(FAVORITE_CONFIG));
-            }
-            return pageInfo;
-        }
-        return null;
+        return pageNodes;
     }
 
     public String getBeforeStartSh() {
