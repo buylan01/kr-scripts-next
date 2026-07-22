@@ -1,21 +1,21 @@
 #!/system/bin/sh
 
-varsion_code="2"
+version_code="2"
 package_dir="$START_DIR/w"
 extract_dir="$package_dir"
-package_file="$package_dir/version_$varsion_code.zip"
-remote_url="https://vtools.oss-cn-beijing.aliyuncs.com/pio/version_$varsion_code.gz"
+package_file="$package_dir/version_$version_code.zip"
+remote_url="https://vtools.oss-cn-beijing.aliyuncs.com/pio/version_$version_code.gz"
 
-function download_last_version() {
+download_last_version() {
     echo '【before_start_sh 功能演示】'
     sleep 1
     echo ' '
 
     echo '■ 清理旧的文件'
 
-    mkdir -p $package_dir
-    rm -rf $package_dir
-    mkdir -p $package_dir
+    mkdir -p "$package_dir"
+    rm -rf "$package_dir"
+    mkdir -p "$package_dir"
 
     echo '■ 下载资源文件'
 
@@ -32,6 +32,6 @@ function download_last_version() {
     sleep 1
 }
 
-if [[ ! -f "$package_file" ]]; then
+if [ ! -f "$package_file" ]; then
     download_last_version
 fi

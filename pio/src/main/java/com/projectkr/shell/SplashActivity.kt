@@ -89,7 +89,7 @@ class SplashActivity : ComponentActivity() {
         binding.startStateText.text = getString(R.string.pop_started)
 
         val config = KrScriptConfig().init(this)
-        if (config.beforeStartSh.isNotEmpty()) {
+        if (config.beforeStartSh!!.isNotEmpty()) {
             BeforeStartThread(this, config, UpdateLogViewHandler(binding.startStateText) {
                 gotoHome()
             }).start()

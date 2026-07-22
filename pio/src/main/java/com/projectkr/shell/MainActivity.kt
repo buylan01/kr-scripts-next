@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 menu.clear()
 
                 pageConfigs.forEach { page ->
-                    val pageItems = getItems(page)
+                    val pageItems = getItems(page!!)
                     val tabFragment = createTab(pageItems!!, page)
                     menu.add(getString(R.string.tab_pages)).apply {
                         icon = ContextCompat.getDrawable(
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         Thread {
             val pageConfigs = krScriptConfig.pageListConfig
             pageConfigs.forEach { page ->
-                val pageItems = getItems(page)
+                val pageItems = getItems(page!!)
 
                 pageItems?.run {
                     handler.post {
