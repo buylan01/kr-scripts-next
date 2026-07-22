@@ -39,7 +39,7 @@ class BgTaskThread(private var process: Process) : Thread() {
         private var STOP_CLICK_ACTION_NAME = context.packageName + ".TaskStop." + "N" + notificationID
         private val stopIntent = PendingIntent.getBroadcast(context, 0, Intent(STOP_CLICK_ACTION_NAME).apply {
             putExtra("id", notificationID)
-        }, PendingIntent.FLAG_UPDATE_CURRENT)
+        }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         private val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent != null && intent.hasExtra("id")) {
