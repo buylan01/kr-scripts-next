@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -274,13 +273,12 @@ class ActionPage : AppCompatActivity() {
             }
         }
 
-        val darkMode = ThemeModeState.getThemeMode().isDarkMode
         val dialog = DialogLogFragment.create(
-                menuOption,
-                Runnable {  },
-                onDismiss,
-                currentPageConfig.pageHandlerSh,
-                params
+            menuOption,
+            { },
+            onDismiss,
+            currentPageConfig.pageHandlerSh,
+            params
         )
         dialog.show(supportFragmentManager, "")
         dialog.isCancelable = false
@@ -449,8 +447,7 @@ class ActionPage : AppCompatActivity() {
                         val fragment = ActionListFragment.create(
                             items,
                             actionShortClickHandler,
-                            autoRunTask,
-                            ThemeModeState.getThemeMode()
+                            autoRunTask
                         )
                         supportFragmentManager.beginTransaction()
                             .replace(com.projectkr.shell.R.id.main_list, fragment)

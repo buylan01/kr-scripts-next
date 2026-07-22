@@ -17,7 +17,6 @@ import com.omarea.common.model.SelectItem
 import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.DialogItemChooser
 import com.omarea.common.ui.ProgressBarDialog
-import com.omarea.common.ui.ThemeMode
 import com.omarea.krscript.BgTaskThread
 import com.omarea.krscript.HiddenTaskThread
 import com.omarea.krscript.R
@@ -34,10 +33,10 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         fun create(
                 actionInfos: ArrayList<NodeInfoBase>?,
                 krScriptActionHandler: KrScriptActionHandler? = null,
-                autoRunTask: AutoRunTask? = null,
-                themeMode: ThemeMode? = null): ActionListFragment {
+                autoRunTask: AutoRunTask? = null
+        ): ActionListFragment {
             val fragment = ActionListFragment()
-            fragment.setListData(actionInfos, krScriptActionHandler, autoRunTask, themeMode)
+            fragment.setListData(actionInfos, krScriptActionHandler, autoRunTask)
             return fragment
         }
     }
@@ -47,18 +46,16 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     private lateinit var progressBarDialog: ProgressBarDialog
     private var krScriptActionHandler: KrScriptActionHandler? = null
     private var autoRunTask: AutoRunTask? = null
-    private var themeMode: ThemeMode? = null
 
     private fun setListData(
             actionInfos: ArrayList<NodeInfoBase>?,
             krScriptActionHandler: KrScriptActionHandler? = null,
-            autoRunTask: AutoRunTask? = null,
-            themeMode: ThemeMode? = null) {
+            autoRunTask: AutoRunTask? = null
+    ) {
         if (actionInfos != null) {
             this.actionInfos = actionInfos
             this.krScriptActionHandler = krScriptActionHandler
             this.autoRunTask = autoRunTask
-            this.themeMode = themeMode
         }
     }
 
@@ -523,7 +520,6 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             val onDismiss = Runnable {
                 krScriptActionHandler?.onActionCompleted(nodeInfo)
             }
-            val darkMode = themeMode != null && themeMode!!.isDarkMode
 
             val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params)
             dialog.isCancelable = false

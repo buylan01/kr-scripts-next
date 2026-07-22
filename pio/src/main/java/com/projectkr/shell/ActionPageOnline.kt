@@ -21,12 +21,12 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.*
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
 import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.ProgressBarDialog
-import com.omarea.common.ui.ThemeMode
 import com.omarea.krscript.WebViewInjector
 import com.omarea.krscript.downloader.Downloader
 import com.omarea.krscript.ui.ParamsFileChooserRender
@@ -39,8 +39,6 @@ import java.util.*
 class ActionPageOnline : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)
 
-    private lateinit var themeMode: ThemeMode
-
     private lateinit var binding: ActivityActionPageOnlineBinding
 
     private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -49,7 +47,7 @@ class ActionPageOnline : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        themeMode = ThemeModeState.switchTheme(this)
+        enableEdgeToEdge()
 
         binding = ActivityActionPageOnlineBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -65,42 +63,6 @@ class ActionPageOnline : AppCompatActivity() {
         }
 
         loadIntentData()
-    }
-
-    private fun hideWindowTitle() {
-        if (Build.VERSION.SDK_INT >= 21) {
-            val decorView = window.decorView
-            val option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            decorView.systemUiVisibility = option
-            window.statusBarColor = Color.TRANSPARENT
-        }
-        val actionBar = supportActionBar
-        actionBar!!.hide()
-    }
-
-    private fun setWindowTitleBar() {
-        val window = window
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
-        var flags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        if (themeMode.isDarkMode) {
-        } else {
-            window.statusBarColor = Color.WHITE
-            window.navigationBarColor = Color.WHITE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    flags = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                }
-            }
-        }
-        getWindow().decorView.systemUiVisibility = flags
-
-        binding.krOnlineRoot.fitsSystemWindows = true
     }
 
     private fun loadIntentData() {
@@ -130,7 +92,6 @@ class ActionPageOnline : AppCompatActivity() {
                     }
                 }
                 */
-                setWindowTitleBar()
                 when {
                     extras.containsKey("config") -> initWebview(extras.getString("config"))
                     extras.containsKey("url") -> initWebview(extras.getString("url"))

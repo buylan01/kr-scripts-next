@@ -3,7 +3,6 @@ package com.projectkr.shell
 import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -119,11 +118,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createFavoritesTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        favoritesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, true), null, ThemeModeState.getThemeMode())
+        favoritesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, true), null)
     }
 
     private fun createMoreTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode) {
-        pagesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, false), null, ThemeModeState.getThemeMode())
+        pagesFragment = ActionListFragment.create(items, getKrScriptActionHandler(pageNode, false), null)
     }
 
     private fun reloadFavoritesTab() {
