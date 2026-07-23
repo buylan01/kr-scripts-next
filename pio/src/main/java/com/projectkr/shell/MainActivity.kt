@@ -65,21 +65,29 @@ class MainActivity : AppCompatActivity() {
                 val menu = binding.bottomNavView.menu
                 menu.clear()
 
-                pageConfigs.forEach { page ->
+                var firstTabFragment: Fragment? = null
+
+                pageConfigs.forEachIndexed { index, page ->
                     val pageItems = getItems(page!!)
                     val tabFragment = createTab(pageItems!!, page)
-                    menu.add(getString(R.string.tab_pages)).apply {
+
+                    if (index == 0) {
+                        firstTabFragment = tabFragment
+                    }
+
+                    menu.add(page.pageConfigPath.substringAfterLast('/')).apply {
                         icon = ContextCompat.getDrawable(
                             this@MainActivity,
-                            R.drawable.baseline_home_24
+                            R.drawable.baseline_bookmark_24
                         )!!
                         setOnMenuItemClickListener {
                             updateTab(tabFragment)
                             return@setOnMenuItemClickListener false
                         }
                     }
-                    updateTab(tabFragment)
                 }
+
+                firstTabFragment?.let { updateTab(it) }
             }
         }.start()
 

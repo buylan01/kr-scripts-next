@@ -1,31 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<items>
-    <group title="运行环境测试">
-        <page config="samples/env/env.xml" title="环境测试">
-            <resource dir="file:///android_asset/samples/env" />
-        </page>
+<page>
+    <group title="文档">
+        <page html="https://buylan01.github.io/kr-scripts-next" title="Kr Scripts Next 开发文档" />
     </group>
 
-    <group title="功能节点">
-        <page config="samples/action.xml" title="Action（动作）" />
-        <page config="samples/switch.xml" title="Switch（开关）" />
-        <page config="samples/picker.xml" title="Picker（选择）" />
-        <page config="samples/page.xml" title="Page（子页面）" />
+    <group title="无关紧要的测试代码">
+        <resource dir="file:///android_asset/samples/thermal" />
+        <resource dir="file:///android_asset/samples/kt" />
+
+        <page
+            before-load="samples/thermal/page-before-load.sh"
+            config-sh="samples/thermal/page-xml.sh"
+            desc="来看一个完全使用脚本动态构成的页面，感受一下config-sh的强大"
+            title="MIUI温控查看" />
+
+        <page config="samples/kt/kernel_tuner.xml" title="内核调谐器" />
     </group>
 
-    <group title="文字节点">
-        <page config="samples/text.xml" title="Text（文字节点）" />
+    <group title="路径测试">
+        <resource dir="samples/relative_path" />
+        <resource dir="samples/relative_path2" />
+
+        <page title="相对路径测试1" config="samples/relative_path/relative_path.xml" />
+
+
+        <!--这里通过sh输出了一个磁盘文件的绝对路径，这会让子页面工作目录切换到磁盘上-->
+        <page
+            title="相对路径测试2"
+            config-sh="echo $START_DIR/samples/relative_path2/page.xml" />
     </group>
 
-    <group title="其它">
-        <page config="samples/shortcut.xml" title="快捷方式" />
-        <page config="samples/reload.xml" title="reload 属性" desc="配置节点显示内容关联刷新" />
-        <page config="samples/bg_task/bg_task.xml" title="后台任务" />
-        <page config="samples/new.xml" title="新功能测试" />
+    <group title="Ansole 联动">
+        <action title="打开命令行">
+            <resource dir="samples/ansole" />
+            <script>
+                test_sh="$START_DIR/samples/ansole/test.sh"
+                if [[ `pm list package com.romide.terminal` != "" ]]; then
+                    am start -a jackpal.androidterm.RUN_SCRIPT --es cmd "su -c $test_sh" --es title "PIO > Ansole" --activity-multiple-task
+                else
+                    echo '你没有安装可用的Ansole'
+                fi
+            </script>
+        </action>
     </group>
-
-    <group title="Web引擎">
-        <page config="samples/web.xml" title="网页引擎测试" />
-    </group>
-
-</items>
+</page>
