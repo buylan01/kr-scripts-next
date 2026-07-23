@@ -148,7 +148,13 @@ class BgTaskThread(private var process: Process) : Thread() {
 
         override fun onStart(forceStop: Runnable?) {
             this.forceStop = forceStop
-            context.registerReceiver(receiver, IntentFilter(STOP_CLICK_ACTION_NAME))
+
+            val intentFilter = IntentFilter(STOP_CLICK_ACTION_NAME)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                context.registerReceiver(receiver, intentFilter)
+            }
 
             updateNotification()
         }
