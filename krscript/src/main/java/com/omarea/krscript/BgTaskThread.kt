@@ -18,6 +18,7 @@ import com.omarea.common.ui.DialogHelper
 import com.omarea.krscript.executor.ShellExecutor
 import com.omarea.krscript.model.RunnableNode
 import com.omarea.krscript.model.ShellHandlerBase
+import java.util.concurrent.CopyOnWriteArrayList
 
 class BgTaskThread(private var process: Process) : Thread() {
     override fun run() {
@@ -31,17 +32,28 @@ class BgTaskThread(private var process: Process) : Thread() {
     class ServiceShellHandler(private val context: Context, private val runnableNode: RunnableNode, private val notificationID: Int) : ShellHandlerBase() {
         private var notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         private val notificationTitle = runnableNode.title
-        private var notificationMessageRows = ArrayList<String>()
+        private var logEntries = CopyOnWriteArrayList<String>()
         private var notificationMShortMsg = ""
         private var progressCurrent = 0
         private var progressTotal = 0
         private var someIgnored = false
         private var forceStop: Runnable? = null
         private var isFinished = false
-        private var STOP_CLICK_ACTION_NAME = context.packageName + ".TaskStop." + "N" + notificationID
-        private val stopIntent = PendingIntent.getBroadcast(context, 0, Intent(STOP_CLICK_ACTION_NAME).apply {
-            putExtra("id", notificationID)
-        }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        private var stopActionName = context.packageName + ".TaskStop." + "N" + notificationID
+
+        private val stopIntent by lazy {
+            val intent = Intent(stopActionName).apply {
+                putExtra("id", notificationID)
+                setPackage(context.packageName)
+            }
+            PendingIntent.getBroadcast(
+                context,
+                notificationID,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
         private val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent != null && intent.hasExtra("id")) {
@@ -53,50 +65,56 @@ class BgTaskThread(private var process: Process) : Thread() {
         }
 
         private fun updateNotification() {
-            if (notificationMessageRows.size > 8) {
-                synchronized(notificationMessageRows) {
-                    notificationMessageRows.remove(notificationMessageRows.first())
-                    someIgnored = true
+            if (logEntries.size > 6) {
+                val removed = logEntries.removeFirstOrNull()
+                if (removed != null) someIgnored = true
+            }
+
+            val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID).apply {
+                setContentTitle("$notificationTitle($notificationID)")
+                setContentText(notificationMShortMsg + " >> " + logEntries.lastOrNull())
+                setSmallIcon(R.drawable.baseline_build_24)
+                setAutoCancel(true)
+                setWhen(System.currentTimeMillis())
+
+                if (progressTotal != progressCurrent) {
+                    setProgress(progressTotal, progressCurrent, progressTotal < 0)
+                } else {
+                    setProgress(0, 0, false)
                 }
-            }
 
-            val expandView = RemoteViews(context.packageName, R.layout.kr_task_notification)
-            expandView.setTextViewText(R.id.kr_task_title, "$notificationTitle($notificationID)")
-            expandView.setTextViewText(R.id.kr_task_log, notificationMessageRows.joinToString("", if (someIgnored) "……\n" else "").trim())
-            expandView.setProgressBar(R.id.kr_task_progress, progressTotal, progressCurrent, progressTotal < 0)
-            expandView.setViewVisibility(R.id.kr_task_progress, if (progressTotal == progressCurrent) View.GONE else View.VISIBLE)
-            expandView.setViewVisibility(R.id.kr_task_stop, if ((forceStop == null && !runnableNode.interruptable) || isFinished) View.GONE else View.VISIBLE)
-            if (runnableNode.interruptable && forceStop != null && !isFinished) {
-                expandView.setOnClickPendingIntent(R.id.kr_task_stop, stopIntent)
-            }
-
-            val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setContentTitle("$notificationTitle($notificationID)")
-                    .setContentText(notificationMShortMsg + " >> " + notificationMessageRows.lastOrNull())
-                    .setSmallIcon(R.drawable.baseline_build_24)
-                    .setAutoCancel(true)
-                    .setWhen(System.currentTimeMillis())
-            if (progressTotal != progressCurrent) {
-                notificationBuilder.setProgress(progressTotal, progressCurrent, progressTotal < 0)
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                notificationBuilder.setCustomBigContentView(expandView)
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (!channelCreated) {
-                    val channel = NotificationChannel(CHANNEL_ID, context.getString(R.string.kr_script_task_notification), NotificationManager.IMPORTANCE_DEFAULT)
-                    channel.enableLights(false)
-                    channel.enableVibration(false)
-                    channel.setSound(null, null)
-                    notificationManager.createNotificationChannel(channel)
+                if (runnableNode.interruptable && forceStop != null && !isFinished) {
+                    addAction(
+                        R.drawable.baseline_stop_circle_24,
+                        context.getString(R.string.kr_stop),
+                        stopIntent
+                    )
                 }
-                channelCreated = true
-                notificationBuilder.setChannelId(CHANNEL_ID)
-            } else {
-                notificationBuilder.setSound(null)
-                notificationBuilder.setVibrate(null)
+
+                if (logEntries.isNotEmpty()) {
+                    setStyle(NotificationCompat.BigTextStyle().bigText(
+                        (if (someIgnored) "……\n" else "") + logEntries.joinToString("")
+                    ))
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (!channelCreated) {
+                        val channel = NotificationChannel(
+                            CHANNEL_ID,
+                            context.getString(R.string.kr_script_task_notification),
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        )
+                        channel.enableLights(false)
+                        channel.enableVibration(false)
+                        channel.setSound(null, null)
+                        notificationManager.createNotificationChannel(channel)
+                    }
+                    channelCreated = true
+                    setChannelId(CHANNEL_ID)
+                } else {
+                    setSound(null)
+                    setVibrate(null)
+                }
             }
 
             val notification = notificationBuilder.build()
@@ -112,18 +130,14 @@ class BgTaskThread(private var process: Process) : Thread() {
         }
 
         override fun onReader(msg: Any?) {
-            synchronized(notificationMessageRows) {
-                notificationMessageRows.add("" + msg?.toString())
-                updateNotification()
-            }
+            logEntries.add("" + msg?.toString())
+            updateNotification()
         }
 
         override fun onError(msg: Any?) {
             notificationMShortMsg = context.getString(R.string.kr_script_task_has_error)
-            synchronized(notificationMessageRows) {
-                notificationMessageRows.add("" + msg?.toString())
-                updateNotification()
-            }
+            logEntries.add("" + msg?.toString())
+            updateNotification()
         }
 
         override fun onWrite(msg: Any?) {
@@ -131,25 +145,25 @@ class BgTaskThread(private var process: Process) : Thread() {
 
         override fun onExit(msg: Any?) {
             try {
-                // context.unregisterReceiver(receiver)
-            } catch (_: java.lang.Exception) {
+                //context.unregisterReceiver(receiver)
+            } catch (_: Exception) {
+
             }
             isFinished = true
             notificationMShortMsg = context.getString(R.string.kr_script_task_finished)
-            synchronized(notificationMessageRows) {
-                if (msg == 0) {
-                    notificationMessageRows.add("\n" + context.getString(R.string.kr_shell_completed))
-                } else {
-                    notificationMessageRows.add("\n" + context.getString(R.string.kr_shell_finish_error) + " " + msg?.toString())
-                }
-                updateNotification()
+
+            if (msg == 0) {
+                logEntries.add("\n" + context.getString(R.string.kr_shell_completed))
+            } else {
+                logEntries.add("\n" + context.getString(R.string.kr_shell_finish_error) + " " + msg?.toString())
             }
+            updateNotification()
         }
 
         override fun onStart(forceStop: Runnable?) {
             this.forceStop = forceStop
 
-            val intentFilter = IntentFilter(STOP_CLICK_ACTION_NAME)
+            val intentFilter = IntentFilter(stopActionName)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
             } else {
