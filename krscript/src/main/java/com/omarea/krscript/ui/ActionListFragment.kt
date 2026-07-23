@@ -26,6 +26,8 @@ import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.*
 import com.omarea.krscript.shortcut.ActionShortcutManager
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 
 class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
@@ -33,10 +35,12 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         fun create(
                 actionInfos: ArrayList<NodeInfoBase>?,
                 krScriptActionHandler: KrScriptActionHandler? = null,
-                autoRunTask: AutoRunTask? = null
+                autoRunTask: AutoRunTask? = null,
+                fitNavigationBar: Boolean = true
         ): ActionListFragment {
             val fragment = ActionListFragment()
             fragment.setListData(actionInfos, krScriptActionHandler, autoRunTask)
+            fragment.fitNavigationBar = fitNavigationBar
             return fragment
         }
     }
@@ -46,6 +50,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     private lateinit var progressBarDialog: ProgressBarDialog
     private var krScriptActionHandler: KrScriptActionHandler? = null
     private var autoRunTask: AutoRunTask? = null
+    private var fitNavigationBar = true
 
     private fun setListData(
             actionInfos: ArrayList<NodeInfoBase>?,
@@ -77,6 +82,15 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             val layout = rootGroup.getView()
 
             val rootView = (this.view?.findViewById<ScrollView?>(R.id.kr_content))
+
+            if (fitNavigationBar) {
+                ViewCompat.setOnApplyWindowInsetsListener(rootView as View) { v, insets ->
+                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                    insets
+                }
+            }
+
             rootView?.removeAllViews()
             rootView?.addView(layout)
             triggerAction(autoRunTask)

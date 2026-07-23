@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shared.FilePathResolver
@@ -43,7 +46,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        setSupportActionBar(binding.toolbar)
 
         krScriptConfig = KrScriptConfig()
 
@@ -97,7 +106,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createTab(items: ArrayList<NodeInfoBase>, pageNode: PageNode): Fragment {
-        return ActionListFragment.create(items, getKrScriptActionHandler(pageNode), null)
+        return ActionListFragment.create(items, getKrScriptActionHandler(pageNode), null, false)
     }
 
     private fun reloadTab() {
