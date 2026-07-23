@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
 import com.omarea.common.ui.DialogHelper
 import com.omarea.krscript.executor.ShellExecutor
 import com.omarea.krscript.model.RunnableNode
@@ -22,7 +23,8 @@ class BgTaskThread(private var process: Process) : Thread() {
     override fun run() {
         try {
             process.waitFor()
-        } catch (ex: java.lang.Exception) {
+        } catch (_: java.lang.Exception) {
+
         }
     }
 
@@ -58,8 +60,8 @@ class BgTaskThread(private var process: Process) : Thread() {
                 }
             }
 
-            val expandView = RemoteViews(context.getPackageName(), R.layout.kr_task_notification)
-            expandView.setTextViewText(R.id.kr_task_title, notificationTitle + "(" + notificationID + ")")
+            val expandView = RemoteViews(context.packageName, R.layout.kr_task_notification)
+            expandView.setTextViewText(R.id.kr_task_title, "$notificationTitle($notificationID)")
             expandView.setTextViewText(R.id.kr_task_log, notificationMessageRows.joinToString("", if (someIgnored) "……\n" else "").trim())
             expandView.setProgressBar(R.id.kr_task_progress, progressTotal, progressCurrent, progressTotal < 0)
             expandView.setViewVisibility(R.id.kr_task_progress, if (progressTotal == progressCurrent) View.GONE else View.VISIBLE)
@@ -68,9 +70,9 @@ class BgTaskThread(private var process: Process) : Thread() {
                 expandView.setOnClickPendingIntent(R.id.kr_task_stop, stopIntent)
             }
 
-            val notificationBuilder = Notification.Builder(context)
-                    .setContentTitle("" + notificationTitle + "(" + notificationID + ")")
-                    .setContentText("" + notificationMShortMsg + " >> " + notificationMessageRows.lastOrNull())
+            val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+                    .setContentTitle("$notificationTitle($notificationID)")
+                    .setContentText(notificationMShortMsg + " >> " + notificationMessageRows.lastOrNull())
                     .setSmallIcon(R.drawable.baseline_build_24)
                     .setAutoCancel(true)
                     .setWhen(System.currentTimeMillis())
@@ -84,14 +86,14 @@ class BgTaskThread(private var process: Process) : Thread() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!channelCreated) {
-                    val channel = NotificationChannel(channelId, context.getString(R.string.kr_script_task_notification), NotificationManager.IMPORTANCE_DEFAULT)
+                    val channel = NotificationChannel(CHANNEL_ID, context.getString(R.string.kr_script_task_notification), NotificationManager.IMPORTANCE_DEFAULT)
                     channel.enableLights(false)
                     channel.enableVibration(false)
                     channel.setSound(null, null)
                     notificationManager.createNotificationChannel(channel)
                 }
                 channelCreated = true
-                notificationBuilder.setChannelId(channelId)
+                notificationBuilder.setChannelId(CHANNEL_ID)
             } else {
                 notificationBuilder.setSound(null)
                 notificationBuilder.setVibrate(null)
@@ -99,15 +101,11 @@ class BgTaskThread(private var process: Process) : Thread() {
 
             val notification = notificationBuilder.build()
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                notification.bigContentView = expandView
-            }
-
             if (!isFinished) {
-                notification!!.flags = Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
+                notification.flags = Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
             }
 
-            notificationManager.notify(notificationID, notification); // 发送通知
+            notificationManager.notify(notificationID, notification) // 发送通知
         }
 
         override fun updateLog(msg: SpannableString?) {
@@ -134,7 +132,7 @@ class BgTaskThread(private var process: Process) : Thread() {
         override fun onExit(msg: Any?) {
             try {
                 // context.unregisterReceiver(receiver)
-            } catch (ex: java.lang.Exception) {
+            } catch (_: java.lang.Exception) {
             }
             isFinished = true
             notificationMShortMsg = context.getString(R.string.kr_script_task_finished)
@@ -168,7 +166,7 @@ class BgTaskThread(private var process: Process) : Thread() {
 
     companion object {
         private var channelCreated = false
-        private val channelId = "kr_script_task_notification"
+        private const val CHANNEL_ID = "kr_script_task_notification"
         private var notificationCounter = 34050
 
         fun startTask(context: Context, script: String, params: HashMap<String, String>?, nodeInfo: RunnableNode, onExit: Runnable, onDismiss: Runnable) {
@@ -190,7 +188,7 @@ class BgTaskThread(private var process: Process) : Thread() {
                         try {
                             onExit.run()
                             onDismiss.run()
-                        } catch (ex: Exception) {
+                        } catch (_: Exception) {
                         }
                     },
                     params,
