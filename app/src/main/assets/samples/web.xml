@@ -18,7 +18,7 @@
                 # --ez Boolean【extra boolean】
 
                 url="https://www.example.com"
-                activity="$PACKAGE_NAME/com.projectkr.shell.ActionPageOnline"
+                activity="$PACKAGE_NAME/com.krscripts.app.ActionPageOnline"
                 am start -a android.intent.action.MAIN -n "$activity" --es url "$url"
 
                 # 对应到Java中取出参数的过程
@@ -37,8 +37,9 @@
                 # --ez autoClose autoClose 【true/false】 是否下载完成后自动关闭界面
 
                 downloadUrl="https://github.com/termux/termux-app/releases/download/v0.118.3/termux-app_v0.118.3+github-debug_sha256sums"
-                activity="$PACKAGE_NAME/com.projectkr.shell.ActionPageOnline"
-                am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl "$downloadUrl"
+                activity="$PACKAGE_NAME/com.krscripts.app.ActionPageOnline"
+                am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl
+                "$downloadUrl"
             </script>
         </action>
 

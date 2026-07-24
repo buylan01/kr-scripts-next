@@ -224,7 +224,7 @@
         <desc>也可以设置允许选择多个应用，同时还可以设置默认选中项</desc>
         <param
             name="package_name"
-            value="com.projectkr.shell,com.android.browser"
+            value="com.krscripts.app,com.android.browser"
             separator=","
             type="app"
             multiple="multiple"

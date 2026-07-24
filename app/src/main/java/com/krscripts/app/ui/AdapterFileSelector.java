@@ -1,4 +1,4 @@
-package com.projectkr.shell.ui;
+package com.krscripts.app.ui;
 
 import static android.view.View.GONE;
 
@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.omarea.common.ui.DialogHelper;
 import com.omarea.common.ui.ProgressBarDialog;
-import com.projectkr.shell.R;
+import com.krscripts.app.R;
 
 import java.io.File;
 import java.io.FileFilter;

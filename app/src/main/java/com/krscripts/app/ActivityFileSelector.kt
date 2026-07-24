@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.omarea.common.ui.ProgressBarDialog
-import com.projectkr.shell.databinding.ActivityFileSelectorBinding
-import com.projectkr.shell.ui.AdapterFileSelector
-import com.projectkr.shell.util.PermissionUtil.checkManageFile
-import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
+import com.krscripts.app.databinding.ActivityFileSelectorBinding
+import com.krscripts.app.ui.AdapterFileSelector
+import com.krscripts.app.util.PermissionUtil.checkManageFile
+import com.krscripts.app.util.PermissionUtil.showManageFileDialog
 import java.io.File
 
 class ActivityFileSelector : AppCompatActivity() {

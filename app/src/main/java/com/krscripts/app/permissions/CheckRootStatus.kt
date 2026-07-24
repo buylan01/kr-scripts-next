@@ -1,15 +1,14 @@
-package com.projectkr.shell.permissions
+package com.krscripts.app.permissions
 
 import android.Manifest
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.PermissionChecker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omarea.common.shell.KeepShellPublic
 import com.omarea.common.ui.DialogHelper
-import com.projectkr.shell.R
+import com.krscripts.app.R
 import kotlin.system.exitProcess
 
 /**

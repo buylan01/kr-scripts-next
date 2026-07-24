@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.app.Activity
 import android.content.Intent

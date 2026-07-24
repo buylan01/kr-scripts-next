@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.content.Context
 import com.omarea.krscript.executor.ScriptEnvironment

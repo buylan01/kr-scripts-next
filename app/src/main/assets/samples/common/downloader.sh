@@ -8,7 +8,7 @@
 #   输出
 #   由于shell的函数只能返回0-255的数字，因此下载后的文件路径，你需要通过变量[downloader_result]获得
 #
-# 原理：通过应用内置的Activity [com.projectkr.shell.ActionPageOnline] 来调用系统自带下载管理器
+# 原理：通过应用内置的Activity [com.krscripts.app.ActionPageOnline] 来调用系统自带下载管理器
 #  传给Activity的参数
 #   --es downloadUrl 【url】下载路径
 #   --ez autoClose 【true/false】 是否下载完成后自动关闭界面，非必需
@@ -46,7 +46,7 @@ function downloader() {
     # --ez autoClose autoClose 【true/false】 是否下载完成后自动关闭界面
     # --es taskId 【taskId】下载任务的唯一标识 用于跟踪进度
 
-    activity="$PACKAGE_NAME/com.projectkr.shell.ActionPageOnline"
+    activity="$PACKAGE_NAME/com.krscripts.app.ActionPageOnline"
     am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl "$downloadUrl" --ez autoClose true --es taskId "$task_id" 1 > /dev/null
 
     # 等待下载完成

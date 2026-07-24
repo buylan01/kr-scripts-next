@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.Manifest
 import android.content.ComponentName
@@ -18,7 +18,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,7 +28,7 @@ import com.omarea.krscript.config.PageConfigSh
 import com.omarea.krscript.model.*
 import com.omarea.krscript.ui.ActionListFragment
 import com.omarea.krscript.ui.ParamsFileChooserRender
-import com.projectkr.shell.databinding.ActivityMainBinding
+import com.krscripts.app.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)

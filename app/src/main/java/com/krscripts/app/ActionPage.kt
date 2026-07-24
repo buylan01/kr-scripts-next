@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.app.Activity
 import android.app.ActivityManager
@@ -31,7 +31,7 @@ import com.omarea.krscript.ui.DialogLogFragment
 import com.omarea.krscript.ui.ParamsFileChooserRender
 import com.omarea.krscript.ui.PageMenuLoader
 import com.omarea.krscript.R
-import com.projectkr.shell.databinding.ActivityActionPageBinding
+import com.krscripts.app.databinding.ActivityActionPageBinding
 
 
 class ActionPage : AppCompatActivity() {
@@ -71,7 +71,7 @@ class ActionPage : AppCompatActivity() {
         }
 
         setSupportActionBar(binding.toolbar)
-        setTitle(com.projectkr.shell.R.string.app_name)
+        setTitle(com.krscripts.app.R.string.app_name)
 
         // 显示返回按钮
         supportActionBar!!.setHomeButtonEnabled(true)
@@ -457,7 +457,7 @@ class ActionPage : AppCompatActivity() {
                             autoRunTask
                         )
                         supportFragmentManager.beginTransaction()
-                            .replace(com.projectkr.shell.R.id.main_list, fragment)
+                            .replace(com.krscripts.app.R.id.main_list, fragment)
                             .commitAllowingStateLoss()
                         hideDialog()
                         actionsLoaded = true

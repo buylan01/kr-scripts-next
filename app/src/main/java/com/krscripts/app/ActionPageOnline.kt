@@ -1,24 +1,18 @@
-package com.projectkr.shell
+package com.krscripts.app
 
-import android.Manifest
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.view.KeyEvent
 import android.view.View
-import android.view.WindowManager
 import android.webkit.*
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -32,10 +26,10 @@ import com.omarea.common.ui.ProgressBarDialog
 import com.omarea.krscript.WebViewInjector
 import com.omarea.krscript.downloader.Downloader
 import com.omarea.krscript.ui.ParamsFileChooserRender
-import com.projectkr.shell.databinding.ActivityActionPageOnlineBinding
+import com.krscripts.app.databinding.ActivityActionPageOnlineBinding
 import com.omarea.krscript.R
-import com.projectkr.shell.util.PermissionUtil.checkManageFile
-import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
+import com.krscripts.app.util.PermissionUtil.checkManageFile
+import com.krscripts.app.util.PermissionUtil.showManageFileDialog
 import java.util.*
 
 class ActionPageOnline : AppCompatActivity() {
@@ -61,7 +55,7 @@ class ActionPageOnline : AppCompatActivity() {
         }
 
         setSupportActionBar(binding.toolbar)
-        setTitle(com.projectkr.shell.R.string.app_name)
+        setTitle(com.krscripts.app.R.string.app_name)
 
         // 显示返回按钮
         supportActionBar!!.setHomeButtonEnabled(true)
@@ -173,7 +167,7 @@ class ActionPageOnline : AppCompatActivity() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                progressBarDialog.showDialog(getString(com.projectkr.shell.R.string.please_wait))
+                progressBarDialog.showDialog(getString(com.krscripts.app.R.string.please_wait))
             }
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

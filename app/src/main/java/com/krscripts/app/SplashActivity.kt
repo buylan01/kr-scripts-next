@@ -1,4 +1,4 @@
-package com.projectkr.shell
+package com.krscripts.app
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,10 +13,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import com.omarea.common.shell.ShellExecutor
 import com.omarea.krscript.executor.ScriptEnvironment
-import com.projectkr.shell.databinding.ActivitySplashBinding
-import com.projectkr.shell.permissions.CheckRootStatus
-import com.projectkr.shell.util.PermissionUtil.checkManageFile
-import com.projectkr.shell.util.PermissionUtil.showManageFileDialog
+import com.krscripts.app.databinding.ActivitySplashBinding
+import com.krscripts.app.permissions.CheckRootStatus
+import com.krscripts.app.util.PermissionUtil.checkManageFile
+import com.krscripts.app.util.PermissionUtil.showManageFileDialog
 import java.io.BufferedReader
 import java.io.DataOutputStream
 
