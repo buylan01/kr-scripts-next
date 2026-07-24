@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawablePadding="4dp"
+        android:layout_marginBottom="4dp"
         android:textColor="?android:attr/textColorSecondary"
         app:drawableStartCompat="@drawable/kr_param_title"
         android:breakStrategy="simple" />
@@ -21,7 +22,7 @@
         android:paddingHorizontal="10dp"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:background="@drawable/in_card_item_inactive"
+        android:background="@drawable/bg_param_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
