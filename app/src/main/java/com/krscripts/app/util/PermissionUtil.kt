@@ -11,7 +11,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.omarea.krscript.R
+import com.krscripts.core.R
+
 import kotlin.system.exitProcess
 
 object PermissionUtil {
@@ -41,7 +42,7 @@ object PermissionUtil {
             .setNegativeButton(R.string.btn_exit) { _, _ ->
                 exitProcess(0)
             }
-            .setNeutralButton(com.omarea.krscript.R.string.btn_skip) { _, _ ->
+            .setNeutralButton(R.string.btn_skip) { _, _ ->
                 onSkip()
             }
             .setCancelable(false)

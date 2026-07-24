@@ -155,7 +155,7 @@
             <options>
                 <option value="com.google.android.packageinstaller">软件包安装服务</option>
                 <option value="com.miui.greenguard">安全守护服务</option>
-                <option value="com.omarea.xxxx">假设个不存在的应用</option>
+                <option value="com.krscripts.xxxx">假设个不存在的应用</option>
             </options>
             <set>echo '包名为：' $package_name</set>
         </action>

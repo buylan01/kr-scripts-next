@@ -1,0 +1,291 @@
+package com.krscripts.common.ui
+
+import android.app.Activity
+import android.content.Context
+import android.content.DialogInterface
+import android.graphics.Rect
+import android.view.*
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.krscripts.common.R
+
+class DialogHelper {
+    class DialogButton(val text: String, val onClick: Runnable? = null, val dismiss: Boolean = true) {
+    }
+
+    class DialogWrap(private val d: AlertDialog) {
+        val context = dialog.context
+        private var mCancelable = true
+        val isCancelable: Boolean
+            get () {
+                return mCancelable
+            }
+
+        fun setCancelable(cancelable: Boolean): DialogWrap {
+            mCancelable = cancelable
+            d.setCancelable(cancelable)
+
+            return this
+        }
+
+        fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener): DialogWrap {
+            d.setOnDismissListener(onDismissListener)
+
+            return this
+        }
+
+        val dialog: AlertDialog
+            get() {
+                return d
+            }
+
+        fun dismiss() {
+            try {
+                d.dismiss()
+            } catch (_: Exception) {
+            }
+        }
+
+        fun hide() {
+            try {
+                d.hide()
+            } catch (_: Exception) {
+            }
+        }
+
+        val isShowing: Boolean
+            get() {
+                return d.isShowing
+            }
+    }
+
+    companion object {
+
+        fun animDialog(dialog: AlertDialog?): DialogWrap? {
+            dialog?.show()
+            return if (dialog != null) DialogWrap(dialog) else null
+        }
+
+        fun animDialog(builder: AlertDialog.Builder): DialogWrap {
+            val dialog = builder.create()
+            animDialog(dialog)
+            return DialogWrap(dialog)
+        }
+
+        fun helpInfo(context: Context, title: String, message: String, onDismiss: Runnable? = null): DialogWrap {
+            val layoutInflater = LayoutInflater.from(context)
+            val dialog = layoutInflater.inflate(R.layout.dialog_confirm, null)
+
+            (dialog.findViewById<TextView>(R.id.confirm_title)!!).run {
+                if (title.isNotEmpty()) {
+                    text = title
+                    visibility = View.VISIBLE
+                } else {
+                    visibility = View.GONE
+                }
+            }
+
+            (dialog.findViewById<TextView>(R.id.confirm_message)!!).run {
+                if (message.isNotEmpty()) {
+                    text = message
+                    visibility = View.VISIBLE
+                } else {
+                    visibility = View.GONE
+                }
+            }
+
+            val d = customDialog(context, dialog, onDismiss == null)
+
+            return d
+        }
+
+        fun confirm(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
+        }
+
+        fun warning(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
+        }
+
+        private fun getCustomDialogView(
+            context: Context,
+            layout: Int,
+            title: String = "",
+            message: String = "",
+            contentView: View? = null
+        ): View {
+
+            val view = LayoutInflater.from(context).inflate(layout, null)
+            view.findViewById<TextView?>(R.id.confirm_title)?.run {
+                if (title.isEmpty()) {
+                    visibility = View.GONE
+                } else {
+                    setText(title)
+                }
+            }
+
+            view.findViewById<TextView?>(R.id.confirm_message)?.run {
+                if (message.isEmpty()) {
+                    visibility = View.GONE
+                } else {
+                    setText(message)
+                }
+            }
+
+            if (contentView != null) {
+                view.findViewById<FrameLayout?>(R.id.confirm_custom_view)?.addView(contentView)
+            }
+
+            return view
+        }
+
+        fun confirm(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            contentView: View? = null,
+            onConfirm: DialogButton? = null,
+            onCancel: DialogButton? = null
+        ): DialogWrap {
+            val view =
+                getCustomDialogView(context, R.layout.dialog_confirm, title, message, contentView)
+
+            val dialog = customDialog(context, view)
+
+            val btnConfirm = view.findViewById<TextView?>(R.id.btn_confirm)
+            if (onConfirm != null) {
+                btnConfirm?.text = onConfirm.text
+            }
+            btnConfirm?.setOnClickListener {
+                if (onConfirm != null) {
+                    if (onConfirm.dismiss) {
+                        dialog.dismiss()
+                    }
+                    onConfirm.onClick?.run()
+                } else {
+                    dialog.dismiss()
+                }
+            }
+
+            val btnCancel = view.findViewById<TextView?>(R.id.btn_cancel)
+            if (onCancel != null) {
+                btnCancel?.text = onCancel.text
+            }
+            btnCancel!!.setOnClickListener {
+                if (onCancel != null) {
+                    if (onCancel.dismiss) {
+                        dialog.dismiss()
+                    }
+                    onCancel.onClick?.run()
+                } else {
+                    dialog.dismiss()
+                }
+            }
+
+            return dialog
+        }
+
+        fun confirm(context: Context, contentView: View? = null, onConfirm: DialogButton? = null, onCancel: DialogButton? = null): DialogWrap {
+            return this.confirm(context, "", "", contentView, onConfirm, onCancel)
+        }
+
+        // 设置点击空白区域关闭弹窗
+        private fun setOutsideTouchDismiss(view: View, dialogWrap: DialogWrap): DialogWrap {
+            val dialog = dialogWrap.dialog
+            val rootView = dialog.window?.decorView
+            rootView?.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                    if (event != null && event.action == MotionEvent.ACTION_UP) {
+                        val x = event.x.toInt()
+                        val y = event.y.toInt()
+                        val rect = Rect()
+                        view.getGlobalVisibleRect(rect)
+                        if (!rect.contains(x, y)) {
+                            // TODO: 从何获取呢...
+                            val mCancelable = dialogWrap.isCancelable // false
+                            if (mCancelable) {
+                                dialogWrap.dismiss()
+                            }
+                        }
+                        return true
+                    }
+                    return false
+                }
+            })
+
+            return dialogWrap
+        }
+
+        private fun openContinueAlert(
+            context: Context,
+            layout: Int,
+            title: String = "",
+            message: String = "",
+            onConfirm: Runnable? = null
+        ): DialogWrap {
+            val view = getCustomDialogView(context, layout, title, message, null)
+
+            val dialog = customDialog(context, view) { dialog, _ ->
+                dialog.dismiss()
+                onConfirm?.run()
+            }
+
+            return dialog
+        }
+
+        fun alert(context: Context,
+                  title: String = "",
+                  message: String = "",
+                  onConfirm: Runnable? = null): DialogWrap {
+            return openContinueAlert(context, R.layout.dialog_confirm, title, message, onConfirm)
+        }
+
+        fun customDialog(
+            context: Context,
+            view: View,
+            cancelable: Boolean = true,
+            onConfirm: DialogInterface.OnClickListener? = null
+        ): DialogWrap {
+
+            val dialog = MaterialAlertDialogBuilder(context)
+                .setView(view)
+                .setCancelable(cancelable)
+                .setNegativeButton("取消") { dialog, _ ->
+                    try {
+                        dialog!!.dismiss()
+                    } catch (_: java.lang.Exception) {
+                    }
+                }
+                .setPositiveButton("确定", onConfirm)
+                .create()
+
+            if (context is Activity) {
+                dialog.show()
+                dialog.window?.run {
+                    decorView.run {
+                        systemUiVisibility = context.window.decorView.systemUiVisibility // View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                    }
+                }
+            } else {
+                dialog.show()
+                dialog.window?.run {
+                    setBackgroundDrawableResource(android.R.color.transparent)
+                }
+            }
+
+            return setOutsideTouchDismiss(view, DialogWrap(dialog).setCancelable(cancelable))
+        }
+    }
+}

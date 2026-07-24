@@ -17,21 +17,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.omarea.common.shared.FilePathResolver
-import com.omarea.common.ui.ProgressBarDialog
-import com.omarea.krscript.TryOpenActivity
-import com.omarea.krscript.config.IconPathAnalysis
-import com.omarea.krscript.config.PageConfigReader
-import com.omarea.krscript.config.PageConfigSh
-import com.omarea.krscript.executor.ScriptEnvironment
-import com.omarea.krscript.model.*
-import com.omarea.krscript.shortcut.ActionShortcutManager
-import com.omarea.krscript.ui.ActionListFragment
-import com.omarea.krscript.ui.DialogLogFragment
-import com.omarea.krscript.ui.ParamsFileChooserRender
-import com.omarea.krscript.ui.PageMenuLoader
-import com.omarea.krscript.R
+import com.krscripts.common.shared.FilePathResolver
+import com.krscripts.common.ui.ProgressBarDialog
+import com.krscripts.core.TryOpenActivity
+import com.krscripts.core.config.IconPathAnalysis
+import com.krscripts.core.config.PageConfigReader
+import com.krscripts.core.config.PageConfigSh
+import com.krscripts.core.executor.ScriptEnvironment
+import com.krscripts.core.shortcut.ActionShortcutManager
+import com.krscripts.core.ui.ActionListFragment
+import com.krscripts.core.ui.DialogLogFragment
+import com.krscripts.core.ui.ParamsFileChooserRender
+import com.krscripts.core.ui.PageMenuLoader
+import com.krscripts.core.R
 import com.krscripts.app.databinding.ActivityActionPageBinding
+import com.krscripts.core.model.AutoRunTask
+import com.krscripts.core.model.ClickableNode
+import com.krscripts.core.model.KrScriptActionHandler
+import com.krscripts.core.model.NodeInfoBase
+import com.krscripts.core.model.PageMenuOption
+import com.krscripts.core.model.PageNode
+import com.krscripts.core.model.RunnableNode
 
 
 class ActionPage : AppCompatActivity() {

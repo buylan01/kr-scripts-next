@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.omarea.common"
+    namespace = "com.krscripts.common"
     compileSdk {
         version = release(37)
     }

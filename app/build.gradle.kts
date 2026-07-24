@@ -40,5 +40,5 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.material)
     implementation(project(":common"))
-    implementation(project(":krscript"))
+    implementation(project(":core"))
 }

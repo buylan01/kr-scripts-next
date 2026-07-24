@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import com.omarea.common.shell.ShellExecutor
-import com.omarea.krscript.executor.ScriptEnvironment
+import com.krscripts.common.shell.ShellExecutor
+import com.krscripts.core.executor.ScriptEnvironment
 import com.krscripts.app.databinding.ActivitySplashBinding
 import com.krscripts.app.permissions.CheckRootStatus
 import com.krscripts.app.util.PermissionUtil.checkManageFile

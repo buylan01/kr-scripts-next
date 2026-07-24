@@ -18,4 +18,4 @@
 
 -keepclassmembers class * implements java.io.Serializable{*;}
 
--keep class com.omarea.krscript.model.**{*;}
+-keep class com.krscripts.krscript.model.**{*;}

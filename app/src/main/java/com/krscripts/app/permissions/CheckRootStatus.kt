@@ -6,8 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.content.PermissionChecker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.omarea.common.shell.KeepShellPublic
-import com.omarea.common.ui.DialogHelper
+import com.krscripts.common.shell.KeepShellPublic
+import com.krscripts.common.ui.DialogHelper
 import com.krscripts.app.R
 import kotlin.system.exitProcess
 
@@ -54,7 +54,7 @@ class CheckRootStatus(var context: Context, private var next: Runnable? = null) 
                                     //android.os.Process.killProcess(android.os.Process.myPid())
                                 }
                         if (!context.resources.getBoolean(R.bool.force_root)) {
-                            builder.setNeutralButton(com.omarea.krscript.R.string.btn_skip) { _, _ ->
+                            builder.setNeutralButton(com.krscripts.core.R.string.btn_skip) { _, _ ->
                                 next?.let { myHandler.post(it) }
                             }
                         }

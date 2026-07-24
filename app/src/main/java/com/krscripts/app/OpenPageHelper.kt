@@ -3,7 +3,7 @@ package com.krscripts.app
 import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
-import com.omarea.krscript.model.PageNode
+import com.krscripts.core.model.PageNode
 
 class OpenPageHelper(private var activity: Activity) {
     fun openPage(pageNode: PageNode) {

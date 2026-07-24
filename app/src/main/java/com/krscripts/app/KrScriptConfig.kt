@@ -1,8 +1,8 @@
 package com.krscripts.app
 
 import android.content.Context
-import com.omarea.krscript.executor.ScriptEnvironment
-import com.omarea.krscript.model.PageNode
+import com.krscripts.core.executor.ScriptEnvironment
+import com.krscripts.core.model.PageNode
 import java.nio.charset.Charset
 import kotlin.math.max
 

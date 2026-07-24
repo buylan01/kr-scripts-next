@@ -11,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.omarea.common.ui.DialogHelper;
-import com.omarea.common.ui.ProgressBarDialog;
+import com.krscripts.common.ui.DialogHelper;
+import com.krscripts.common.ui.ProgressBarDialog;
 import com.krscripts.app.R;
 
 import java.io.File;

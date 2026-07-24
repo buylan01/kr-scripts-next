@@ -21,14 +21,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.omarea.common.shared.FilePathResolver
-import com.omarea.common.ui.ProgressBarDialog
-import com.omarea.krscript.config.PageConfigReader
-import com.omarea.krscript.config.PageConfigSh
-import com.omarea.krscript.model.*
-import com.omarea.krscript.ui.ActionListFragment
-import com.omarea.krscript.ui.ParamsFileChooserRender
+import com.krscripts.common.shared.FilePathResolver
+import com.krscripts.common.ui.ProgressBarDialog
+import com.krscripts.core.config.PageConfigReader
+import com.krscripts.core.config.PageConfigSh
+import com.krscripts.core.ui.ActionListFragment
+import com.krscripts.core.ui.ParamsFileChooserRender
 import com.krscripts.app.databinding.ActivityMainBinding
+import com.krscripts.core.model.ClickableNode
+import com.krscripts.core.model.KrScriptActionHandler
+import com.krscripts.core.model.NodeInfoBase
+import com.krscripts.core.model.PageNode
+import com.krscripts.core.model.RunnableNode
 
 class MainActivity : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)

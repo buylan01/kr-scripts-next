@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "kr-script-next"
-include(":app", ":krscript", ":common")
+include(":app", ":core", ":common")

@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.omarea.common.ui.ProgressBarDialog
+import com.krscripts.common.ui.ProgressBarDialog
 import com.krscripts.app.databinding.ActivityFileSelectorBinding
 import com.krscripts.app.ui.AdapterFileSelector
 import com.krscripts.app.util.PermissionUtil.checkManageFile
