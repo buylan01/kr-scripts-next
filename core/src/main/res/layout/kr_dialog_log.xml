@@ -1,78 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:clickable="true"
-    android:focusable="true"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fitsSystemWindows="true">
 
-    <ImageButton
-        android:id="@+id/btn_hide"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@null"
-        android:scaleType="centerInside"
-        android:padding="8dp"
-        android:background="@null"
-        android:src="@drawable/baseline_keyboard_arrow_down_24"
-        app:tint="?colorOnSurface" />
-
     <LinearLayout
-        android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/btn_hide"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp">
 
-        <TextView
-            android:id="@+id/title"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:paddingTop="0dp"
-            style="@style/TextAppearance.Material3.TitleSmall" />
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/desc"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:paddingTop="0dp"
-            style="@style/TextAppearance.Material3.BodySmall" />
+            <TextView
+                android:id="@+id/title"
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:padding="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/desc"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:padding="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_hide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/baseline_keyboard_arrow_down_24"
+            app:tint="?colorOnSurface" />
     </LinearLayout>
 
-    <ScrollView
-        android:layout_marginTop="16dp"
-        android:background="@drawable/krscript_item_bg"
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/action_progress"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_actions"
-        android:layout_below="@+id/top_bar"
-        android:layout_marginHorizontal="16dp">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="8dp"
+        android:indeterminate="true"
+        android:max="100"
+        android:progress="0" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/krscript_item_bg">
 
         <TextView
             android:id="@+id/shell_output"
-            android:breakStrategy="simple"
-            android:textIsSelectable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:breakStrategy="simple"
             android:fontFamily="monospace"
-            android:textSize="12sp"
-            android:padding="12dp" />
+            android:padding="12dp"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
     </ScrollView>
 
     <LinearLayout
         android:id="@+id/bottom_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="end"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
 
         <Button
             android:id="@+id/btn_copy"
@@ -85,15 +96,4 @@
             android:text="@string/btn_exit" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/action_progress"
-        android:layout_marginTop="12dp"
-        android:layout_marginHorizontal="16dp"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_below="@+id/top_bar"
-        android:indeterminate="true"
-        android:max="100"
-        android:progress="0" />
-</RelativeLayout>
+</LinearLayout>
