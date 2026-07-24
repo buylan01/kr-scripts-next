@@ -5,40 +5,36 @@ import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.*
 
-// 从Resource解析字符串，实现输出内容多语言
 class ShellTranslation(val context: Context) {
     private val resources = context.resources
     private val packageName = context.packageName
+    private val placeholderRegex = Regex(
+        """@(string|dimen)[:/]([_a-z][_a-z0-9]*)""",
+        RegexOption.IGNORE_CASE
+    )
+    private val resIdCache = mutableMapOf<String, Int>()
 
     fun resolveRow(originRow: String): String {
-        if (!originRow.startsWith("@")) return originRow
-
-        val prefixEnd = originRow.indexOfAny(charArrayOf(':', '/'), startIndex = 1)
-        if (prefixEnd == -1) return originRow
-
-        val type = originRow.substring(1, prefixEnd).lowercase(Locale.ENGLISH)
-        if (type != "string" && type != "dimen") return originRow
-
-        val name = originRow.substring(prefixEnd + 1).trim()
-        val id = resources.getIdentifier(name, type, packageName)
-
-        return try {
-            when (type) {
-                "string" -> {
-                    resources.getString(id)
-                }
-                "dimen" -> {
-                    resources.getDimension(id).toString()
-                }
-                else -> originRow
+        return placeholderRegex.replace(originRow) { match ->
+            val type = match.groupValues[1].lowercase(Locale.ENGLISH)
+            val name = match.groupValues[2]
+            val cacheKey = "$type:$name"
+            val id = resIdCache.getOrPut(cacheKey) {
+                resources.getIdentifier(name, type, packageName)
             }
-        } catch (_: Exception) {
-            if (originRow.contains("[(") && originRow.contains(")]")) {
-                originRow.substring(
-                    originRow.indexOf("[(") + 2,
-                    originRow.indexOf(")]")
-                )
-            } else originRow
+            if (id != 0) {
+                try {
+                    when (type) {
+                        "string" -> resources.getString(id)
+                        "dimen" -> resources.getDimension(id).toString()
+                        else -> match.value
+                    }
+                } catch (_: Exception) {
+                    match.value
+                }
+            } else {
+                match.value
+            }
         }
     }
 
