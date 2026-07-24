@@ -61,7 +61,7 @@
 
         <action>
             <title>数字输入（滑块）</title>
-            <param name="test" max="100" min="10" title="数字（滑块）" type="seekbar" value="50" />
+            <param name="test" max="10" min="1" title="数字（滑块）" type="seekbar" value="6" />
             <set>echo '数值为：' $test</set>
         </action>
 

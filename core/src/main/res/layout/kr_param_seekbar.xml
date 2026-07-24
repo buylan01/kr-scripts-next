@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center" />
 
-    <SeekBar
+    <com.google.android.material.slider.RangeSlider
         android:id="@+id/kr_param_seekbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
