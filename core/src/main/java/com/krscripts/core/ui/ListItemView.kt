@@ -8,14 +8,15 @@ import com.krscripts.core.R
 import com.krscripts.core.executor.ScriptEnvironment
 import com.krscripts.core.model.NodeInfoBase
 
-open class ListItemView(private val context: Context,
-                        private val layoutId: Int,
-                        private val config: NodeInfoBase) {
-    protected var layout = LayoutInflater.from(context).inflate(layoutId, null)
-
-    protected var descView = layout.findViewById<TextView?>(R.id.kr_desc)
-    protected var summaryView = layout.findViewById<TextView?>(R.id.kr_summary)
-    protected var titleView = layout.findViewById<TextView?>(R.id.kr_title)
+open class ListItemView(
+    private val context: Context,
+    layoutId: Int,
+    private val config: NodeInfoBase
+) {
+    protected var layout: View = LayoutInflater.from(context).inflate(layoutId, null)
+    protected var descView: TextView? = layout.findViewById(R.id.kr_desc)
+    protected var summaryView: TextView? = layout.findViewById(R.id.kr_summary)
+    protected var titleView: TextView? = layout.findViewById(R.id.kr_title)
 
 
     val key: String

@@ -15,10 +15,6 @@ class ParamsSingleSelect(
         private var actionParamInfo: ActionParamInfo,
         private var context: FragmentActivity
 ) {
-
-    private val systemUiVisibility = context.window?.decorView?.systemUiVisibility
-    private var darkMode = systemUiVisibility != null && (systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) == 0
-
     val options = actionParamInfo.optionsFromShell!!
     var selectedIndex = ActionParamsLayoutRender.getParamOptionsCurrentIndex(actionParamInfo, options) // 获取当前选中项索引
 

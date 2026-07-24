@@ -12,16 +12,11 @@ class ParamsCheckbox(private var actionParamInfo: ActionParamInfo, private var c
     fun render(): View {
         val layout = LayoutInflater.from(context).inflate(R.layout.kr_param_checkbox, null)
 
-
         layout.findViewById<CheckBox>(R.id.kr_param_checkbox).run {
             tag = actionParamInfo.name
             isChecked = getCheckState(actionParamInfo, false)
             if (!actionParamInfo.label.isNullOrEmpty()) {
                 text = actionParamInfo.label
-            }
-
-            setOnClickListener {
-
             }
         }
 

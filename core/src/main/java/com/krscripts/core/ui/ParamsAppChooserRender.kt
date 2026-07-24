@@ -11,10 +11,10 @@ import com.krscripts.common.ui.DialogAppChooser
 import com.krscripts.core.R
 import com.krscripts.core.model.ActionParamInfo
 
-class ParamsAppChooserRender(private var actionParamInfo: ActionParamInfo, private var context: FragmentActivity) : DialogAppChooser.Callback {
-    private val systemUiVisibility = context.window?.decorView?.systemUiVisibility
-    private var darkMode = systemUiVisibility != null && (systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) == 0
-
+class ParamsAppChooserRender(
+    private var actionParamInfo: ActionParamInfo,
+    private var context: FragmentActivity
+) : DialogAppChooser.Callback {
     private lateinit var valueView: TextView
     private lateinit var nameView: TextView
     private lateinit var packages: ArrayList<AdapterAppChooser.AppInfo>
@@ -40,8 +40,6 @@ class ParamsAppChooserRender(private var actionParamInfo: ActionParamInfo, priva
 
     private fun openAppChooser() {
         setSelectStatus()
-
-        // TODO:深色模式、浅色模式
         DialogAppChooser(packages, actionParamInfo.multiple, this).show(context.supportFragmentManager, "app-chooser")
     }
 

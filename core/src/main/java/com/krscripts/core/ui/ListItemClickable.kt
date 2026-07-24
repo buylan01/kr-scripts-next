@@ -7,13 +7,15 @@ import com.krscripts.core.R
 import com.krscripts.core.config.IconPathAnalysis
 import com.krscripts.core.model.ClickableNode
 
-open class ListItemClickable(context: Context,
-                             layoutId: Int,
-                             private val config: ClickableNode) : ListItemView(context, layoutId, config) {
+open class ListItemClickable(
+    context: Context,
+    layoutId: Int,
+    config: ClickableNode
+) : ListItemView(context, layoutId, config) {
     protected var mOnClickListener: OnClickListener? = null
     protected var mOnLongClickListener: OnLongClickListener? = null
-    protected var shortcutIconView = layout.findViewById<View?>(R.id.kr_shortcut_icon)
-    protected var iconView = layout.findViewById<ImageView?>(R.id.kr_icon)
+    protected var shortcutIconView: View? = layout.findViewById(R.id.kr_shortcut_icon)
+    protected var iconView: ImageView? = layout.findViewById(R.id.kr_icon)
 
     fun setOnClickListener(onClickListener: OnClickListener): ListItemClickable {
         this.mOnClickListener = onClickListener

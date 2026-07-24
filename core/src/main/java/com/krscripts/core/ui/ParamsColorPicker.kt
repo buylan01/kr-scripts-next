@@ -12,6 +12,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.common.ui.DialogHelper
 import com.krscripts.core.R
 import com.krscripts.core.model.ActionParamInfo
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class ParamsColorPicker(private val actionParamInfo: ActionParamInfo, private val context: Context) {
     fun render(): View {
@@ -93,6 +95,7 @@ class ParamsColorPicker(private val actionParamInfo: ActionParamInfo, private va
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 val color = Color.argb(alphaBar.progress, redBar.progress, greenBar.progress, blueBar.progress)
                 colorPreview.setBackgroundColor(color)
+                colorPreviewText.text = "#" + color.toHexString().uppercase(getDefault())
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
