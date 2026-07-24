@@ -442,7 +442,7 @@ class PageConfigReader {
                 Log.w("KrConfig", "解析 slice 属性 '$attrName=$attrValue' 失败: ${ex.message}")
             }
         }
-        textRow.text = "" + parser.nextText()
+        textRow.text = parser.nextText().trim()
         textNode.rows.add(textRow)
     }
 

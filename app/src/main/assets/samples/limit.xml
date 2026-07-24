@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<page>
+    <group>
+        <action warning="不许点喵">
+            <title>测试操作警告</title>
+            <desc>在执行命令前弹出警告</desc>
+        </action>
+        <text>
+            <slice br="true">
+                在执行有参数输入界面的Action时，警告内容会显示在参数输入界面顶部，而不再单独弹出
+            </slice>
+        </text>
+    </group>
+
+    <group title="操作锁">
+        <action locked="true">
+            <title>静态锁</title>
+            <desc>在节点上添加 locked="true" 将功能锁定</desc>
+            <summary>静态锁定无法自定义提示内容</summary>
+        </action>
+
+        <action>
+            <title>动态锁</title>
+            <desc>添加lock节点来动态判断功能锁定状态</desc>
+            <summary>动态锁在脚本里输出提示内容</summary>
+            <set>echo '诶嘿~'</set>
+            <lock>
+                if [[ `getprop ro.build.version.sdk` -gt 28 ]]; then
+                echo '你不能在 > Android 9.0(SDK28)的系统上使用本功能！'
+                else
+                // 输出 unlocked、unlock、false、0 均可表示功能处于解锁状态
+                // 输出其它内容则会被视作提示文本显示
+                echo 'unlocked'
+                fi
+            </lock>
+        </action>
+    </group>
+
+    <group title="系统版本限定">
+        <action max-sdk="28" min-sdk="28">
+            <title>SDK版本限制-范围</title>
+            <desc>通过[min-sdk]和[max-sdk]属性，可以很方便的设置系统版本范围限制</desc>
+            <set>
+                echo '....'
+            </set>
+        </action>
+
+        <action target-sdk="28">
+            <title>SDK版本限制-指定单个版本</title>
+            <desc>通过[target-sdk]属性，可以很方便的设置系统版本限制</desc>
+            <set>
+                echo '....'
+            </set>
+        </action>
+    </group>
+</page>

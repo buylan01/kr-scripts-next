@@ -19,9 +19,9 @@
 
     <group title="其它">
         <page config="samples/shortcut.xml" title="快捷方式" />
-        <page config="samples/reload.xml" title="reload 属性" desc="配置节点显示内容关联刷新" />
+        <page config="samples/reload.xml" title="节点刷新" />
         <page config="samples/bg_task/bg_task.xml" title="后台任务" />
-        <page config="samples/new.xml" title="新功能测试" />
+        <page config="samples/limit.xml" title="功能限制" />
     </group>
 
     <group title="Web引擎">

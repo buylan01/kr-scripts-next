@@ -33,4 +33,6 @@
     <string name="transparent_ui">界面透明 </string>
     <string name="title_activity_file_selector">请选择文件</string>
     <string name="title_activity_folder_selector">请长按选择目录</string>
+
+    <string name="resource_reference_desc">通过输出带有指向资源地址的字符串引用资源</string>
 </resources>

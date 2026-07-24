@@ -43,4 +43,14 @@
             </script>
         </action>
     </group>
+
+    <group title="其他">
+        <action>
+            <title>引用 Arsc 资源</title>
+            <desc sh="echo '@string:resource_reference_desc'" />
+            <set>
+                echo "内容：@string/appliction_name"
+            </set>
+        </action>
+    </group>
 </page>
