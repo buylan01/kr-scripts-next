@@ -2,10 +2,9 @@ package com.omarea.common.ui
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.*
+import androidx.appcompat.widget.SearchView
 import com.omarea.common.R
 import com.omarea.common.model.SelectItem
 
@@ -62,25 +61,14 @@ class DialogItemChooser(
 
         // 长列表才有搜索
         if (items.size > 5) {
-            val clearBtn = view.findViewById<View>(R.id.search_box_clear)
-            val searchBox = view.findViewById<EditText>(R.id.search_box).apply {
-                addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                    override fun afterTextChanged(s: Editable?) {
-                        if (s != null) {
-                            clearBtn.visibility = if (s.length > 0) View.VISIBLE else View.GONE
-                        }
-                    }
-
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        (absListView.adapter as Filterable).getFilter().filter(if (s == null) "" else s.toString())
-                    }
-                })
-            }
-            clearBtn.visibility = if (searchBox.text.isNullOrEmpty()) View.GONE else View.VISIBLE
-            clearBtn.setOnClickListener {
-                searchBox.text = null
-            }
+            val searchView = view.findViewById<SearchView>(R.id.search_view)
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?) = false
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    (absListView.adapter as Filterable).filter.filter(newText ?: "")
+                    return true
+                }
+            })
         }
 
         updateTitle()

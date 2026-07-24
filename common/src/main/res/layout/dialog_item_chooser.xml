@@ -7,35 +7,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:id="@+id/search_bar"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="end"
         android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="16dp">
-
-        <EditText
-            android:id="@+id/search_box"
-            android:nextFocusDown="@id/search_box"
-            android:lines="1"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/item_chooser_search_hint" />
-
-        <ImageButton
-            android:id="@+id/search_box_clear"
-            android:background="@null"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/dialog_search_clear"
-            android:scaleType="centerInside"
-            android:padding="15dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:tint="?android:textColorPrimary" />
-    </RelativeLayout>
+        app:searchIcon="@null"
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/item_chooser_search_hint" />
 
     <FrameLayout
         android:layout_marginBottom="8dp"
