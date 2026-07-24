@@ -7,7 +7,6 @@ import com.omarea.common.shared.FileWrite.getPrivateFileDir
 import com.omarea.common.shared.FileWrite.getPrivateFilePath
 import com.omarea.common.shared.FileWrite.writePrivateFile
 import com.omarea.common.shared.FileWrite.writePrivateShellFile
-import com.omarea.common.shared.MagiskExtend
 import com.omarea.common.shell.KeepShell
 import com.omarea.common.shell.KeepShellPublic.checkRoot
 import com.omarea.common.shell.KeepShellPublic.getDefaultInstance
@@ -206,25 +205,17 @@ object ScriptEnvironment {
         val params = HashMap<String, String>()
 
         params["TOOLKIT"] = TOOLKIT_DIR ?: "null"
-        params["MAGISK_PATH"] = if (MagiskExtend.moduleInstalled()) {
-            MagiskExtend.MAGISK_PATH.removeSuffix("/")
-        } else {
-            ""
-        }
+        params["MAGISK_PATH"] = "null"
         params["START_DIR"] = getStartPath(context)
-        // params.put("EXECUTOR_PATH", environmentPath);
         params["TEMP_DIR"] = context.cacheDir.absolutePath
 
         val fileOwner = FileOwner(context)
         val androidUid = fileOwner.getUserId()
-        params["ANDROID_UID"] = "" + androidUid
+        params["ANDROID_UID"] = androidUid.toString()
 
         try {
             // @ https://blog.csdn.net/Gaugamela/article/details/78689580
             params["APP_USER_ID"] = fileOwner.getFileOwner()
-            // params.put("APP_UID", "" + android.os.Process.myPid());
-            // params.put("APP_PID", "" + android.os.Process.myPid());
-            // params.put("APP_TID", "" + android.os.Process.myTid());
         } catch (_: Exception) {
 
         }
