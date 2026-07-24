@@ -7,32 +7,22 @@
 
     <string name="app_name">Kr Scripts</string>
     <string name="btn_exit">退出</string>
-    <string name="float_monitor_tips">双击悬浮窗即可关闭，或按住拖动调整位置</string>
-    <string name="permission_float">请授权显示悬浮窗权限！</string>
     <string name="please_wait">请稍等</string>
-    <string name="title_activity_action_page">功能分页</string>
-
     <string name="author_name">placeholder</string>
     <string name="about_title">关于</string>
     <string name="appliction_desc">演示应用</string>
     <string name="appliction_name">Kr Scripts Next</string>
     <string name="appliction_author">作者：嘟嘟ski, buylan</string>
     <string name="engine_version_name">基于[Kr-Script-Next 0.1.0]创作</string>
-
-    <string name="tab_pages">页面</string>
-
     <string name="copy_success">复制成功</string>
     <string name="btn_retry">重试</string>
-
     <string name="pio_starting">初始化</string>
     <string name="pop_before_start">准备中…</string>
     <string name="pop_started">启动完成！</string>
     <string name="pio_permission_checking">检查并获取必需权限…</string>
     <string name="error_root">未能获得ROOT授权，如果你的手机已经ROOT，清在授权管理器弹出对话框时选择允许！</string>
     <string name="error_su_timeout">等待ROOT授权超时，请检查授权管理器是否在后台运行！</string>
-    <string name="transparent_ui">界面透明 </string>
     <string name="title_activity_file_selector">请选择文件</string>
     <string name="title_activity_folder_selector">请长按选择目录</string>
-
     <string name="resource_reference_desc">通过输出带有指向资源地址的字符串引用资源</string>
 </resources>

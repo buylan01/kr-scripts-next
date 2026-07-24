@@ -25,7 +25,6 @@
         <activity
             android:name=".ActionPage"
             android:exported="true"
-            android:label="@string/title_activity_action_page"
             android:configChanges="keyboardHidden|orientation|layoutDirection|screenLayout|colorMode|fontScale|smallestScreenSize|density|keyboard|screenSize|touchscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +34,6 @@
         <activity
             android:name=".ActionPageOnline"
             android:exported="true"
-            android:label="@string/title_activity_action_page"
             android:configChanges="keyboardHidden|orientation|layoutDirection|screenLayout|colorMode|fontScale|smallestScreenSize|density|keyboard|screenSize|touchscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
