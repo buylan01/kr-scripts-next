@@ -1,7 +1,7 @@
 package com.projectkr.shell
 
 import android.content.Context
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.PageNode
 import java.nio.charset.Charset
 import kotlin.math.max
@@ -55,7 +55,7 @@ class KrScriptConfig {
 
             }
 
-            ScriptEnvironmen.init(context, this.executorCore, this.toolkitDir)
+            ScriptEnvironment.init(context, this.executorCore!!, this.toolkitDir)
         }
         return this
     }

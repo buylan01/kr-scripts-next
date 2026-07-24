@@ -22,7 +22,7 @@ import com.omarea.krscript.HiddenTaskThread
 import com.omarea.krscript.R
 import com.omarea.krscript.TryOpenActivity
 import com.omarea.krscript.config.IconPathAnalysis
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.*
 import com.omarea.krscript.shortcut.ActionShortcutManager
 import androidx.core.net.toUri
@@ -129,7 +129,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
 
         var message = ""
         val unlocked = (if (clickableNode.lockShell.isNotEmpty()) {
-            message = ScriptEnvironmen.executeResultRoot(context, clickableNode.lockShell, clickableNode)
+            message = ScriptEnvironment.executeResultRoot(context!!, clickableNode.lockShell, clickableNode)
             message == "unlock" || message == "unlocked" || message == "false" || message == "0"
         } else {
             !clickableNode.locked
@@ -505,7 +505,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     }
 
     private fun executeScriptGetResult(shellScript: String, nodeInfoBase: NodeInfoBase): String {
-        return ScriptEnvironmen.executeResultRoot(this.requireContext(), shellScript, nodeInfoBase)
+        return ScriptEnvironment.executeResultRoot(this.requireContext(), shellScript, nodeInfoBase)
     }
 
 

@@ -1,7 +1,7 @@
 package com.omarea.krscript.ui
 
 import android.content.Context
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.PageMenuOption
 import com.omarea.krscript.model.PageNode
 
@@ -13,7 +13,7 @@ class PageMenuLoader(private val applicationContext: Context, private val pageNo
             if (menuOptions == null) {
                 pageNode.run {
                     if (pageMenuOptionsSh.isNotEmpty()) {
-                        val result = ScriptEnvironmen.executeResultRoot(applicationContext, pageMenuOptionsSh, this)
+                        val result = ScriptEnvironment.executeResultRoot(applicationContext, pageMenuOptionsSh, this)
                         if (result != "error") {
                             val items = result.split("\n")
                             for (item in items) {

@@ -16,7 +16,7 @@ import android.widget.Toast
 import com.omarea.common.ui.DialogHelper
 import com.omarea.krscript.R
 import com.omarea.krscript.TryOpenActivity
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.TextNode
 
 
@@ -82,7 +82,7 @@ class ListItemText(private val context: Context,
                 if (row.onClickScript.isNotEmpty()) {
                     spannableString.setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
-                            val result = ScriptEnvironmen.executeResultRoot(context, row.onClickScript, config)
+                            val result = ScriptEnvironment.executeResultRoot(context, row.onClickScript, config)
                             if (result.trim().isNotEmpty()) {
                                 DialogHelper.helpInfo(context, context.getString(R.string.kr_slice_script_result), result)
                             }

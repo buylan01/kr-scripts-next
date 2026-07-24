@@ -20,7 +20,7 @@ import com.omarea.common.shell.ShellExecutor;
 import com.omarea.common.ui.DialogHelper;
 import com.omarea.krscript.downloader.Downloader;
 import com.omarea.krscript.executor.ExtractAssets;
-import com.omarea.krscript.executor.ScriptEnvironmen;
+import com.omarea.krscript.executor.ScriptEnvironment;
 import com.omarea.krscript.model.NodeInfoBase;
 import com.omarea.krscript.model.ShellHandlerBase;
 import com.omarea.krscript.ui.ParamsFileChooserRender;
@@ -123,7 +123,7 @@ public class WebViewInjector {
         @JavascriptInterface
         public String executeShell(String script) {
             if (script != null && !script.isEmpty()) {
-                return ScriptEnvironmen.executeResultRoot(context, script, virtualRootNode);
+                return ScriptEnvironment.executeResultRoot(context, script, virtualRootNode);
             }
             return "";
         }
@@ -159,7 +159,7 @@ public class WebViewInjector {
                     }
                 });
 
-                ScriptEnvironmen.executeShell(context, dataOutputStream, script, params, null, null);
+                ScriptEnvironment.executeShell(context, dataOutputStream, script, params, null, null);
                 return true;
             } else {
                 return false;

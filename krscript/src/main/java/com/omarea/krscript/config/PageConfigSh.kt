@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import com.omarea.krscript.R
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.NodeInfoBase
 import com.omarea.krscript.model.PageNode
 import java.io.ByteArrayInputStream
@@ -28,7 +28,7 @@ class PageConfigSh(private var activity: Activity, private var pageConfigSh: Str
     fun execute(): ArrayList<NodeInfoBase>? {
         var items: ArrayList<NodeInfoBase>? = null
 
-        val result = ScriptEnvironmen.executeResultRoot(activity, pageConfigSh, parentConfig)?.trim()
+        val result = ScriptEnvironment.executeResultRoot(activity, pageConfigSh, parentConfig)?.trim()
         if (result != null) {
             if (result.endsWith(".xml")) {
                 items = PageConfigReader(activity, result, parentConfig?.pageConfigDir).readConfigXml()

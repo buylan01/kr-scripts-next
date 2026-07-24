@@ -19,8 +19,8 @@ class ShellExecutor {
     private var started = false
     private val sessionTag = "kr_" + UUID.randomUUID()
     private fun killProcess(context: Context?) {
-        ScriptEnvironmen.executeResultRoot(
-            context,
+        ScriptEnvironment.executeResultRoot(
+            context!!,
             "kill -s 1 `pgrep -f $sessionTag`",
             null
         )
@@ -38,7 +38,7 @@ class ShellExecutor {
             return null
         }
 
-        val process = ScriptEnvironmen.getRuntime()
+        val process = ScriptEnvironment.runtime
         if (process == null) {
             Toast.makeText(context, "未能启动命令行进程", Toast.LENGTH_SHORT).show()
             onExit?.run()
@@ -84,8 +84,8 @@ class ShellExecutor {
 
                 dataOutputStream.writeBytes("sleep 0.2;\n")
 
-                ScriptEnvironmen.executeShell(
-                    context,
+                ScriptEnvironment.executeShell(
+                    context!!,
                     dataOutputStream,
                     cmd,
                     params,

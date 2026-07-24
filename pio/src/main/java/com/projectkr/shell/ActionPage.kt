@@ -14,7 +14,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -24,7 +23,7 @@ import com.omarea.krscript.TryOpenActivity
 import com.omarea.krscript.config.IconPathAnalysis
 import com.omarea.krscript.config.PageConfigReader
 import com.omarea.krscript.config.PageConfigSh
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.*
 import com.omarea.krscript.shortcut.ActionShortcutManager
 import com.omarea.krscript.ui.ActionListFragment
@@ -48,7 +47,7 @@ class ActionPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // 如果应用还没启动，就直接打开了actionPage(通常是PIO的快捷方式)，先跳转到启动页面
-        if (!ScriptEnvironmen.isInited()) {
+        if (!ScriptEnvironment.isInitialed) {
             val initIntent = Intent(this.applicationContext, SplashActivity::class.java)
             initIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             initIntent.putExtras(this.intent)
@@ -409,7 +408,7 @@ class ActionPage : AppCompatActivity() {
             currentPageConfig.run {
                 if (beforeRead.isNotEmpty()) {
                     showDialog(getString(R.string.kr_page_before_load))
-                    ScriptEnvironmen.executeResultRoot(activity, beforeRead, this)
+                    ScriptEnvironment.executeResultRoot(activity, beforeRead, this)
                 }
 
                 showDialog(getString(R.string.kr_page_loading))
@@ -429,13 +428,13 @@ class ActionPage : AppCompatActivity() {
 
                 if (afterRead.isNotEmpty()) {
                     showDialog(getString(R.string.kr_page_after_load))
-                    ScriptEnvironmen.executeResultRoot(activity, afterRead, this)
+                    ScriptEnvironment.executeResultRoot(activity, afterRead, this)
                 }
 
                 if (!items.isNullOrEmpty()) {
                     if (loadSuccess.isNotEmpty()) {
                         showDialog(getString(R.string.kr_page_load_success))
-                        ScriptEnvironmen.executeResultRoot(activity, loadSuccess, this)
+                        ScriptEnvironment.executeResultRoot(activity, loadSuccess, this)
                     }
 
                     handler.post {
@@ -466,7 +465,7 @@ class ActionPage : AppCompatActivity() {
                 } else {
                     if (loadFail.isNotEmpty()) {
                         showDialog(getString(R.string.kr_page_load_fail))
-                        ScriptEnvironmen.executeResultRoot(activity, loadFail, this)
+                        ScriptEnvironment.executeResultRoot(activity, loadFail, this)
                         hideDialog()
                     }
 

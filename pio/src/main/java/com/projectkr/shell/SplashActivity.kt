@@ -12,7 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import com.omarea.common.shell.ShellExecutor
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.projectkr.shell.databinding.ActivitySplashBinding
 import com.projectkr.shell.permissions.CheckRootStatus
 import com.projectkr.shell.util.PermissionUtil.checkManageFile
@@ -32,7 +32,7 @@ class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (ScriptEnvironmen.isInited()) {
+        if (ScriptEnvironment.isInitialed) {
             if (isTaskRoot) {
                 gotoHome()
             }
@@ -143,7 +143,7 @@ class SplashActivity : ComponentActivity() {
                 if (process != null) {
                     val outputStream = DataOutputStream(process.outputStream)
 
-                    ScriptEnvironmen.executeShell(context, outputStream, config.beforeStartSh, params, null, "pio-splash")
+                    ScriptEnvironment.executeShell(context, outputStream, config.beforeStartSh, params, null, "pio-splash")
 
                     StreamReadThread(process.inputStream.bufferedReader(), updateLogViewHandler).start()
                     StreamReadThread(process.errorStream.bufferedReader(), updateLogViewHandler).start()

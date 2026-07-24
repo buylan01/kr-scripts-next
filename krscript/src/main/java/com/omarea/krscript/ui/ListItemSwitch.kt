@@ -1,13 +1,10 @@
 package com.omarea.krscript.ui
 
 import android.content.Context
-import android.widget.Switch
-import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.omarea.krscript.R
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.SwitchNode
-import java.util.Locale
 import java.util.Locale.getDefault
 
 class ListItemSwitch(
@@ -28,7 +25,7 @@ class ListItemSwitch(
         super.updateViewByShell()
 
         if (config.getState.isNotEmpty()) {
-            val shellResult = ScriptEnvironmen.executeResultRoot(context, config.getState, config)
+            val shellResult = ScriptEnvironment.executeResultRoot(context, config.getState, config)
             config.checked = shellResult == "1" || shellResult.lowercase(getDefault()) == "true"
         }
         checked = config.checked

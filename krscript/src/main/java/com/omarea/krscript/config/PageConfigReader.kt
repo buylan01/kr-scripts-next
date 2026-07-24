@@ -11,7 +11,7 @@ import android.util.Xml
 import android.widget.Toast
 import com.omarea.common.model.SelectItem
 import com.omarea.krscript.executor.ExtractAssets
-import com.omarea.krscript.executor.ScriptEnvironmen
+import com.omarea.krscript.executor.ScriptEnvironment
 import com.omarea.krscript.model.*
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
@@ -205,7 +205,7 @@ class PageConfigReader {
         if (virtualRootNode == null) {
             virtualRootNode = NodeInfoBase(pageConfigAbsPath)
         }
-        return ScriptEnvironmen.executeResultRoot(context, scriptIn, virtualRootNode)
+        return ScriptEnvironment.executeResultRoot(context, scriptIn, virtualRootNode)
     }
 
     /** Same as [executeResultRoot] but memoized by exact script text for this parse pass. */
