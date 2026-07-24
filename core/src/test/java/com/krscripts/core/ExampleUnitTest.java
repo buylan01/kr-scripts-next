@@ -1,4 +1,4 @@
-package com.omarea.krscript;
+package com.krscripts.core;
 
 import org.junit.Test;
 
