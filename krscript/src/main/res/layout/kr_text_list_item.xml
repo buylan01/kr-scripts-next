@@ -13,14 +13,14 @@
         android:id="@id/kr_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/textTitle" />
+        style="@style/TextAppearance.Material3.TitleSmall" />
 
     <TextView
         android:id="@id/kr_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        style="@style/textSmall"  />
+        style="@style/TextAppearance.Material3.BodySmall"  />
 
     <TextView
         android:id="@id/kr_summary"
@@ -28,11 +28,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="?android:colorAccent"
-        style="@style/textSmall" />
+        style="@style/TextAppearance.Material3.BodySmall" />
 
     <TextView
         android:id="@id/kr_rows"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/textSmall" />
+        style="@style/TextAppearance.Material3.BodySmall" />
 </LinearLayout>
