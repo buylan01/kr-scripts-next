@@ -7,19 +7,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/confirm_title"
-            style="@style/dialogTitle"
-            android:breakStrategy="simple"
-            android:text="Title" />
+            style="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:breakStrategy="simple" />
 
         <TextView
             android:id="@+id/confirm_message"
-            style="@style/dialogDesc"
-            android:breakStrategy="simple"
-            android:text="Message" />
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:breakStrategy="simple" />
 
         <FrameLayout
             android:id="@+id/confirm_custom_view"

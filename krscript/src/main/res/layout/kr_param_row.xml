@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/kr_param_title"
-        style="@style/textSmallTitle"
+        style="@style/TextAppearance.Material3.BodySmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawablePadding="4dp"
@@ -31,8 +31,8 @@
 
         <TextView
             android:id="@+id/kr_param_label"
-            style="@style/textTitle"
-            android:layout_width="80dp"
+            style="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="10dp"
@@ -40,6 +40,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:maxLines="2"
+            android:minWidth="80dp"
             android:textStyle="normal"
             app:drawableRightCompat="@drawable/kr_param_label" />
 
@@ -56,7 +57,8 @@
     <TextView
         android:id="@+id/kr_param_desc"
         android:paddingHorizontal="10dp"
-        style="@style/textSmall"
+        android:layout_marginTop="4dp"
+        style="@style/TextAppearance.Material3.BodySmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

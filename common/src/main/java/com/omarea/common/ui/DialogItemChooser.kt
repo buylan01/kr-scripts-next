@@ -39,10 +39,11 @@ class DialogItemChooser(
 
         // 全选功能
         val selectAll = view.findViewById<CompoundButton?>(R.id.select_all)
+        val selectAllGroup = view.findViewById<RelativeLayout>(R.id.select_all_block)
         if (selectAll != null) {
             if (multiple) {
                 val adapter = (absListView.adapter as AdapterItemChooser?)
-                selectAll.visibility = View.VISIBLE
+                selectAllGroup.visibility = View.VISIBLE
                 selectAll.isChecked = items.filter { it.selected }.size == items.size
                 selectAll.setOnClickListener {
                     adapter?.setSelectAllState((it as CompoundButton).isChecked)
@@ -55,7 +56,7 @@ class DialogItemChooser(
                     })
                 }
             } else {
-                selectAll.visibility = View.GONE
+                selectAllGroup.visibility = View.GONE
             }
         }
 

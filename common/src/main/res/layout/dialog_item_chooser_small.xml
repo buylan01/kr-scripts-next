@@ -24,7 +24,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            style="@style/dialogTitle"
+            style="@style/TextAppearance.Material3.TitleSmall"
             android:breakStrategy="simple"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            style="@style/dialogDesc"
+            style="@style/TextAppearance.Material3.BodySmall"
             android:breakStrategy="simple"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"

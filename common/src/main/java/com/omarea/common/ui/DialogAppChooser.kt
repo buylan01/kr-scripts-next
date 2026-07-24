@@ -10,6 +10,7 @@ import android.widget.AbsListView
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.Filterable
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.SearchView
 import com.omarea.common.R
 
@@ -37,10 +38,11 @@ class DialogAppChooser(
 
         // 全选功能
         val selectAll = view.findViewById<CompoundButton?>(R.id.select_all)
+        val selectAllGroup = view.findViewById<RelativeLayout>(R.id.select_all_block)
         if (selectAll != null) {
             if (multiple) {
                 val adapter = (absListView.adapter as AdapterAppChooser?)
-                selectAll.visibility = View.VISIBLE
+                selectAllGroup.visibility = View.VISIBLE
                 selectAll.isChecked = packages.filter { it.selected }.size == packages.size
                 selectAll.setOnClickListener {
                     adapter?.setSelectAllState((it as CompoundButton).isChecked)
@@ -53,10 +55,10 @@ class DialogAppChooser(
                     })
                 }
                 if (!allowAllSelect) {
-                    selectAll.visibility = View.GONE
+                    selectAllGroup.visibility = View.GONE
                 }
             } else {
-                selectAll.visibility = View.GONE
+                selectAllGroup.visibility = View.GONE
             }
         }
 

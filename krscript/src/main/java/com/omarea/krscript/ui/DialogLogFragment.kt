@@ -33,7 +33,6 @@ class DialogLogFragment : DialogFragment() {
     private lateinit var onExit: Runnable
     private lateinit var script: String
     private var params: HashMap<String, String>? = null
-    private var themeResId: Int = com.omarea.common.R.style.dialog_full_screen
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = KrDialogLogBinding.inflate(inflater, container, false)
@@ -65,7 +64,7 @@ class DialogLogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return Dialog(requireActivity(), themeResId)
+        return Dialog(requireActivity(), com.omarea.common.R.style.dialog_full_screen)
     }
 
     private fun openExecutor(nodeInfo: RunnableNode): ShellHandlerBase {
@@ -266,7 +265,6 @@ class DialogLogFragment : DialogFragment() {
             fragment.script = script
             fragment.params = params
             fragment.onDismissRunnable = onDismiss
-            fragment.themeResId = com.omarea.common.R.style.dialog_full_screen
 
             return fragment
         }

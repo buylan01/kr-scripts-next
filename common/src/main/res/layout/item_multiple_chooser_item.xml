@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:paddingStart="26dp"
+    android:paddingEnd="16dp"
     android:paddingVertical="8dp">
 
     <LinearLayout
@@ -19,7 +21,7 @@
             android:breakStrategy="simple"
             android:ellipsize="end"
             android:maxLines="2"
-            style="@style/textTitle" />
+            style="@style/TextAppearance.Material3.TitleSmall" />
         <TextView
             android:id="@+id/ItemDesc"
             android:layout_width="match_parent"
@@ -28,7 +30,7 @@
             android:breakStrategy="simple"
             android:ellipsize="end"
             android:maxLines="2"
-            style="@style/textSmall" />
+            style="@style/TextAppearance.Material3.BodySmall" />
     </LinearLayout>
 
     <CheckBox

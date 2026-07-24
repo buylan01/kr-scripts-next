@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:fitsSystemWindows="true">
 
     <ImageButton
         android:id="@+id/btn_hide"
@@ -34,14 +35,14 @@
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:paddingTop="0dp"
-            style="@style/dialogTitle" />
+            style="@style/TextAppearance.Material3.TitleSmall" />
 
         <TextView
             android:id="@+id/desc"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:paddingTop="0dp"
-            style="@style/dialogDesc" />
+            style="@style/TextAppearance.Material3.BodySmall" />
     </LinearLayout>
 
     <ScrollView
