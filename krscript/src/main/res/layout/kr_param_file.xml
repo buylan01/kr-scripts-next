@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
@@ -35,6 +36,7 @@
         android:layout_width="30dp"
         android:minHeight="40dp"
         android:layout_height="match_parent">
+
         <ImageButton
             android:clickable="false"
             android:layout_alignParentEnd="true"
@@ -43,9 +45,9 @@
             android:layout_height="20dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
-            android:background="@android:color/transparent"
+            android:background="@null"
             android:scaleType="centerInside"
             android:src="@drawable/baseline_folder_24"
-            android:tint="@android:color/darker_gray" />
+            app:tint="?colorAccent" />
     </RelativeLayout>
 </LinearLayout>

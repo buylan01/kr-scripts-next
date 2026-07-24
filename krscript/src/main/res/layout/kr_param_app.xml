@@ -47,6 +47,6 @@
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
             android:src="@drawable/baseline_android_24"
-            app:tint="@android:color/darker_gray" />
+            app:tint="?colorAccent" />
     </RelativeLayout>
 </LinearLayout>

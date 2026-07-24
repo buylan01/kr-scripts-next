@@ -1,13 +1,4 @@
 <resources>
-    <style name="SceneSeekbarIcon">
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:background">@null</item>
-        <item name="android:gravity">center</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:scaleType">centerInside</item>
-        <item name="android:tint">?colorAccent</item>
-    </style>
 
     <style name="textSmallTitle" parent="textTitle">
         <item name="android:textSize">11dp</item>

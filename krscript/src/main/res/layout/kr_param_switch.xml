@@ -7,11 +7,6 @@
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/kr_param_switch"
-        android:textStyle="normal"
-        android:textColor="?android:textColorPrimary"
-        android:alpha="0.8"
-        android:textSize="14dp"
-        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

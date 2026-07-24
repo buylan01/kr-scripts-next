@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
@@ -7,8 +8,12 @@
 
     <ImageButton
         android:id="@+id/kr_param_seekbar_minus"
-        style="@style/SceneSeekbarIcon"
-        android:src="@drawable/baseline_remove_circle_24" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="@null"
+        android:src="@drawable/baseline_remove_circle_24"
+        app:tint="?colorAccent" />
 
     <TextView
         android:id="@+id/kr_param_seekbar_value"
@@ -25,7 +30,11 @@
 
     <ImageButton
         android:id="@+id/kr_param_seekbar_plus"
-        style="@style/SceneSeekbarIcon"
-        android:src="@drawable/baseline_add_circle_24" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="@null"
+        android:src="@drawable/baseline_add_circle_24"
+        app:tint="?colorAccent" />
 
 </LinearLayout>
