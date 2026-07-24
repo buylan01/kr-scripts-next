@@ -15,8 +15,8 @@ import com.krscripts.common.shell.ShellExecutor
 import com.krscripts.core.executor.ScriptEnvironment
 import com.krscripts.app.databinding.ActivitySplashBinding
 import com.krscripts.app.permissions.CheckRootStatus
-import com.krscripts.app.util.PermissionUtil.checkManageFile
-import com.krscripts.app.util.PermissionUtil.showManageFileDialog
+import com.krscripts.core.util.PermissionUtil.checkManageFile
+import com.krscripts.core.util.PermissionUtil.showManageFileDialog
 import java.io.BufferedReader
 import java.io.DataOutputStream
 

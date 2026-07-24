@@ -38,8 +38,7 @@
 
                 downloadUrl="https://github.com/termux/termux-app/releases/download/v0.118.3/termux-app_v0.118.3+github-debug_sha256sums"
                 activity="$PACKAGE_NAME/com.krscripts.app.ActionPageOnline"
-                am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl
-                "$downloadUrl"
+                am start -a android.intent.action.MAIN -n "$activity" --es downloadUrl "$downloadUrl"
             </script>
         </action>
 

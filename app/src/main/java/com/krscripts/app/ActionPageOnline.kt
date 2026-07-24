@@ -28,18 +28,14 @@ import com.krscripts.core.WebViewInjector
 import com.krscripts.core.downloader.Downloader
 import com.krscripts.core.ui.ParamsFileChooserRender
 import com.krscripts.app.databinding.ActivityActionPageOnlineBinding
-import com.krscripts.app.util.PermissionUtil.checkManageFile
-import com.krscripts.app.util.PermissionUtil.showManageFileDialog
+import com.krscripts.core.util.PermissionUtil.checkManageFile
+import com.krscripts.core.util.PermissionUtil.showManageFileDialog
 import java.util.*
 
 class ActionPageOnline : AppCompatActivity() {
     private val progressBarDialog = ProgressBarDialog(this)
 
     private lateinit var binding: ActivityActionPageOnlineBinding
-
-    private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +102,7 @@ class ActionPageOnline : AppCompatActivity() {
 
                     if (!checkManageFile(this)) {
                         downloader.saveTaskStatus(taskAliasId, 0)
-                        showManageFileDialog(this, manageFileRequester, onSkip = { })
+                        showManageFileDialog(this)
                     } else {
                         val downloadId = downloader.download(url, null, null, taskAliasId)
                         if (downloadId != null) {
