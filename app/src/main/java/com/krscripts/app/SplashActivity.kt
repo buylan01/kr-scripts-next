@@ -74,9 +74,9 @@ class SplashActivity : ComponentActivity() {
 
     private suspend fun checkRootOrShizuku() {
         while (true) {
-            withContext(Dispatchers.IO) {
-                if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
-            }
+
+            if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
+
             if (permissionType == PermissionType.ROOT) {
                 return
             }

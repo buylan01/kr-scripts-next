@@ -40,8 +40,8 @@ object KeepShellPublic {
         }
     }
 
-    val defaultKeepShell = KeepShell(PermissionType.NONE)
-    val secondaryKeepShell = KeepShell(PermissionType.NONE)
+    val defaultKeepShell = KeepShell(PermissionType.ROOT)
+    val secondaryKeepShell = KeepShell(PermissionType.ROOT)
 
     fun getDefaultInstance(): KeepShell {
         return if (defaultKeepShell.isIdle || !secondaryKeepShell.isIdle) {

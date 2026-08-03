@@ -61,7 +61,7 @@ class KeepShell(
             if (permissionType == PermissionType.ROOT) {
                 tryExit()
             }
-            return  false
+            return false
         }
     }
 
