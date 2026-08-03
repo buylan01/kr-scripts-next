@@ -32,6 +32,8 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
     implementation(libs.material)
     implementation(project(":common"))
 }

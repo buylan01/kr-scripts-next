@@ -1,5 +1,8 @@
 [versions]
 agp = "9.3.1"
+#noinspection NewerVersionAvailable
+#do not update this(shizuku api)
+shizuku = "12.1.0"
 appcompat = "1.7.1"
 constraintlayout = "2.2.1"
 kotlin = "2.4.10"
@@ -8,11 +11,12 @@ material = "1.14.0"
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

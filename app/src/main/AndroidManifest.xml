@@ -18,6 +18,8 @@
     <!-- https://dev.mi.com/xiaomihyperos/documentation/detail?pId=1619 -->
     <uses-permission android:name="android.permission.GET_INSTALLED_APPS" />
 
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.api" />
+
     <application
         android:allowBackup="true"
         android:usesCleartextTraffic="true"
@@ -79,6 +81,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 
 </manifest>

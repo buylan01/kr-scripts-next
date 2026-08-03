@@ -11,7 +11,7 @@
     <string name="pop_started">启动完成！</string>
     <string name="pio_permission_checking">检查并获取必需权限…</string>
     <string name="error_root_title">权限警告</string>
-    <string name="error_root_message">未能获得ROOT授权，如果你的手机已经ROOT，请在管理器中为本应用授权</string>
+    <string name="error_root_message">未能获得 ROOT 或 ADB 授权，如果你的手机已经ROOT，请在管理器中为本应用授权，或尝试使用 Shizuku</string>
     <string name="title_activity_file_selector">请选择文件</string>
     <string name="title_activity_folder_selector">请长按选择目录</string>
     <string name="resource_reference_desc">通过输出带有指向资源地址的字符串引用资源</string>
