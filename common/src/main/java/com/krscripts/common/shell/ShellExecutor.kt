@@ -1,5 +1,8 @@
 package com.krscripts.common.shell
 
+import com.krscripts.common.util.PermissionType
+import rikka.shizuku.Shizuku
+
 object ShellExecutor {
     private var extraEnvPath: String? = ""
     private var defaultEnvPath = ""
@@ -50,6 +53,24 @@ object ShellExecutor {
             outputStream.flush()
         }
         return process
+    }
+
+    private fun getShizukuProcess(envPath: String?): Process {
+        val process = Shizuku.newProcess(arrayOf("sh"), null, null)
+        if (envPath != null) {
+            val outputStream = process.outputStream
+            outputStream.write("export $envPath\n".toByteArray())
+            outputStream.flush()
+        }
+        return process
+    }
+
+    fun getRuntime(permissionType: PermissionType): Process {
+        return when(permissionType) {
+            PermissionType.ROOT -> superUserRuntime
+            PermissionType.ADB_ROOT -> getShizukuProcess(envPath)
+            PermissionType.NONE -> runtime
+        }
     }
 
     val superUserRuntime: Process

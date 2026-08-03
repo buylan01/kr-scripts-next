@@ -30,6 +30,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 }

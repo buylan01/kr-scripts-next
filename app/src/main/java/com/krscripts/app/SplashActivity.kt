@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
@@ -15,8 +16,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.app.databinding.ActivitySplashBinding
 import com.krscripts.common.shell.KeepShellPublic
-import com.krscripts.common.shell.ShellExecutor
+import com.krscripts.common.shell.ShellExecutor.getRuntime
 import com.krscripts.common.ui.DialogHelper
+import com.krscripts.common.util.PermissionType
 import com.krscripts.core.executor.ScriptEnvironment
 import com.krscripts.core.util.PermissionUtil.checkAccessFiles
 import com.krscripts.core.util.PermissionUtil.requestAccessFilesDialog
@@ -25,6 +27,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
+import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import java.io.DataOutputStream
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -32,9 +36,13 @@ import kotlin.coroutines.resume
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
+    companion object {
+        const val REQUEST_CODE_SHIZUKU: Int = 1360
+    }
+
     lateinit var binding: ActivitySplashBinding
     private var logs = ArrayList<String>()
-    private var isRoot: Boolean? = null
+    private var permissionType = PermissionType.NONE
     private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         checkFileManage { startToFinish() }
     }
@@ -59,12 +67,73 @@ class SplashActivity : ComponentActivity() {
     private fun checkPermissions() {
         binding.startStateText.text = getString(R.string.pio_permission_checking)
         lifecycleScope.launch {
-            checkRoot {
-                withContext(Dispatchers.Main) {
-                    checkFileManage {
-                        startToFinish()
-                    }
+            checkRootOrShizuku()
+
+            withContext(Dispatchers.Main) {
+                checkFileManage {
+                    startToFinish()
                 }
+            }
+        }
+    }
+
+    private suspend fun checkRootOrShizuku() {
+        while (true) {
+            withContext(Dispatchers.IO) {
+                if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
+            }
+            if (permissionType == PermissionType.ROOT) {
+                return
+            }
+
+            if (Shizuku.pingBinder()) {
+                val shizukuGranted = ensureShizukuPermission()
+                if (shizukuGranted) {
+                    permissionType = PermissionType.ADB_ROOT
+                    return
+                }
+            }
+
+            val shouldRetry = suspendCancellableCoroutine { continuation ->
+                val dialog = requestRoot(
+                    this@SplashActivity,
+                    onRetry = {
+                        continuation.resume(true)
+                    },
+                    onSkip = {
+                        continuation.resume(false)
+                    }
+                )
+                continuation.invokeOnCancellation {
+                    dialog?.dismiss()
+                }
+            }
+            if (!shouldRetry) {
+                return
+            }
+        }
+    }
+
+    private suspend fun ensureShizukuPermission(): Boolean {
+        if (Shizuku.isPreV11()) {
+            return false
+        }
+        if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            val listener = object : OnRequestPermissionResultListener {
+                override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
+                    Shizuku.removeRequestPermissionResultListener(this)
+                    continuation.resume(grantResult == PackageManager.PERMISSION_GRANTED)
+                }
+            }
+            Shizuku.addRequestPermissionResultListener(listener)
+            Shizuku.requestPermission(REQUEST_CODE_SHIZUKU)
+
+            continuation.invokeOnCancellation {
+                Shizuku.removeRequestPermissionResultListener(listener)
             }
         }
     }
@@ -76,40 +145,6 @@ class SplashActivity : ComponentActivity() {
             }
         } else {
             next()
-        }
-    }
-
-    private suspend fun checkRoot(next: suspend () -> Unit) {
-        withContext(Dispatchers.IO) {
-            while (true) {
-                isRoot = KeepShellPublic.checkRoot()
-                if (isRoot == true) {
-                    next()
-                    return@withContext
-                } else {
-                    val shouldRetry = suspendCancellableCoroutine { continuation ->
-                        lifecycleScope.launch {
-                            val dialog = requestRoot(
-                                this@SplashActivity,
-                                onRetry = {
-                                    continuation.resume(true)
-                                },
-                                onSkip = {
-                                    continuation.resume(false)
-                                }
-                            )
-                            continuation.invokeOnCancellation {
-                                dialog?.dismiss()
-                            }
-                        }
-                    }
-
-                    if (!shouldRetry) {
-                        next()
-                        return@withContext
-                    }
-                }
-            }
         }
     }
 
@@ -164,7 +199,7 @@ class SplashActivity : ComponentActivity() {
         withContext(Dispatchers.IO) {
             var process: Process? = null
             try {
-                process = if (isRoot == true) ShellExecutor.superUserRuntime else ShellExecutor.runtime
+                process = getRuntime(permissionType)
 
                 DataOutputStream(process.outputStream).use { outputStream ->
                     ScriptEnvironment.executeShell(
