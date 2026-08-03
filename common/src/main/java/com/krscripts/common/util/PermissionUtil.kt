@@ -15,9 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.common.R
 import com.krscripts.common.shell.KeepShellPublic
 import com.krscripts.common.ui.DialogHelper
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 import kotlin.coroutines.resume
@@ -103,13 +101,12 @@ object PermissionUtil {
         }
     }
 
-    suspend fun getPermissionType(): PermissionType {
+    fun getPermissionType(): PermissionType {
 
         var permissionType = PermissionType.NONE
 
-        withContext(Dispatchers.IO) {
-            if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
-        }
+        if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
+
         if (permissionType == PermissionType.ROOT) {
             return permissionType
         }

@@ -17,10 +17,6 @@ import com.krscripts.common.util.PermissionUtil.getPermissionType
 import com.krscripts.core.FileOwner
 import com.krscripts.core.model.NodeInfoBase
 import com.krscripts.core.util.MD5
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.io.DataOutputStream
 import java.io.File
 import java.nio.charset.Charset
@@ -61,17 +57,13 @@ object ScriptEnvironment {
      */
     fun init(context: Context, executor: String, toolkitDir: String?): Boolean {
 
-        val scope = CoroutineScope(Job() + Dispatchers.Main)
-
         if (isInitialed) {
             return true
         }
 
         shellTranslation = ShellTranslation(context.applicationContext)
 
-        scope.launch {
-            permissionType = getPermissionType()
-        }
+        permissionType = getPermissionType()
 
         try {
             if (!toolkitDir.isNullOrEmpty()) {
