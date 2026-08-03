@@ -9,17 +9,27 @@ import com.krscripts.common.shared.FileWrite.getPrivateFilePath
 import com.krscripts.common.shared.FileWrite.writePrivateFile
 import com.krscripts.common.shared.FileWrite.writePrivateShellFile
 import com.krscripts.common.shell.KeepShell
-import com.krscripts.common.shell.KeepShellPublic.checkRoot
 import com.krscripts.common.shell.KeepShellPublic.getDefaultInstance
+import com.krscripts.common.shell.ShellExecutor.getRuntime
 import com.krscripts.common.shell.ShellTranslation
+import com.krscripts.common.util.PermissionType
+import com.krscripts.common.util.PermissionUtil.getPermissionType
 import com.krscripts.core.FileOwner
 import com.krscripts.core.model.NodeInfoBase
 import com.krscripts.core.util.MD5
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.DataOutputStream
 import java.io.File
 import java.nio.charset.Charset
 
 object ScriptEnvironment {
+    val runtime: Process
+        get() {
+            return getRuntime(permissionType ?: PermissionType.NONE)
+        }
     private const val ASSETS_FILE = "file:///android_asset/"
     var isInitialed: Boolean = false
         private set
@@ -27,7 +37,7 @@ object ScriptEnvironment {
 
     // 此目录将添加到PATH尾部，作为应用程序提供的拓展程序库目录，如有需要则需要在初始化executor.sh之前为该变量赋值
     private var TOOLKIT_DIR: String? = ""
-    private var rooted = false
+    private var permissionType: PermissionType? = null
     private var privateShell: KeepShell? = null
     private var shellTranslation: ShellTranslation? = null
     private val PLACEHOLDER_REGEX = Regex("""\{([^}]+)\}""")
@@ -50,12 +60,18 @@ object ScriptEnvironment {
      * @return 是否初始化成功
      */
     fun init(context: Context, executor: String, toolkitDir: String?): Boolean {
+
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+
         if (isInitialed) {
             return true
         }
 
         shellTranslation = ShellTranslation(context.applicationContext)
-        rooted = checkRoot()
+
+        scope.launch {
+            permissionType = getPermissionType()
+        }
 
         try {
             if (!toolkitDir.isNullOrEmpty()) {
@@ -87,7 +103,13 @@ object ScriptEnvironment {
                 putString("toolkitDir", toolkitDir)
             }
 
-            privateShell = if (rooted) getDefaultInstance() else KeepShell(false)
+            privateShell =
+                if (permissionType == PermissionType.ROOT) {
+                    getDefaultInstance()
+                }
+                else {
+                    KeepShell(permissionType ?: PermissionType.NONE)
+                }
 
             return isInitialed
         } catch (_: Exception) {
@@ -172,7 +194,7 @@ object ScriptEnvironment {
             }
             appendLine()
             appendLine()
-            append("${if (rooted) "" else "sh " }$environmentPath \"$path\"")
+            append("${if (permissionType != PermissionType.NONE) "" else "sh " }$environmentPath \"$path\"")
         }
 
         val cmdResult = privateShell!!.doCmdSync(script)
@@ -221,7 +243,7 @@ object ScriptEnvironment {
 
         params["ANDROID_SDK"] = "" + Build.VERSION.SDK_INT
         // params.put("ROOT_PERMISSION", rooted ? "granted" : "denied");
-        params["ROOT_PERMISSION"] = if (rooted) "true" else "false"
+        params["ROOT_PERMISSION"] = if (permissionType == PermissionType.ROOT) "true" else "false"
         params["SDCARD_PATH"] = Environment.getExternalStorageDirectory().absolutePath
         val busyboxPath = getPrivateFilePath(context, "busybox")
         if (File(busyboxPath).exists()) {
@@ -287,21 +309,8 @@ object ScriptEnvironment {
         }
 
 
-        return "${if (rooted) "" else "sh "}$environmentPath \"$cachePath\" \"$tag\""
+        return "${if (permissionType != PermissionType.NONE) "" else "sh "}$environmentPath \"$cachePath\" \"$tag\""
     }
-
-    val runtime: Process?
-        get() {
-            return try {
-                if (rooted) {
-                    Runtime.getRuntime().exec("su")
-                } else {
-                    Runtime.getRuntime().exec("sh")
-                }
-            } catch (_: Exception) {
-                null
-            }
-        }
 
     /**
      * 使用执行器运行脚本

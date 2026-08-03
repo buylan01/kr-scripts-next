@@ -7,4 +7,6 @@
     <string name="item_chooser_search_hint">搜索可选择项</string>
     <string name="select_all">全选</string>
     <string name="help_title">说明提示</string>
+    <string name="btn_exit">退出</string>
+    <string name="btn_skip">跳过</string>
 </resources>
