@@ -10,13 +10,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.common.shell.KeepShellPublic.checkRoot
 import com.krscripts.common.shell.ShellExecutor
 import com.krscripts.common.ui.DialogHelper
+import com.krscripts.common.util.PermissionUtil
 import com.krscripts.core.downloader.Downloader
 import com.krscripts.core.executor.ExtractAssets
 import com.krscripts.core.executor.ScriptEnvironment
 import com.krscripts.core.executor.ScriptEnvironment.executeResultRoot
 import com.krscripts.core.model.NodeInfoBase
 import com.krscripts.core.model.ShellHandlerBase
-import com.krscripts.core.util.PermissionUtil
 import org.json.JSONObject
 import java.io.DataOutputStream
 import java.io.IOException

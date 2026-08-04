@@ -1,9 +1,10 @@
-package com.krscripts.core.util
+package com.krscripts.common.util
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -11,11 +12,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.krscripts.common.R
+import com.krscripts.common.shell.KeepShellPublic
 import com.krscripts.common.ui.DialogHelper
-import com.krscripts.core.R
-import kotlin.system.exitProcess
+import kotlinx.coroutines.suspendCancellableCoroutine
+import rikka.shizuku.Shizuku
+import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
+import kotlin.coroutines.resume
 
 object PermissionUtil {
+
+    const val REQUEST_CODE_SHIZUKU: Int = 1360
 
     fun requestAccessFilesDialog(
         context: Activity,
@@ -68,5 +75,49 @@ object PermissionUtil {
             context,
             permission
         ) == PermissionChecker.PERMISSION_GRANTED
+    }
+
+    suspend fun ensureShizukuPermission(): Boolean {
+        if (Shizuku.isPreV11()) {
+            return false
+        }
+        if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            val listener = object : OnRequestPermissionResultListener {
+                override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
+                    Shizuku.removeRequestPermissionResultListener(this)
+                    continuation.resume(grantResult == PackageManager.PERMISSION_GRANTED)
+                }
+            }
+            Shizuku.addRequestPermissionResultListener(listener)
+            Shizuku.requestPermission(REQUEST_CODE_SHIZUKU)
+
+            continuation.invokeOnCancellation {
+                Shizuku.removeRequestPermissionResultListener(listener)
+            }
+        }
+    }
+
+    fun getPermissionType(): PermissionType {
+
+        var permissionType = PermissionType.NONE
+
+        if (KeepShellPublic.checkRoot()) permissionType = PermissionType.ROOT
+
+        if (permissionType == PermissionType.ROOT) {
+            return permissionType
+        }
+
+        if (Shizuku.pingBinder()) {
+            if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                permissionType = PermissionType.ADB_ROOT
+                return permissionType
+            }
+        }
+
+        return PermissionType.NONE
     }
 }

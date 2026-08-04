@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.krscripts.common.ui.ProgressBarDialog
 import com.krscripts.app.databinding.ActivityFileSelectorBinding
 import com.krscripts.app.ui.AdapterFileSelector
-import com.krscripts.core.util.PermissionUtil.checkAccessFiles
-import com.krscripts.core.util.PermissionUtil.requestAccessFilesDialog
+import com.krscripts.common.ui.ProgressBarDialog
+import com.krscripts.common.util.PermissionUtil.checkAccessFiles
+import com.krscripts.common.util.PermissionUtil.requestAccessFilesDialog
 import java.io.File
 
 class ActivityFileSelector : AppCompatActivity() {

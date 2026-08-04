@@ -1,6 +1,8 @@
 package com.krscripts.common.shell
 
 import android.util.Log
+import com.krscripts.common.shell.ShellExecutor.getRuntime
+import com.krscripts.common.util.PermissionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
@@ -12,8 +14,11 @@ import java.util.concurrent.locks.ReentrantLock
 
 /**
  * Created by Hello on 2018/01/23.
+ * Edited by buylan on 2026/08/03.
  */
-class KeepShell(private var rootMode: Boolean = true) {
+class KeepShell(
+    private var permissionType: PermissionType
+) {
     private var p: Process? = null
     private var out: OutputStream? = null
     private var reader: BufferedReader? = null
@@ -42,18 +47,21 @@ class KeepShell(private var rootMode: Boolean = true) {
 
     fun checkRoot(): Boolean {
         val r = doCmdSync(checkRootState).lowercase(Locale.getDefault())
-        return if (r == "error" || r.contains("permission denied") || r.contains("not allowed") || r == "not found") {
-            if (rootMode) {
-                tryExit()
-            }
+        val isRoot = if (r == "error" || r.contains("permission denied") || r.contains("not allowed") || r == "not found") {
             false
         } else if (r.contains("success")) {
             true
         } else {
-            if (rootMode) {
+            false
+        }
+
+        if (isRoot) {
+            return true
+        } else {
+            if (permissionType == PermissionType.ROOT) {
                 tryExit()
             }
-            false
+            return false
         }
     }
 
@@ -63,16 +71,9 @@ class KeepShell(private var rootMode: Boolean = true) {
             try {
                 mLock.lockInterruptibly()
                 enterLockTime = System.currentTimeMillis()
-                p =
-                    if (rootMode) ShellExecutor.superUserRuntime else ShellExecutor.runtime
+                p = getRuntime(permissionType)
                 out = p!!.outputStream
                 reader = p!!.inputStream.bufferedReader()
-                if (rootMode) {
-                    out?.run {
-                        write(checkRootState.toByteArray(Charset.defaultCharset()))
-                        flush()
-                    }
-                }
                 Thread {
                     try {
                         val errorReader =

@@ -1,12 +1,14 @@
 package com.krscripts.common.shell
 
+import com.krscripts.common.util.PermissionType
+
 /**
  * Created by Hello on 2018/01/23.
  */
 object KeepShellPublic {
     private val keepShells = HashMap<String, KeepShell>()
 
-    fun getInstance(key: String, rootMode: Boolean): KeepShell {
+    fun getInstance(key: String, rootMode: PermissionType): KeepShell {
         synchronized(keepShells) {
             if (!keepShells.containsKey(key)) {
                 keepShells.put(key, KeepShell(rootMode))
@@ -38,8 +40,8 @@ object KeepShellPublic {
         }
     }
 
-    public val defaultKeepShell = KeepShell()
-    public val secondaryKeepShell = KeepShell()
+    val defaultKeepShell = KeepShell(PermissionType.ROOT)
+    val secondaryKeepShell = KeepShell(PermissionType.ROOT)
 
     fun getDefaultInstance(): KeepShell {
         return if (defaultKeepShell.isIdle || !secondaryKeepShell.isIdle) {
