@@ -66,7 +66,7 @@ object PermissionUtil {
         }
     }
 
-    private fun checkPermission(context: Context, permission: String): Boolean {
+    fun checkPermission(context: Context, permission: String): Boolean {
         return PermissionChecker.checkSelfPermission(
             context,
             permission

@@ -1,5 +1,7 @@
 package com.krscripts.core.shell
 
+import android.Manifest
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,11 +10,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.krscripts.core.R
 import com.krscripts.core.executor.ShellExecutor
 import com.krscripts.core.model.RunnableNode
 import com.krscripts.core.ui.dialog.DialogHelper
+import com.krscripts.core.util.PermissionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -173,6 +177,21 @@ class ShellBackground {
         private var notificationCounter = 0
 
         fun startTask(context: Context, script: String, params: HashMap<String, String>?, nodeInfo: RunnableNode, onExit: Runnable, onDismiss: Runnable) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasPermission = PermissionUtil.checkPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                if (!hasPermission) {
+                    ActivityCompat.requestPermissions(
+                        context as Activity,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        0x12
+                    )
+                }
+            }
+
             val applicationContext = context.applicationContext
             notificationCounter += 1
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
