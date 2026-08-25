@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/top_bar"
@@ -29,21 +28,13 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_param_row"
             android:padding="16dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
-    <RelativeLayout
+    <ScrollView
         android:id="@+id/kr_params_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_bar"
-        android:paddingTop="16dp"
-        android:paddingHorizontal="10dp">
-
-        <ScrollView
-            android:id="@+id/kr_params_center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="16dp" />
-    </RelativeLayout>
-</RelativeLayout>
+        android:paddingHorizontal="24dp"
+        android:paddingTop="16dp" />
+</LinearLayout>

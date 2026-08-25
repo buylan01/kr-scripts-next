@@ -403,7 +403,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                                 if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small,
                                 null
                             )
-                            val center = dialogView.findViewById<ViewGroup>(R.id.kr_params_center)
+                            val center = dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
                             center.removeAllViews()
                             center.addView(linearLayout)
 

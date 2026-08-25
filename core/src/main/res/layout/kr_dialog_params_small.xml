@@ -24,7 +24,7 @@
         android:padding="16dp" />
 
     <FrameLayout
-        android:id="@+id/kr_params_center"
+        android:id="@+id/kr_params_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
