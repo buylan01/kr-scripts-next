@@ -59,4 +59,7 @@
     <string name="kr_stop">停止</string>
     <string name="execute_wait">正在执行，请稍等…</string>
     <string name="item_chooser_search_hint">搜索</string>
+
+    <string name="kr_hint_text">请输入文本</string>
+    <string name="kr_hint_number">请输入数字</string>
 </resources>

@@ -59,10 +59,12 @@ class EditTextRender(
             setText(actionParamInfo.valueFromShell ?: actionParamInfo.value)
 
             // hint
-            if (actionParamInfo.placeholder.isNotEmpty()) {
-                hint = actionParamInfo.placeholder
+            hint = if (actionParamInfo.placeholder.isNotEmpty()) {
+                actionParamInfo.placeholder
             } else if (isLimitNumber) {
-                hint = "${actionParamInfo.min} ~ ${actionParamInfo.max}"
+                "${actionParamInfo.min} ~ ${actionParamInfo.max}"
+            } else {
+                context.getString(if (isNumber) R.string.kr_hint_number else R.string.kr_hint_text)
             }
 
             // fliter input

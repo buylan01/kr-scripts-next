@@ -78,7 +78,7 @@
 
         <action>
             <title>要求非空参数</title>
-            <param name="input_text" title="文本框" required="1" placeholder="请输入文本" />
+            <param name="input_text" title="文本框" required="1" />
             <set>
                 echo '文本为：' $input_text
             </set>
@@ -86,8 +86,23 @@
         <action warning="不许输入喵">
             <title>描述和警告</title>
             <desc>描述和警告将内嵌在弹窗中</desc>
-            <param name="input_text" placeholder="请输入文本"/>
+            <param name="input_text" />
             <set>echo 可恶</set>
+        </action>
+    </group>
+
+    <group>
+        <action>
+            <title>大杂烩</title>
+            <desc>以全屏弹窗显示</desc>
+            <param name="a" label="选框" type="bool" />
+            <param name="b" label="开关" type="switch" />
+            <param name="c" label="文本" />
+            <param name="d" label="文本" />
+            <param name="e" label="数字" type="int" />
+            <param name="f" label="数字" type="int" />
+            <param name="g" max="10" min="1" type="seekbar" />
+            <set>echo 'O.o'</set>
         </action>
     </group>
 

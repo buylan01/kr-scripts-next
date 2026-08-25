@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
-import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
@@ -87,7 +86,7 @@ class DialogLogFragment : DialogFragment() {
                     is ShellEvent.Started -> {
                         shellOnStop = event.forceStop
                         shellRunning = true
-                        binding.btnExit.isVisible = interruptable && event.forceStop != null
+                        binding.btnExit.isEnabled = interruptable && event.forceStop != null
                     }
                     is ShellEvent.Log -> {
                         if (event.type == ShellLogType.OUTPUT_ERROR) { shellHasError = true }
@@ -105,7 +104,8 @@ class DialogLogFragment : DialogFragment() {
                             outputView.append(str)
                         }
 
-                        binding.btnExit.visibility = View.VISIBLE
+                        binding.btnExit.isEnabled = true
+                        binding.btnHide.isEnabled = true
 
                         binding.actionProgress.let { view ->
                             val initialHeight = view.trackThickness
@@ -197,8 +197,8 @@ class DialogLogFragment : DialogFragment() {
         }
 
         val interruptable = nodeInfo.interruptable
-        binding.btnHide.isVisible = interruptable && !nodeInfo.reloadPage
-        binding.btnExit.isVisible = interruptable
+        binding.btnHide.isEnabled = interruptable && !nodeInfo.reloadPage
+        binding.btnExit.isEnabled = interruptable
 
 
         if (nodeInfo.title.isNotEmpty()) {

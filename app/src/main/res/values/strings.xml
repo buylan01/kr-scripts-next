@@ -20,4 +20,6 @@
     <string name="app_version">v%1$s</string>
     <string name="app_author"><![CDATA[应用作者: <名称>]]></string>
     <string name="title_about">关于</string>
+    <string name="kr_download_source">下载来源</string>
+    <string name="kr_download_location">保存位置</string>
 </resources>

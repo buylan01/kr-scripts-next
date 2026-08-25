@@ -3,8 +3,8 @@ package com.krscripts.core.ui.param
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import com.krscripts.core.R
 import com.krscripts.core.model.ActionParamInfo
@@ -35,8 +35,8 @@ class SliderRender(
             value = initialValue
             tag = actionParamInfo.name
 
-            val minusBtn = layout.findViewById<ImageButton>(R.id.kr_param_seekbar_minus)
-            val plusBtn = layout.findViewById<ImageButton>(R.id.kr_param_seekbar_plus)
+            val minusBtn = layout.findViewById<MaterialButton>(R.id.kr_param_seekbar_minus)
+            val plusBtn = layout.findViewById<MaterialButton>(R.id.kr_param_seekbar_plus)
             val textView = layout.findViewById<TextView>(R.id.kr_param_seekbar_value)
             textView.text = formatValue(initialValue)
 

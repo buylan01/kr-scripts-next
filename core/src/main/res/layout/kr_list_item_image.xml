@@ -31,20 +31,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
-    <ImageButton
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/baseline_refresh_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        style="@style/Widget.AppCompat.ActionButton"
-        app:tint="?colorPrimary"
-        android:alpha="0.6"/>
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"

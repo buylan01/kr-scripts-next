@@ -37,15 +37,15 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_hide"
-            style="@style/Widget.AppCompat.ActionButton"
+            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
-            android:scaleType="centerInside"
-            android:src="@drawable/baseline_keyboard_arrow_down_24"
-            app:tint="?colorOnSurface" />
+            android:minHeight="0dp"
+            android:paddingVertical="4dp"
+            app:icon="@drawable/baseline_keyboard_arrow_down_24" />
     </LinearLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -53,7 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
-        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:indeterminate="true"
         android:max="100"
         android:progress="0"
@@ -67,7 +68,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/krscript_item_bg">
 
