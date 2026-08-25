@@ -10,6 +10,7 @@ import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.core.R
 import com.krscripts.core.ui.dialog.DialogHelper
@@ -26,7 +27,10 @@ object PermissionUtil {
             .setMessage("请授予文件管理权限")
             .setPositiveButton("授予") { _, _ ->
                 if (Build.VERSION.SDK_INT >= 30) {
-                    val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                    val intent = Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        "package:${context.packageName}".toUri()
+                    )
                     if (manageFileRequester != null)
                         manageFileRequester.launch(intent)
                     else {
