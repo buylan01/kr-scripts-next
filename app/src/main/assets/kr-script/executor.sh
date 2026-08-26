@@ -1,15 +1,12 @@
 #!/system/bin/sh
 
-# 参数说明
-# $1 脚本路径
-
-# 将要执行的具体脚本，执行 executor.sh 时传入，如 ./executor.sh test.sh
+# 脚本路径，$1 为传入的第一个参数
 script_path="$1"
 
-# 全局变量 - 会由脚本引擎为其赋值
-# 框架并不需要这些变量，如果你不需要可以将其删除
-# 如有需要，你也可以增加一些自己的变量定义
-# 但这个文件每次运行脚本都会被执行，不建议写太复杂的过程
+# 全局变量，大部分可运行脚本的地方都能获取到
+# 删除未被使用的变量不会影响脚本运行
+# 非必要请勿在此文件编写耗时操作
+# {} 中的内容会被框架动态替换，但里面只能写下面有的
 export EXECUTOR_PATH="{EXECUTOR_PATH}"
 export START_DIR="{START_DIR}"
 export TEMP_DIR="{TEMP_DIR}"
@@ -26,19 +23,13 @@ export TOOLKIT="{TOOLKIT}"
 export TMPDIR="$TEMP_DIR"
 export PREF_PATH="$START_DIR/pref"
 
-# 添加toolkit添加为应用程序目录
+# 添加工具目录到环境，工具目录的可执行文件优先
 if [ ! "$TOOLKIT" = "" ]; then
-    PATH="$PATH:$TOOLKIT"
+    PATH="$TOOLKIT:$PATH"
 fi
 
-# 安装busybox完整功能
-if [ -f "$TOOLKIT/install_busybox.sh" ] && [ ! -f busybox_installed ]; then
-    sh "$TOOLKIT/install_busybox.sh"
-fi
-
-# 判断是否有指定执行目录，跳转到起始目录
-if [ "$START_DIR" != "" ] && [ -d "$START_DIR" ]
-then
+# 跳转到起始目录 (如果有)
+if [ "$START_DIR" != "" ] && [ -d "$START_DIR" ]; then
     cd "$START_DIR" || exit 1
 fi
 

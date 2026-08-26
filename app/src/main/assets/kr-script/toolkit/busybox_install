@@ -1,0 +1,9 @@
+#!/system/bin/sh
+
+cd "$TOOLKIT" || exit 1
+
+if [ ! -f "./busybox_installed" ]; then
+    echo "busybox not found, installing..."
+    ./busybox --install -s ./
+    echo '' > "./busybox_installed"
+fi
