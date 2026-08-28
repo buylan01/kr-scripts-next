@@ -15,6 +15,7 @@ import com.krscripts.app.util.chooseFilePath
 import com.krscripts.core.R
 import com.krscripts.core.TryOpenActivity
 import com.krscripts.core.executor.ScriptEnvironment
+import com.krscripts.core.model.ActionAfterExecution
 import com.krscripts.core.model.AutoRunTask
 import com.krscripts.core.model.ClickableNode
 import com.krscripts.core.model.KrScriptActionHandler
@@ -140,7 +141,7 @@ open class ActionPage : KrActivity() {
 
     private var actionShortClickHandler = object : KrScriptActionHandler {
         override fun onActionCompleted(runnableNode: RunnableNode) {
-            if (runnableNode.autoFinish) {
+            if (runnableNode.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
                 finishAndRemoveTask()
             } else if (runnableNode.reloadPage) {
                 loadPageConfig()

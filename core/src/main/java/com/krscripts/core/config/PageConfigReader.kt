@@ -11,6 +11,7 @@ import android.util.Xml
 import android.widget.Toast
 import com.krscripts.core.executor.AssetsExtractor
 import com.krscripts.core.executor.ScriptEnvironment
+import com.krscripts.core.model.ActionAfterExecution
 import com.krscripts.core.model.ActionNode
 import com.krscripts.core.model.ActionParamInfo
 import com.krscripts.core.model.ClickableNode
@@ -313,7 +314,7 @@ class PageConfigReader {
             "title" -> action.title = parser.nextText()
             "desc" -> descNode(action, parser)
             "summary" -> summaryNode(action, parser)
-            "script", "set", "setstate" -> action.setState = parser.nextText().trim()
+            "script", "set", "setstate" -> action.script = parser.nextText().trim()
             "lock", "lock-state" -> action.lockShell = parser.nextText()
             "param" -> {
                 if (actionParamInfos == null) actionParamInfos = ArrayList()
@@ -375,7 +376,6 @@ class PageConfigReader {
     }
 
     private fun tagEndInAction(action: ActionNode) {
-        if (action.setState == null) action.setState = ""
         action.params = actionParamInfos
         actionParamInfos = null
         actionParamInfo = null
@@ -448,19 +448,19 @@ class PageConfigReader {
             "title" -> switchNode.title = parser.nextText()
             "desc" -> descNode(switchNode, parser)
             "summary" -> summaryNode(switchNode, parser)
-            "get", "getstate" -> switchNode.getState = parser.nextText()
-            "set", "setstate" -> switchNode.setState = parser.nextText()
+            "get", "getstate" -> switchNode.getScript = parser.nextText()
+            "set", "setstate" -> switchNode.setScript = parser.nextText()
             "resource" -> resourceNode(parser)
             "lock", "lock-state" -> switchNode.lockShell = parser.nextText()
         }
     }
 
     private fun tagEndInSwitch(switchNode: SwitchNode) {
-        val getState = switchNode.getState
-        val shellResult = if (getState.isEmpty()) "" else executeResultRootCached(getState)
-        switchNode.checked = shellResult != "error" &&
-                (shellResult == "1" || shellResult.lowercase(getDefault()) == "true")
-        if (switchNode.setState == null) switchNode.setState = ""
+        val getScript = switchNode.getScript
+        if (!getScript.isNullOrEmpty()) {
+            val shellResult = executeResultRootCached(getScript)
+            switchNode.checked = shellResult.lowercase() in setOf("1", "true")
+        }
     }
 
     private fun tagStartInPicker(pickerNode: PickerNode, parser: XmlPullParser) {
@@ -478,8 +478,8 @@ class PageConfigReader {
                 if (option.value == null) option.value = option.title
                 pickerNode.options!!.add(option)
             }
-            "getstate", "get" -> pickerNode.getState = parser.nextText()
-            "setstate", "set" -> pickerNode.setState = parser.nextText()
+            "getstate", "get" -> pickerNode.getScript = parser.nextText()
+            "setstate", "set" -> pickerNode.setScript = parser.nextText()
             "resource" -> resourceNode(parser)
             "lock", "lock-state" -> pickerNode.lockShell = parser.nextText()
         }
@@ -495,13 +495,10 @@ class PageConfigReader {
     }
 
     private fun tagEndInPicker(pickerNode: PickerNode) {
-        val getState = pickerNode.getState
-        if (getState == null) {
-            pickerNode.getState = ""
-        } else {
-            pickerNode.value = executeResultRootCached(getState)
+        val getScript = pickerNode.getScript
+        if (!getScript.isNullOrEmpty()) {
+            pickerNode.value = executeResultRootCached(getScript)
         }
-        if (pickerNode.setState == null) pickerNode.setState = ""
     }
 
     private fun textNode(
@@ -620,9 +617,14 @@ class PageConfigReader {
     ) {
         parser.attr("confirm")?.let { base.confirm = isTruthy(it) }
         parser.attrAny("warn", "warning")?.let { base.warning = it }
-        parser.attrAny("auto-off", "auto-close")
-            ?.let { base.autoOff = isTruthy(it, "auto-close", "auto-off") }
-        parser.attr("auto-finish")?.let { base.autoFinish = isTruthy(it, "auto-finish") }
+        parser.attrAny("auto-off", "auto-close")?.let {
+            val enabled = isTruthy(it, "auto-close", "auto-off")
+            if (enabled) base.afterExecution = ActionAfterExecution.HIDE
+        }
+        parser.attr("auto-finish")?.let {
+            val enabled = isTruthy(it, "auto-finish")
+            if (enabled) base.afterExecution = ActionAfterExecution.FINISH_ACTIVITY
+        }
         parser.attrAny("interruptible", "interruptable")?.let {
             base.interruptable = it.isEmpty() || isTruthy(it, "interruptable")
         }
@@ -633,7 +635,7 @@ class PageConfigReader {
             if (isTruthy(it, "reload-page", "reload", "page")) {
                 base.reloadPage = true
             } else if (it.isNotEmpty()) {
-                base.updateBlocks = it.split(",").map { s -> s.trim() }
+                base.reloadBlock = it.split(",").map { s -> s.trim() }
                     .dropLastWhile { s -> s.isEmpty() }.toTypedArray()
             }
         }

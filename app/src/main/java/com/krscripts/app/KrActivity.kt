@@ -14,6 +14,7 @@ import com.krscripts.core.R
 import com.krscripts.core.config.IconPathAnalysis
 import com.krscripts.core.config.PageConfigReader
 import com.krscripts.core.config.PageConfigSh
+import com.krscripts.core.model.ActionAfterExecution
 import com.krscripts.core.model.ConfigNode
 import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.PageMenuOption
@@ -77,11 +78,11 @@ open class KrActivity: AppCompatActivity() {
 
     protected open fun menuItemExecute(menuOption: PageMenuOption, params: HashMap<String, String>) {
         val onDismiss = Runnable {
-            if (menuOption.autoFinish) {
+            if (menuOption.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
                 finish()
             } else if (menuOption.reloadPage) {
                 onReload()
-            } else if (menuOption.updateBlocks != null) {
+            } else if (menuOption.reloadBlock != null) {
                 // TODO rootGroup.triggerUpdateByKey(item.updateBlocks!!)
             }
         }

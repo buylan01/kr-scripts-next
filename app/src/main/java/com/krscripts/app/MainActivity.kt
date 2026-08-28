@@ -20,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.app.databinding.ActivityMainBinding
 import com.krscripts.app.util.chooseFilePath
+import com.krscripts.core.model.ActionAfterExecution
 import com.krscripts.core.model.ClickableNode
 import com.krscripts.core.model.ConfigNode
 import com.krscripts.core.model.KrScriptActionHandler
@@ -142,7 +143,7 @@ class MainActivity : KrActivity() {
     private fun getKrScriptActionHandler(pageNode: PageNode, index: Int): KrScriptActionHandler {
         return object : KrScriptActionHandler {
             override fun onActionCompleted(runnableNode: RunnableNode) {
-                if (runnableNode.autoFinish ) {
+                if (runnableNode.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
                     finishAndRemoveTask()
                 } else if (runnableNode.reloadPage) {
                     reloadTab(pageNode, index)

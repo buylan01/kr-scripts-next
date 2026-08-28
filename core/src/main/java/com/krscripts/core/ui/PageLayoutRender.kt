@@ -62,8 +62,8 @@ class PageLayoutRender(
             handler.post {
                 node.updateViewByShell()
 
-                if (item is RunnableNode && item.updateBlocks != null) {
-                    rootGroup.triggerUpdateByKey(item.updateBlocks!!)
+                if (item is RunnableNode && item.reloadBlock != null) {
+                    rootGroup.triggerUpdateByKey(item.reloadBlock!!)
                 }
             }
         }

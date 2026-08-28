@@ -22,6 +22,7 @@ import com.google.android.material.color.MaterialColors
 import com.krscripts.core.R
 import com.krscripts.core.databinding.KrDialogLogBinding
 import com.krscripts.core.executor.ShellExecutor
+import com.krscripts.core.model.ActionAfterExecution
 import com.krscripts.core.model.RunnableNode
 import com.krscripts.core.shell.ShellEvent
 import com.krscripts.core.shell.ShellEventSource
@@ -123,10 +124,8 @@ class DialogLogFragment : DialogFragment() {
 
                         isCancelable = true
 
-                        if (!shellHasError) {
-                            if (nodeInfo?.autoOff == true) {
-                                dismiss()
-                            }
+                        if (!shellHasError && nodeInfo?.afterExecution == ActionAfterExecution.HIDE) {
+                            dismiss()
                         }
                     }
                 }

@@ -255,7 +255,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     }
 
     private fun switchExecute(switchNode: SwitchNode, toValue: Boolean, onExit: Runnable) {
-        val script = switchNode.setState ?: return
+        val script = switchNode.setScript ?: ""
         actionExecute(switchNode, script, onExit, hashMapOf("state" to if (toValue) "1" else "0"))
     }
 
@@ -275,8 +275,8 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
 
         lifecycleScope.launch(Dispatchers.IO) {
             // 获取当前值
-            if (item.getState != null) {
-                paramInfo.valueFromShell = executeScriptGetResult(item.getState!!, item)
+            item.getScript?.let {
+                paramInfo.valueFromShell = executeScriptGetResult(it, item)
             }
 
             // 获取可选项（合并options-sh和静态options的结果）
@@ -322,7 +322,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     }
 
     private fun pickerOnConfirm(pickerNode: PickerNode, toValue: String, onExit: Runnable) {
-        val script = pickerNode.setState ?: return
+        val script = pickerNode.setScript ?: ""
         actionExecute(pickerNode, script, onExit, hashMapOf("state" to toValue))
     }
 
@@ -334,7 +334,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     }
 
     private fun actionExecute(action: ActionNode, onExit: Runnable) {
-        val script = action.setState ?: return
+        val script = action.script ?: ""
 
         if (action.params != null) {
             val actionParamInfos = action.params!!
