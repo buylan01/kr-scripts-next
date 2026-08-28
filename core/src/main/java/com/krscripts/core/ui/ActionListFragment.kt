@@ -513,16 +513,16 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             for (item in shellResult.split("\n")) {
                 if (item.contains('|')) {
                     val data = item.split('|')
-                    val item = SelectItem().apply {
-                        title = data[1]
+                    val item = SelectItem(
+                        title = data[1],
                         value = data[0]
-                    }
+                    )
                     options.add(item)
                 } else {
-                    val item = SelectItem().apply {
-                        title = item
+                    val item = SelectItem(
+                        title = item,
                         value = item
-                    }
+                    )
                     options.add(item)
                 }
             }

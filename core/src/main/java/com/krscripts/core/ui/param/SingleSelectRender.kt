@@ -79,10 +79,10 @@ class SingleSelectRender(
         onConfirm: (Int) -> Unit
     ) {
         DialogItemChooser(ArrayList(options.mapIndexed { _, item ->
-            SelectItem().apply {
-                title = item.title
+            SelectItem(
+                title = item.title,
                 selected = item.value == autoCompleteTextView?.selectedValue
-            }
+            )
         }), false, onConfirm = { _, status ->
             onConfirm(status.indexOf(true))
         }).show(context.supportFragmentManager, "params-single-select")

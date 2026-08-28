@@ -71,10 +71,11 @@ class MultipleSelectRender(
         options?.run {
             val items = ArrayList<SelectItem>()
             for (i in labels.indices) {
-                items.add(SelectItem().apply {
-                    title = "" + labels[i]
+                val item = SelectItem(
+                    title = "" + labels[i],
                     selected = status[i]
-                })
+                )
+                items.add(item)
             }
 
             DialogItemChooser(ArrayList(items), true, onConfirm = { _, status ->
