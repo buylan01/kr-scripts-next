@@ -281,11 +281,9 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
 
             // 获取可选项（合并options-sh和静态options的结果）
             val options = getParamOptions(paramInfo, item)
-            val optionsSorted = (if (options != null) {
-                ParamLayoutRender.setParamOptionsSelectedStatus(paramInfo, options)
-            } else {
-                null
-            })
+            val optionsSorted = options?.let {
+                ParamLayoutRender.applySelectedState(paramInfo, options)
+            }
 
             withContext(Dispatchers.IO) {
                 progressBarDialog.hideDialog()

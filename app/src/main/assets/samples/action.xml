@@ -11,7 +11,7 @@
     <group title="基本参数">
         <action>
             <title>选择</title>
-            <param name="single_short" title="单选" label="短列表">
+            <param name="single_short" title="单选" label="短列表" value="2">
                 <option value="1">选项 1</option>
                 <option value="2">选项 2</option>
             </param>
@@ -28,7 +28,7 @@
             </param>
 
             <!-- separator 属性设置输出用户选择的项目的分隔符号, 默认为 " ", 输出为 "A B C" -->
-            <param name="multi" title="多选" multiple="multiple" separator="|">
+            <param name="multi" title="多选" multiple="multiple" separator="|" value="1|3|5">
                 <option value="1">选项 1</option>
                 <option value="2">选项 2</option>
                 <option value="3">选项 3</option>

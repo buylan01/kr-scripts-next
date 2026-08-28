@@ -16,7 +16,7 @@ import com.krscripts.core.model.SelectItem
 import com.krscripts.core.ui.adapter.AdapterItemChooser
 
 class DialogItemChooser(
-    private var items: ArrayList<SelectItem>,
+    private var items: List<SelectItem>,
     private val multiple: Boolean = false,
     private var onConfirm: ((selected: List<SelectItem>, status: BooleanArray) -> Unit)? = null,
     showAsSmall: Boolean? = null

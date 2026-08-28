@@ -9,7 +9,7 @@ import com.krscripts.core.R
 import com.krscripts.core.model.ActionParamInfo
 import com.krscripts.core.model.SelectItem
 import com.krscripts.core.ui.dialog.DialogItemChooser
-import com.krscripts.core.ui.param.ParamLayoutRender.Companion.getParamOptionsCurrentIndex
+import com.krscripts.core.ui.param.ParamLayoutRender.Companion.getInitialSelectedIndex
 
 class SingleSelectRender(
     override var actionParamInfo: ActionParamInfo,
@@ -38,7 +38,7 @@ class SingleSelectRender(
                 hint = this
             }
 
-            val initialIndex = getParamOptionsCurrentIndex(actionParamInfo, options)
+            val initialIndex = getInitialSelectedIndex(actionParamInfo, options)
             val initialOption = options.getOrNull(initialIndex)
 
             initialOption?.let {

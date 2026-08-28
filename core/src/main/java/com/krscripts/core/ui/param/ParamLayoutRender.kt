@@ -23,70 +23,40 @@ class ParamLayoutRender(
         // Label is hidden in these params
         private val HIDE_LABEL_TYPES = setOf("bool", "checkbox", "switch")
 
-        /**
-         * 获取当前选中项索引（单选）
-         * @param actionParamInfo 参数信息
-         * @param options 使用getParamOptions获得的数据（不为空时）
-         */
-        fun getParamOptionsCurrentIndex(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): Int {
-            var selectedIndex = -1
-
-            val valList = ArrayList<String>()
-            if (actionParamInfo.valueFromShell != null)
-                valList.add(actionParamInfo.valueFromShell!!)
-            // TODO:这里可能有点争议
-            if (actionParamInfo.value != null) {
-                valList.add(actionParamInfo.value!!)
+        // Single Select
+        fun getInitialSelectedIndex(actionParamInfo: ActionParamInfo, options: List<SelectItem>): Int {
+            actionParamInfo.valueFromShell?.let { value ->
+                val index = options.indexOfFirst { it.value == value }
+                if (index != -1) return index
             }
-            if (valList.isNotEmpty()) {
-                for (j in valList.indices) {
-                    for ((index, option) in options.withIndex()) {
-                        if (option.value == valList[j]) {
-                            selectedIndex = index
-                            break
-                        }
-                    }
-                    if (selectedIndex > -1)
-                        break
-                }
+            actionParamInfo.value?.let { value ->
+                val index = options.indexOfFirst { it.value == value }
+                if (index != -1) return index
             }
-            return selectedIndex
+            return -1
         }
 
-        /**
-         * 获取当前选中项索引（多选）
-         * @param actionParamInfo 参数信息
-         * @param options 使用getParamOptions获得的数据（不为空时）
-         */
-        fun getParamOptionsSelectedStatus(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): BooleanArray {
-            val status = BooleanArray(options.size)
-            val values = getParamValues(actionParamInfo)
-
-            options.forEachIndexed { index, item ->
-                status[index] = (values != null && values.contains(item.value))
-            }
-            return status
-        }
-
-        /**
-         * 设置列表的选中状态
-         * @param actionParamInfo 参数信息
-         * @param options 使用getParamOptions获得的数据（不为空时）
-         */
-        fun setParamOptionsSelectedStatus(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): ArrayList<SelectItem> {
-            val values = getParamValues(actionParamInfo)
-
-            for (element in options) {
-                element.selected = (values != null && values.contains(element.value))
-            }
-            return options
-        }
-
-        // 获取多选下拉的选中值列表
-        fun getParamValues(actionParamInfo: ActionParamInfo): List<String>? {
+        // Multi Select
+        fun getCurrentValues(actionParamInfo: ActionParamInfo): List<String>? {
             val value = actionParamInfo.valueFromShell ?: actionParamInfo.value
             val values = value?.split(actionParamInfo.separator)
             return values
+        }
+
+        fun getSelectedFlags(actionParamInfo: ActionParamInfo, options: ArrayList<SelectItem>): BooleanArray {
+            val valueSet = getCurrentValues(actionParamInfo)?.toHashSet()
+                ?: return BooleanArray(options.size)
+            return BooleanArray(options.size) { index ->
+                valueSet.contains(options[index].value)
+            }
+        }
+
+        fun applySelectedState(actionParamInfo: ActionParamInfo, options: MutableList<SelectItem>): List<SelectItem> {
+            val valueSet = getCurrentValues(actionParamInfo)?.toHashSet()
+            for (option in options) {
+                option.selected = valueSet?.contains(option.value) == true
+            }
+            return options
         }
     }
 

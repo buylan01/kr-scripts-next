@@ -142,7 +142,7 @@ class AppChooserRender(
                 val packageMap = packages.associateBy { it.packageName }
 
                 if (actionParamInfo.multiple) {
-                    ParamLayoutRender.getParamValues(actionParamInfo)?.forEach { value ->
+                    ParamLayoutRender.getCurrentValues(actionParamInfo)?.forEach { value ->
                         packageMap[value]?.selected = true
                     }
 

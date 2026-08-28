@@ -29,7 +29,7 @@ class MultipleSelectRender(
         options?.run {
             labels = map { it.title }.toTypedArray()
             values = map { it.value }.toTypedArray()
-            status = ParamLayoutRender.getParamOptionsSelectedStatus(actionParamInfo, this)
+            status = ParamLayoutRender.getSelectedFlags(actionParamInfo, this)
         }
 
         val layout = LayoutInflater.from(context).inflate(R.layout.kr_param_multiple_select, null)

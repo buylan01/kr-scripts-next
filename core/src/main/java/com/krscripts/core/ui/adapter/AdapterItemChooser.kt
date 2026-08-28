@@ -19,7 +19,7 @@ import java.util.Locale
 
 class AdapterItemChooser(
     private val context: Context,
-    private var items: ArrayList<SelectItem>,
+    private var items: List<SelectItem>,
     private val multiple: Boolean
 ) : RecyclerView.Adapter<AdapterItemChooser.ViewHolder>(), Filterable {
     interface SelectStateListener {
@@ -28,7 +28,7 @@ class AdapterItemChooser(
 
     private var selectStateListener: SelectStateListener? = null
     private var filter: Filter? = null
-    internal var filterItems: ArrayList<SelectItem> = items
+    internal var filterItems: List<SelectItem> = items
 
     override fun getFilter(): Filter {
         if (filter == null) {
