@@ -128,7 +128,8 @@ class ShellBackground {
 
         suspend fun collectEvents(
             events: Flow<ShellEvent>,
-            scope: CoroutineScope
+            scope: CoroutineScope,
+            onFinish: () -> Unit
         ) {
             events.collect { event ->
                 when(event) {
@@ -158,13 +159,19 @@ class ShellBackground {
                         if (event.payload == 0) {
                             logEntries.add(context.getString(R.string.kr_shell_completed))
                         } else {
-                            logEntries.add(context.getString(R.string.kr_shell_finish_error) + " " + event.payload?.toString())
+                            logEntries.add(context.getString(R.string.kr_shell_error) + " " + event.payload?.toString())
                         }
                         updateNotification()
 
                         forceStop = null
                         shellEventSource.destroy()
                         scope.cancel()
+
+                        try {
+                            onFinish()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
@@ -176,7 +183,13 @@ class ShellBackground {
         private const val CHANNEL_ID = "kr_script_task_notification"
         private var notificationCounter = 0
 
-        fun startTask(context: Context, script: String, params: HashMap<String, String>?, nodeInfo: RunnableNode, onExit: Runnable, onDismiss: Runnable) {
+        fun startTask(
+            context: Context,
+            script: String,
+            params: HashMap<String, String>?,
+            nodeInfo: RunnableNode,
+            onFinish: () -> Unit
+        ) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val hasPermission = PermissionUtil.checkPermission(
@@ -201,7 +214,11 @@ class ShellBackground {
                 TaskNotificationController(applicationContext, shellEventSource, nodeInfo, notificationCounter)
 
             scope.launch {
-                controller.collectEvents(shellEventSource.events, scope)
+                controller.collectEvents(
+                    shellEventSource.events,
+                    scope,
+                    onFinish
+                )
             }
 
             scope.launch {
@@ -220,13 +237,6 @@ class ShellBackground {
                 context,
                 nodeInfo,
                 script,
-                {
-                    try {
-                        onExit.run()
-                        onDismiss.run()
-                    } catch (_: Exception) {
-                    }
-                },
                 params,
                 shellEventSource
             )

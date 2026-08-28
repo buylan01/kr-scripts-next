@@ -10,7 +10,6 @@ object ShellLogWatcher {
         context: Context,
         process: Process,
         shellEventSource: ShellEventSource,
-        onExit: Runnable?
     ) {
         val shellTranslation = ShellTranslation(context)
 
@@ -49,7 +48,6 @@ object ShellLogWatcher {
                 }
 
                 shellEventSource.postExit(status)
-                onExit?.run()
             }
         }
 

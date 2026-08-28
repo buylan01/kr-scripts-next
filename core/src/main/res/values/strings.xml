@@ -5,7 +5,7 @@
     <string name="btn_exit">退出</string>
     <string name="onloading">正在加载数据…</string>
     <string name="kr_shell_completed">脚本运行结束</string>
-    <string name="kr_shell_finish_error">运行结束，但出现错误</string>
+    <string name="kr_shell_error">运行结束，但出现错误</string>
     <string name="btn_copy_output">复制输出</string>
     <string name="copy_success">输出日志已复制到剪贴板</string>
     <string name="copy_fail">复制失败</string>

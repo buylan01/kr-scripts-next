@@ -77,7 +77,7 @@ open class KrActivity: AppCompatActivity() {
     protected open fun onReload() = recreate()
 
     protected open fun menuItemExecute(menuOption: PageMenuOption, params: HashMap<String, String>) {
-        val onDismiss = Runnable {
+        val onFinish = {
             if (menuOption.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
                 finish()
             } else if (menuOption.reloadPage) {
@@ -91,14 +91,14 @@ open class KrActivity: AppCompatActivity() {
 
         fun runScripts() {
             if (menuOption.executionMode == ExecutionMode.HIDDEN) {
-                ShellHiddenTask.startTask(this, scripts, params, menuOption, { }, onDismiss)
+                ShellHiddenTask.startTask(this, scripts, params, menuOption, onFinish)
             } else {
                 val dialog = DialogLogFragment.create(
                     menuOption,
-                    { },
-                    onDismiss,
                     scripts,
-                    params
+                    params,
+                    onFinish = onFinish,
+                    onDismiss = {}
                 )
                 dialog.show(supportFragmentManager, "")
                 dialog.isCancelable = false

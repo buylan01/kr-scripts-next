@@ -191,7 +191,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         return locked
     }
 
-    override fun onPageClick(item: PageNode, onCompleted: Runnable) {
+    override fun onPageClick(item: PageNode, onCompleted: () -> Unit) {
         val context = context ?: return
         val locked = checkNodeLocked(item)
         if (locked) return
@@ -249,23 +249,23 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
 
     // Switch
 
-    override fun onSwitchClick(item: SwitchNode, onCompleted: Runnable) {
+    override fun onSwitchClick(item: SwitchNode, onCompleted: () -> Unit) {
         val toValue = !item.checked
         onRunnableItemClick(item) { switchExecute(item, toValue, onCompleted) }
     }
 
-    private fun switchExecute(switchNode: SwitchNode, toValue: Boolean, onExit: Runnable) {
+    private fun switchExecute(switchNode: SwitchNode, toValue: Boolean, onFinish: () -> Unit) {
         val script = switchNode.setScript ?: ""
-        actionExecute(switchNode, script, onExit, hashMapOf("state" to if (toValue) "1" else "0"))
+        actionExecute(switchNode, script, hashMapOf("state" to if (toValue) "1" else "0"), onFinish)
     }
 
     // Picker
 
-    override fun onPickerClick(item: PickerNode, onCompleted: Runnable) {
+    override fun onPickerClick(item: PickerNode, onCompleted: () -> Unit) {
         onRunnableItemClick(item) { pickerExecute(item, onCompleted) }
     }
 
-    private fun pickerExecute(item: PickerNode, onCompleted: Runnable) {
+    private fun pickerExecute(item: PickerNode, onCompleted: () -> Unit) {
         val paramInfo = ActionParamInfo()
         paramInfo.options = item.options
         paramInfo.optionsSh = item.optionsSh
@@ -319,19 +319,19 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         }.start()
     }
 
-    private fun pickerOnConfirm(pickerNode: PickerNode, toValue: String, onExit: Runnable) {
+    private fun pickerOnConfirm(pickerNode: PickerNode, toValue: String, onFinish: () -> Unit) {
         val script = pickerNode.setScript ?: ""
-        actionExecute(pickerNode, script, onExit, hashMapOf("state" to toValue))
+        actionExecute(pickerNode, script, hashMapOf("state" to toValue), onFinish)
     }
 
     // Action
 
-    override fun onActionClick(item: ActionNode, onCompleted: Runnable) {
+    override fun onActionClick(item: ActionNode, onCompleted: () -> Unit) {
         val ignoreWarning = !item.params.isNullOrEmpty()
         onRunnableItemClick(item, ignoreWarning) { actionExecute(item, onCompleted) }
     }
 
-    private fun actionExecute(action: ActionNode, onExit: Runnable) {
+    private fun actionExecute(action: ActionNode, onFinish: () -> Unit) {
         val script = action.script ?: ""
 
         if (action.params != null) {
@@ -385,7 +385,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                         ) {
                             try {
                                 val params = render.readParamsValue()
-                                actionExecute(action, script, onExit, params)
+                                actionExecute(action, script, params, onFinish)
                             } catch (ex: Exception) {
                                 Toast.makeText(
                                     context,
@@ -409,7 +409,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                             val onConfirm = {
                                 try {
                                     val params = render.readParamsValue()
-                                    actionExecute(action, script, onExit, params)
+                                    actionExecute(action, script, params, onFinish)
                                 } catch (ex: Exception) {
                                     Toast.makeText(
                                         context,
@@ -458,7 +458,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                 return
             }
         }
-        actionExecute(action, script, onExit, null)
+        actionExecute(action, script, null, onFinish)
     }
 
     // Common on runnable click
@@ -541,25 +541,32 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
 
 
     private var runningTasks = mutableListOf<String>()
-    private fun actionExecute(nodeInfo: RunnableNode, script: String, onExit: Runnable, params: HashMap<String, String>?) {
+    private fun actionExecute(
+        nodeInfo: RunnableNode,
+        script: String,
+        params: HashMap<String, String>?,
+        onFinish: () -> Unit
+    ) {
         val context = context ?: return
 
-        when(nodeInfo.executionMode) {
+        when (nodeInfo.executionMode) {
             ExecutionMode.NORMAL -> {
-                val onDismiss = Runnable {
-                    krScriptActionHandler?.onActionCompleted(nodeInfo)
-                }
-
-                val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params)
+                val dialog = DialogLogFragment.create(
+                    nodeInfo = nodeInfo,
+                    script = script,
+                    params = params,
+                    onFinish = onFinish,
+                    onDismiss = { krScriptActionHandler?.onActionCompleted(nodeInfo) }
+                )
                 dialog.isCancelable = false
                 dialog.show(parentFragmentManager, null)
             }
 
             ExecutionMode.BACKGROUND -> {
-                val onDismiss = Runnable {
+                ShellBackground.startTask(context, script, params, nodeInfo) {
+                    onFinish()
                     krScriptActionHandler?.onActionCompleted(nodeInfo)
                 }
-                ShellBackground.startTask(context, script, params, nodeInfo, onExit, onDismiss)
             }
 
             ExecutionMode.HIDDEN -> {
@@ -568,11 +575,11 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                     Toast.makeText(context, getString(R.string.kr_hidden_task_running), Toast.LENGTH_SHORT).show()
                 } else {
                     runningTasks.add(index)
-                    val onDismiss = Runnable {
+                    ShellHiddenTask.startTask(context, script, params, nodeInfo) {
+                        onFinish()
                         runningTasks.remove(index)
                         krScriptActionHandler?.onActionCompleted(nodeInfo)
                     }
-                    ShellHiddenTask.startTask(context, script, params, nodeInfo, onExit, onDismiss)
                 }
             }
         }

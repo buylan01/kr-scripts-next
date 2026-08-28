@@ -34,10 +34,10 @@ class PageLayoutRender(
 ) {
 
     interface OnItemClickListener {
-        fun onPageClick(item: PageNode, onCompleted: Runnable)
-        fun onActionClick(item: ActionNode, onCompleted: Runnable)
-        fun onSwitchClick(item: SwitchNode, onCompleted: Runnable)
-        fun onPickerClick(item: PickerNode, onCompleted: Runnable)
+        fun onPageClick(item: PageNode, onCompleted: () -> Unit)
+        fun onActionClick(item: ActionNode, onCompleted: () -> Unit)
+        fun onSwitchClick(item: SwitchNode, onCompleted: () -> Unit)
+        fun onPickerClick(item: PickerNode, onCompleted: () -> Unit)
         fun onItemLongClick(clickableNode: ClickableNode)
     }
 
@@ -56,9 +56,9 @@ class PageLayoutRender(
         return null
     }
 
-    private fun getCommonOnExitRunnable(item: NodeInfoBase, node: ListItemView): Runnable {
+    private fun getCommonOnExitRunnable(item: NodeInfoBase, node: ListItemView): () -> Unit {
         val handler = Handler(Looper.getMainLooper())
-        return Runnable {
+        return {
             handler.post {
                 node.updateViewByShell()
 
@@ -108,7 +108,7 @@ class PageLayoutRender(
                     item.setEnabled(false)
                     val onComplete = {
                         item.setEnabled(true)
-                        getCommonOnExitRunnable(switchNode, item).run()
+                        getCommonOnExitRunnable(switchNode, item).invoke()
                     }
                     clickListener.onSwitchClick(switchNode, onComplete)
                 }

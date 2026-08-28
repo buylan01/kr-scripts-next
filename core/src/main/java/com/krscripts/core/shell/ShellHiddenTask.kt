@@ -19,8 +19,7 @@ object ShellHiddenTask {
         script: String,
         params: HashMap<String, String>?,
         nodeInfo: RunnableNode,
-        onExit: Runnable,
-        onDismiss: Runnable
+        onFinish: () -> Unit
     ) {
         val errorRows = ArrayList<String>()
         val shellEventSource = ShellEventSource()
@@ -37,7 +36,7 @@ object ShellHiddenTask {
                         }
                     }
                     is ShellEvent.Exited -> {
-                                             if (errorRows.isNotEmpty()) {
+                        if (errorRows.isNotEmpty()) {
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.kr_script_task_has_error) + ": " + errorRows.joinToString(", ").trim(),
@@ -47,6 +46,12 @@ object ShellHiddenTask {
                         }
                         shellEventSource.destroy()
                         scope.cancel()
+
+                        try {
+                            onFinish()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     else -> {}
@@ -55,18 +60,11 @@ object ShellHiddenTask {
         }
 
         ShellExecutor().execute(
-            context,
-            nodeInfo,
-            script,
-            {
-                try {
-                    onExit.run()
-                    onDismiss.run()
-                } catch (_: Exception) {
-                }
-            },
-            params,
-            shellEventSource
+            context = context,
+            nodeInfo = nodeInfo,
+            cmd = script,
+            params = params,
+            shellEventSource = shellEventSource
         )
     }
 }

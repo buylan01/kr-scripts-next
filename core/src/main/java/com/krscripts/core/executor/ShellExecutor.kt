@@ -3,7 +3,6 @@ package com.krscripts.core.executor
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.RunnableNode
 import com.krscripts.core.shell.ShellEventSource
@@ -30,7 +29,6 @@ class ShellExecutor {
         context: Context?,
         nodeInfo: RunnableNode,
         cmd: String?,
-        onExit: Runnable?,
         params: HashMap<String, String>?,
         shellEventSource: ShellEventSource
     ): Process? {
@@ -40,8 +38,8 @@ class ShellExecutor {
 
         val process = ScriptEnvironment.runtime
         if (process == null) {
-            Toast.makeText(context, "未能启动命令行进程", Toast.LENGTH_SHORT).show()
-            onExit?.run()
+            shellEventSource.postReadError("未能启动命令行进程")
+            shellEventSource.postExit(1)
         } else {
             val forceStopRunnable: Runnable? =
                 if (nodeInfo.interruptable || nodeInfo.executionMode == ExecutionMode.BACKGROUND)
@@ -62,7 +60,7 @@ class ShellExecutor {
                         }
                     }
                 else null
-            ShellLogWatcher.setWatcher(context!!, process, shellEventSource, onExit)
+            ShellLogWatcher.setWatcher(context!!, process, shellEventSource)
 
             val outputStream = process.outputStream
             val dataOutputStream = DataOutputStream(outputStream)

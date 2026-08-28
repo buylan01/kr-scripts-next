@@ -28,6 +28,7 @@ import com.krscripts.core.shell.ShellEvent
 import com.krscripts.core.shell.ShellEventSource
 import com.krscripts.core.shell.ShellLogType
 import com.krscripts.core.util.AnsiToSpannable
+import com.krscripts.core.util.isExitError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -36,7 +37,8 @@ class DialogLogFragment : DialogFragment() {
     private var _binding: KrDialogLogBinding? = null
     private val binding get() = _binding!!
     private var nodeInfo: RunnableNode? = null
-    private lateinit var onExit: Runnable
+    private var onFinish: (() -> Unit)? = null
+    private var onDismiss: (() -> Unit)? = null
     private lateinit var script: String
     private var params: HashMap<String, String>? = null
 
@@ -65,7 +67,7 @@ class DialogLogFragment : DialogFragment() {
         createCollector(shellEventSource.events, lifecycleScope, info.interruptable)
 
         if (activity != null) {
-            ShellExecutor().execute(activity, info, script, onExit, params, shellEventSource)
+            ShellExecutor().execute(activity, info, script, params, shellEventSource)
         } else {
             dismiss()
         }
@@ -98,9 +100,15 @@ class DialogLogFragment : DialogFragment() {
                         }
                     }
                     is ShellEvent.Exited -> {
-                        context?.getString(R.string.kr_shell_completed)?.let {
+
+                        val isError = isExitError(event.payload)
+
+                        val messageRes = if (isError) R.string.kr_shell_error else R.string.kr_shell_completed
+                        val color = if (isError) colorOutputError else colorInput
+
+                        context?.getString(messageRes)?.let {
                             val str = buildSpannedString {
-                                color(colorInput) { append(it) }
+                                color(color) { append(it) }
                             }
                             outputView.append(str)
                         }
@@ -127,6 +135,7 @@ class DialogLogFragment : DialogFragment() {
                         if (!shellHasError && nodeInfo?.afterExecution == ActionAfterExecution.HIDE) {
                             dismiss()
                         }
+                        onFinish?.invoke()
                     }
                 }
             }
@@ -156,6 +165,12 @@ class DialogLogFragment : DialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismiss?.invoke()
+        onDismiss = null
     }
 
     override fun onDestroyView() {
@@ -215,13 +230,6 @@ class DialogLogFragment : DialogFragment() {
         binding.actionProgress.isIndeterminate = true
     }
 
-    private var onDismissRunnable: Runnable? = null
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        onDismissRunnable?.run()
-        onDismissRunnable = null
-    }
-
     fun ShellEvent.Log.toLogSpanned(): Spanned {
         val defaultColor = when (type) {
             ShellLogType.OUTPUT -> colorOutput
@@ -234,17 +242,17 @@ class DialogLogFragment : DialogFragment() {
     companion object {
         fun create(
             nodeInfo: RunnableNode,
-            onExit: Runnable,
-            onDismiss: Runnable,
             script: String,
-            params: HashMap<String, String>?
+            params: HashMap<String, String>?,
+            onFinish: () -> Unit,
+            onDismiss: () -> Unit
         ): DialogLogFragment {
             val fragment = DialogLogFragment()
             fragment.nodeInfo = nodeInfo
-            fragment.onExit = onExit
+            fragment.onFinish = onFinish
+            fragment.onDismiss = onDismiss
             fragment.script = script
             fragment.params = params
-            fragment.onDismissRunnable = onDismiss
 
             return fragment
         }
