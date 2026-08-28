@@ -152,6 +152,7 @@ open class KrActivity: AppCompatActivity() {
         fab: FloatingActionButton,
         items: List<PageMenuOption>
     ) {
+        menu.clear()
         items.forEachIndexed { index, item ->
             if (item.isFab) {
                 addFab(item, fab)
