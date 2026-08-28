@@ -17,15 +17,14 @@ open class RunnableNode(currentConfigXml: String) : ClickableNode(currentConfigX
     // 执行完成后是否自动关闭页面
     var autoFinish = false
 
-    // 交互界面（default、bg-task、hidden）
-    var shell = shellModeDefault
+    var executionMode = ExecutionMode.NORMAL
 
-    companion object {
-        val shellModeDefault = "default"
-        val shellModeBgTask = "bg-task"
-        val shellModeHidden = "hidden"
-    }
-
-    //
+    // 脚本
     var setState: String? = null
+}
+
+enum class ExecutionMode(
+    val label: String
+) {
+    BACKGROUND("bg-task"), NORMAL("default"), HIDDEN("hidden")
 }

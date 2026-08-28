@@ -57,9 +57,10 @@ class MainActivity : KrActivity() {
 
         binding.toolbar.apply {
             setTitle(R.string.app_name)
-            inflateMenu(R.menu.main)
             setOnMenuItemClickListener { menuItem ->
-                onMenuItemSelected(menuItem)
+                menuExtra[menuItem.itemId]?.let {
+                    onMenuItemClick(it)
+                } ?: false
             }
         }
 
@@ -93,6 +94,7 @@ class MainActivity : KrActivity() {
         val navMenu = binding.bottomNavView.menu
         navMenu.clear()
 
+        binding.toolbar.menu.clear()
         pageConfigCache.forEachIndexed { index, (page, config) ->
             createOptionsMenu(binding.toolbar.menu, binding.fab, config.pageMenuOptions)
             val menuName = config.title ?: page.pageConfigPath.substringAfterLast('/')
@@ -104,6 +106,12 @@ class MainActivity : KrActivity() {
                 }
             }
         }
+        binding.toolbar.menu.add(null)
+            .setIcon(R.drawable.baseline_info_24)
+            .setOnMenuItemClickListener {
+                onInfoAlertClicked()
+            }
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
 
         binding.viewPager.apply {
             adapter = PageFragmentAdapter(this@MainActivity, pageConfigCache)
@@ -178,33 +186,25 @@ class MainActivity : KrActivity() {
         OpenPageHelper(this).openPage(pageNode)
     }
 
-    fun onMenuItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.option_menu_info -> {
-                val layoutInflater = LayoutInflater.from(this)
-                val layout = layoutInflater.inflate(R.layout.dialog_about, null)
+    private fun onInfoAlertClicked(): Boolean {
+        val layoutInflater = LayoutInflater.from(this)
+        val layout = layoutInflater.inflate(R.layout.dialog_about, null)
 
-                val appVersion = try {
-                    packageManager.getPackageInfo(packageName, 0).versionName
-                } catch (_: Exception) {
-                    ".null"
-                }
-
-                val tvAppVersion = layout.findViewById<TextView>(R.id.tv_app_version)
-                tvAppVersion.text = getString(R.string.app_version, appVersion)
-
-                val frameworkVersion = BuildConfig.FRAMEWORK_VERSION
-                val tvFrameworkInfo = layout.findViewById<TextView>(R.id.tv_framework_info)
-                tvFrameworkInfo.text = getString(R.string.framework_info, frameworkVersion)
-
-                DialogHelper.animDialog(this, MaterialAlertDialogBuilder(this).setView(layout).setTitle(getString(R.string.title_about)))
-            }
-            else -> {
-                menuExtra[item.itemId]?.let {
-                    onMenuItemClick(it)
-                } ?: Toast.makeText(this, "菜单数据丢失", Toast.LENGTH_SHORT).show()
-            }
+        val appVersion = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (_: Exception) {
+            ".null"
         }
+
+        val tvAppVersion = layout.findViewById<TextView>(R.id.tv_app_version)
+        tvAppVersion.text = getString(R.string.app_version, appVersion)
+
+        val frameworkVersion = BuildConfig.FRAMEWORK_VERSION
+        val tvFrameworkInfo = layout.findViewById<TextView>(R.id.tv_framework_info)
+        tvFrameworkInfo.text = getString(R.string.framework_info, frameworkVersion)
+
+        DialogHelper.animDialog(this, MaterialAlertDialogBuilder(this).setView(layout).setTitle(getString(R.string.title_about)))
+
         return true
     }
 

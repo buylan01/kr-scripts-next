@@ -236,6 +236,7 @@ open class ActionPage : KrActivity() {
                             menuOptions.addAll(it)
                         }
 
+                        binding.toolbar.menu.clear()
                         createOptionsMenu(binding.toolbar.menu, binding.actionPageFab, menuOptions)
 
                         menuHandler = if (config.pageHandlerSh.isNullOrEmpty()) {

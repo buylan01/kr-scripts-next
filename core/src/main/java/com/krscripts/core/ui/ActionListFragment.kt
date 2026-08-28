@@ -22,6 +22,7 @@ import com.krscripts.core.model.ActionNode
 import com.krscripts.core.model.ActionParamInfo
 import com.krscripts.core.model.AutoRunTask
 import com.krscripts.core.model.ClickableNode
+import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.GroupNode
 import com.krscripts.core.model.KrScriptActionHandler
 import com.krscripts.core.model.NodeInfoBase
@@ -545,15 +546,25 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     private fun actionExecute(nodeInfo: RunnableNode, script: String, onExit: Runnable, params: HashMap<String, String>?) {
         val context = context ?: return
 
-        when(nodeInfo.shell) {
-            RunnableNode.shellModeBgTask -> {
+        when(nodeInfo.executionMode) {
+            ExecutionMode.NORMAL -> {
+                val onDismiss = Runnable {
+                    krScriptActionHandler?.onActionCompleted(nodeInfo)
+                }
+
+                val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params)
+                dialog.isCancelable = false
+                dialog.show(parentFragmentManager, null)
+            }
+
+            ExecutionMode.BACKGROUND -> {
                 val onDismiss = Runnable {
                     krScriptActionHandler?.onActionCompleted(nodeInfo)
                 }
                 ShellBackground.startTask(context, script, params, nodeInfo, onExit, onDismiss)
             }
 
-            RunnableNode.shellModeHidden -> {
+            ExecutionMode.HIDDEN -> {
                 val index = nodeInfo.index
                 if (index in runningTasks) {
                     Toast.makeText(context, getString(R.string.kr_hidden_task_running), Toast.LENGTH_SHORT).show()
@@ -565,16 +576,6 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                     }
                     ShellHiddenTask.startTask(context, script, params, nodeInfo, onExit, onDismiss)
                 }
-            }
-
-            else -> {
-                val onDismiss = Runnable {
-                    krScriptActionHandler?.onActionCompleted(nodeInfo)
-                }
-
-                val dialog = DialogLogFragment.create(nodeInfo, onExit, onDismiss, script, params)
-                dialog.isCancelable = false
-                dialog.show(parentFragmentManager, null)
             }
         }
     }

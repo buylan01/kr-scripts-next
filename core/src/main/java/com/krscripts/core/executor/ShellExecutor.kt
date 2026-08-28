@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.RunnableNode
-import com.krscripts.core.model.RunnableNode.Companion.shellModeBgTask
 import com.krscripts.core.shell.ShellEventSource
 import java.io.DataOutputStream
 import java.util.UUID
@@ -44,7 +44,7 @@ class ShellExecutor {
             onExit?.run()
         } else {
             val forceStopRunnable: Runnable? =
-                if (nodeInfo.interruptable || nodeInfo.shell == shellModeBgTask)
+                if (nodeInfo.interruptable || nodeInfo.executionMode == ExecutionMode.BACKGROUND)
                     Runnable {
                         killProcess(context)
                         process.inputStream.runCatching { close() }

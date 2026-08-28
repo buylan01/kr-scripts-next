@@ -15,6 +15,7 @@ import com.krscripts.core.model.ActionNode
 import com.krscripts.core.model.ActionParamInfo
 import com.krscripts.core.model.ClickableNode
 import com.krscripts.core.model.ConfigNode
+import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.GroupNode
 import com.krscripts.core.model.ImageNode
 import com.krscripts.core.model.NodeInfoBase
@@ -636,10 +637,13 @@ class PageConfigReader {
                     .dropLastWhile { s -> s.isEmpty() }.toTypedArray()
             }
         }
-        parser.attr("shell")?.let { base.shell = it }
+        parser.attr("shell")?.let {
+            base.executionMode = ExecutionMode.entries.firstOrNull { entry -> entry.label == it }
+                ?: ExecutionMode.NORMAL
+        }
         parser.attrAny("bg-task", "background-task", "async-task")?.let {
             if (isTruthy(it, "async-task", "async", "bg-task", "background", "background-task")) {
-                base.shell = RunnableNode.shellModeBgTask
+                base.executionMode = ExecutionMode.BACKGROUND
             }
         }
     }

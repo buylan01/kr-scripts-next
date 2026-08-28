@@ -15,9 +15,9 @@ import com.krscripts.core.config.IconPathAnalysis
 import com.krscripts.core.config.PageConfigReader
 import com.krscripts.core.config.PageConfigSh
 import com.krscripts.core.model.ConfigNode
+import com.krscripts.core.model.ExecutionMode
 import com.krscripts.core.model.PageMenuOption
 import com.krscripts.core.model.PageNode
-import com.krscripts.core.model.RunnableNode
 import com.krscripts.core.shell.ShellHiddenTask
 import com.krscripts.core.ui.dialog.DialogHelper
 import com.krscripts.core.ui.dialog.DialogLogFragment
@@ -89,7 +89,7 @@ open class KrActivity: AppCompatActivity() {
         val scripts = menuHandler ?: "echo Handler not found"
 
         fun runScripts() {
-            if (menuOption.shell == RunnableNode.shellModeHidden) {
+            if (menuOption.executionMode == ExecutionMode.HIDDEN) {
                 ShellHiddenTask.startTask(this, scripts, params, menuOption, { }, onDismiss)
             } else {
                 val dialog = DialogLogFragment.create(
@@ -152,7 +152,6 @@ open class KrActivity: AppCompatActivity() {
         fab: FloatingActionButton,
         items: List<PageMenuOption>
     ) {
-        menu.clear()
         items.forEachIndexed { index, item ->
             if (item.isFab) {
                 addFab(item, fab)
