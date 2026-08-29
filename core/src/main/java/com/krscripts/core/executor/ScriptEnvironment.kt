@@ -340,7 +340,7 @@ object ScriptEnvironment {
                 append(exportCommands).append('\n')
             }
             append(script)
-            append("\nexit 0\n")
+            append("\nexit\n")
         }
 
         try {

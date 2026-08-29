@@ -8,6 +8,13 @@
                 exit 0
             </script>
         </action>
+        <action title="带错输出">
+            <script>
+                echo 开始~
+                sleep 1
+                exit 1
+            </script>
+        </action>
         <action title="运行命令" desc="运行时禁止中断" interruptible="false">
             <script>
                 echo 开始~
