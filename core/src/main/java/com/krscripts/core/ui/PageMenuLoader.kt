@@ -13,7 +13,7 @@ class PageMenuLoader(private val applicationContext: Context, private val pageNo
             if (menuOptions == null) {
                 pageNode.run {
                     if (pageMenuOptionsSh.isNotEmpty()) {
-                        val result = ScriptEnvironment.executeResultRoot(applicationContext, pageMenuOptionsSh, this)
+                        val result = ScriptEnvironment.execute(applicationContext, pageMenuOptionsSh, this)
                         if (result != "error") {
                             val items = result.split("\n")
                             for (item in items) {

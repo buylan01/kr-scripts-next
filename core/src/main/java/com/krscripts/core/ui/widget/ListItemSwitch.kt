@@ -33,7 +33,7 @@ class ListItemSwitch(
         super.updateViewByShell()
 
         if (!config.getScript.isNullOrEmpty()) {
-            val shellResult = ScriptEnvironment.executeResultRoot(context, config.getScript, config)
+            val shellResult = ScriptEnvironment.execute(context, config.getScript, config)
             config.checked = shellResult == "1" || shellResult.lowercase(getDefault()) == "true"
         }
         isAdjusting = true

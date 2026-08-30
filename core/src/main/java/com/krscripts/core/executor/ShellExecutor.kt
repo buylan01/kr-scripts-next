@@ -18,7 +18,7 @@ class ShellExecutor {
     private var started = false
     private val sessionTag = "kr_" + UUID.randomUUID()
     private fun killProcess(context: Context?) {
-        ScriptEnvironment.executeResultRoot(
+        ScriptEnvironment.execute(
             context!!,
             "kill -s 1 `pgrep -f $sessionTag`",
             null
@@ -68,7 +68,7 @@ class ShellExecutor {
                 shellEventSource.postStart(forceStopRunnable)
                 shellEventSource.postWrite(cmd + "\n")
 
-                ScriptEnvironment.executeShell(
+                ScriptEnvironment.executeAsync(
                     context,
                     dataOutputStream,
                     cmd,

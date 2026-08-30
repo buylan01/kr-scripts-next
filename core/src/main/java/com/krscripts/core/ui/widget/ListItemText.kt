@@ -94,7 +94,7 @@ class ListItemText(
                     if (row.onClickScript.isNotEmpty()) {
                         setSpan(object : ClickableSpan() {
                             override fun onClick(widget: View) {
-                                val result = ScriptEnvironment.executeResultRoot(
+                                val result = ScriptEnvironment.execute(
                                     context,
                                     row.onClickScript,
                                     config

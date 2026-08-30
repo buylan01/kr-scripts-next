@@ -13,7 +13,7 @@ class PageConfigSh(
 ) {
 
     fun getConfig(): ConfigNode? {
-        val result = ScriptEnvironment.executeResultRoot(activity, pageConfigSh, parentConfig).trim()
+        val result = ScriptEnvironment.execute(activity, pageConfigSh, parentConfig).trim()
 
         return when {
             result.endsWith(".xml") -> {

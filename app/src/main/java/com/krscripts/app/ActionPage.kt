@@ -195,7 +195,7 @@ open class ActionPage : KrActivity() {
             pageConfigCompat.run {
                 if (beforeRead.isNotEmpty()) {
                     showDialog(getString(R.string.kr_page_before_load))
-                    ScriptEnvironment.executeResultRoot(activity, beforeRead, this)
+                    ScriptEnvironment.execute(activity, beforeRead, this)
                 }
 
                 showDialog(getString(R.string.kr_page_loading))
@@ -204,13 +204,13 @@ open class ActionPage : KrActivity() {
 
                 if (afterRead.isNotEmpty()) {
                     showDialog(getString(R.string.kr_page_after_load))
-                    ScriptEnvironment.executeResultRoot(activity, afterRead, this)
+                    ScriptEnvironment.execute(activity, afterRead, this)
                 }
 
                 config?.let { config ->
                     if (loadSuccess.isNotEmpty()) {
                         showDialog(getString(R.string.kr_page_load_success))
-                        ScriptEnvironment.executeResultRoot(activity, loadSuccess, this)
+                        ScriptEnvironment.execute(activity, loadSuccess, this)
                     }
 
                     withContext(Dispatchers.Main) {
@@ -259,7 +259,7 @@ open class ActionPage : KrActivity() {
                     }
                 } ?: if (loadFail.isNotEmpty()) {
                         showDialog(getString(R.string.kr_page_load_fail))
-                        ScriptEnvironment.executeResultRoot(activity, loadFail, this)
+                        ScriptEnvironment.execute(activity, loadFail, this)
                         hideDialog()
                     } else {
                         withContext(Dispatchers.Main) {

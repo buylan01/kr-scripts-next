@@ -282,7 +282,7 @@ class PageConfigReader {
         if (virtualRootNode == null) {
             virtualRootNode = NodeInfoBase(pageConfigAbsPath)
         }
-        return ScriptEnvironment.executeResultRoot(context, scriptIn, virtualRootNode)
+        return ScriptEnvironment.execute(context, scriptIn, virtualRootNode)
     }
 
     /** Same as [executeResultRoot] but memoized by exact script text for this parse pass. */

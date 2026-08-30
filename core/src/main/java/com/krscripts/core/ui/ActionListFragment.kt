@@ -179,7 +179,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         // Check with script
         var message = ""
         val locked = if (clickableNode.lockShell.isNotEmpty()) {
-            message = ScriptEnvironment.executeResultRoot(requireContext(), clickableNode.lockShell, clickableNode)
+            message = ScriptEnvironment.execute(requireContext(), clickableNode.lockShell, clickableNode)
             message !in setOf("unlock", "unlocked", "false", "0")
         } else {
             clickableNode.locked
@@ -536,7 +536,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
     }
 
     private fun executeScriptGetResult(shellScript: String, nodeInfoBase: NodeInfoBase): String {
-        return ScriptEnvironment.executeResultRoot(this.requireContext(), shellScript, nodeInfoBase)
+        return ScriptEnvironment.execute(this.requireContext(), shellScript, nodeInfoBase)
     }
 
 

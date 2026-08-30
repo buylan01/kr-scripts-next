@@ -26,8 +26,6 @@ object ScriptEnvironment {
     var isInitialed: Boolean = false
         private set
     private var environmentPath = ""
-
-    // 此目录将添加到PATH尾部，作为应用程序提供的拓展程序库目录，如有需要则需要在初始化executor.sh之前为该变量赋值
     private var TOOLKIT_DIR: String? = ""
     private var rooted = false
     private var privateShell: KeepShell? = null
@@ -48,14 +46,11 @@ object ScriptEnvironment {
         )
     }
 
-    /**
-     * 初始化执行器
-     *
-     * @param context  Context
-     * @param executor 执行器在Assets中的位置
-     * @return 是否初始化成功
-     */
-    fun init(context: Context, executor: String, toolkitDir: String?): Boolean {
+    fun init(
+        context: Context,
+        executorPath: String,
+        toolkitDir: String?
+    ): Boolean {
         if (isInitialed) {
             return true
         }
@@ -71,7 +66,7 @@ object ScriptEnvironment {
                 TOOLKIT_DIR = assetsExtractor?.extractResources(toolkitDir)
             }
 
-            val fileName = executor.removePrefix(ASSETS_FILE)
+            val fileName = executorPath.removePrefix(ASSETS_FILE)
 
             val bytes = context.assets.open(fileName).use { it.readBytes() }
             var envShell = String(bytes, Charset.defaultCharset()).replace("\r", "")
@@ -92,7 +87,7 @@ object ScriptEnvironment {
             }
 
             context.getSharedPreferences("kr-script-config", Context.MODE_PRIVATE).edit {
-                putString("executor", executor)
+                putString("executor", executorPath)
                 putString("toolkitDir", toolkitDir)
             }
 
@@ -104,40 +99,8 @@ object ScriptEnvironment {
         }
     }
 
-    /**
-     * 写入缓存（脚本代码存入脚本文件）
-     */
-    private fun createShellCache(context: Context, script: String): String {
-        val md5 = MD5.md5(script)
-        val outputPath = "kr-script/cache/$md5.sh"
-        if (File(outputPath).exists()) {
-            return outputPath
-        }
-
-        val bytes = ("#!/system/bin/sh\n\n$script")
-            .replace("\r\n", "\n")
-            .replace("\r\t", "\t")
-            .replace("\r", "\n")
-            .toByteArray()
-        if (writePrivateFile(bytes, outputPath, context)) {
-            return getPrivateFilePath(context, outputPath)
-        }
-        return ""
-    }
-
-    /**
-     * 执行脚本
-     */
-    private fun extractScript(context: Context, fileName: String): String? {
-        var fileName = fileName
-        if (fileName.startsWith(ASSETS_FILE)) {
-            fileName = fileName.substring(ASSETS_FILE.length)
-        }
-        return writePrivateShellFile(fileName, fileName, context)
-    }
-
     @JvmStatic
-    fun executeResultRoot(context: Context, script: String?, nodeInfoBase: NodeInfoBase?): String {
+    fun execute(context: Context, script: String?, nodeInfoBase: NodeInfoBase?): String {
         if (!isInitialed) {
             init(context)
         }
@@ -178,6 +141,80 @@ object ScriptEnvironment {
         return shellTranslation?.resolveRow(cmdResult) ?: cmdResult
     }
 
+    @JvmStatic
+    fun executeAsync(
+        context: Context,
+        dataOutputStream: DataOutputStream,
+        cmds: String?,
+        params: HashMap<String, String>?,
+        nodeInfo: NodeInfoBase?,
+        tag: String?
+    ) {
+        val envParams = params ?: HashMap()
+
+        nodeInfo?.let {
+            val configDir = it.pageConfigDir
+            val configFile = it.currentPageConfigPath
+            envParams["PAGE_CONFIG_DIR"] = configDir
+            envParams["PAGE_CONFIG_FILE"] = configFile
+
+            var workDir: String? = null
+            var workFile: String? = null
+            if (configFile.startsWith("file:///android_asset/")) {
+                val extractor = AssetsExtractor(context)
+                workDir = extractor.getExtractPath(configDir)
+                workFile = extractor.getExtractPath(configFile)
+            }
+
+            envParams["PAGE_WORK_DIR"] = workDir ?: configDir
+            envParams["PAGE_WORK_FILE"] = workFile ?: configFile
+        }
+
+        val exportCommands = buildVariables(envParams).joinToString(separator = "\n")
+        val script = getExecuteScript(context, cmds, tag)
+
+        val content = buildString {
+            if (exportCommands.isNotEmpty()) {
+                append(exportCommands).append('\n')
+            }
+            append(script)
+            append("\nexit\n")
+        }
+
+        try {
+            dataOutputStream.write(content.toByteArray(Charsets.UTF_8))
+            dataOutputStream.flush()
+        } catch (e: Exception) {
+            Log.e("ShellEnvironment", "Failed to write shell commands", e)
+        }
+    }
+
+    private fun createShellCache(context: Context, script: String): String {
+        val md5 = MD5.md5(script)
+        val outputPath = "kr-script/cache/$md5.sh"
+        if (File(outputPath).exists()) {
+            return outputPath
+        }
+
+        val bytes = ("#!/system/bin/sh\n\n$script")
+            .replace("\r\n", "\n")
+            .replace("\r\t", "\t")
+            .replace("\r", "\n")
+            .toByteArray()
+        if (writePrivateFile(bytes, outputPath, context)) {
+            return getPrivateFilePath(context, outputPath)
+        }
+        return ""
+    }
+
+    private fun extractScript(context: Context, fileName: String): String? {
+        var fileName = fileName
+        if (fileName.startsWith(ASSETS_FILE)) {
+            fileName = fileName.substring(ASSETS_FILE.length)
+        }
+        return writePrivateShellFile(fileName, fileName, context)
+    }
+
     private fun StringBuilder.appendExport(name: String, value: String) {
         append("export ").append(name).append("=\'").append(value).append("\'\n")
     }
@@ -190,20 +227,6 @@ object ScriptEnvironment {
         return dir
     }
 
-    /*
-    public static int getUserId() {
-        int value = 0;
-        try {
-            Class<?> c = Class.forName("android.os.UserHandle");
-            Method get = c.getMethod("getUserId", int.class);
-            value = (int)(get.invoke(c, android.os.Process.myUid()));
-        } catch (Exception ignored) {
-        }
-        return value;
-    }*/
-    /**
-     * 获取框架的环境变量
-     */
     private fun getEnvironment(context: Context): HashMap<String, String> {
         val params = HashMap<String, String>()
 
@@ -294,60 +317,4 @@ object ScriptEnvironment {
                 null
             }
         }
-
-    /**
-     * 使用执行器运行脚本
-     *
-     * @param context          Context
-     * @param dataOutputStream Runtime进程的输出流
-     * @param cmds             要执行的脚本
-     * @param params           参数类别
-     */
-    @JvmStatic
-    fun executeShell(
-        context: Context,
-        dataOutputStream: DataOutputStream,
-        cmds: String?,
-        params: HashMap<String, String>?,
-        nodeInfo: NodeInfoBase?,
-        tag: String?
-    ) {
-        val envParams = params ?: HashMap()
-
-        nodeInfo?.let {
-            val configDir = it.pageConfigDir
-            val configFile = it.currentPageConfigPath
-            envParams["PAGE_CONFIG_DIR"] = configDir
-            envParams["PAGE_CONFIG_FILE"] = configFile
-
-            var workDir: String? = null
-            var workFile: String? = null
-            if (configFile.startsWith("file:///android_asset/")) {
-                val extractor = AssetsExtractor(context)
-                workDir = extractor.getExtractPath(configDir)
-                workFile = extractor.getExtractPath(configFile)
-            }
-
-            envParams["PAGE_WORK_DIR"] = workDir ?: configDir
-            envParams["PAGE_WORK_FILE"] = workFile ?: configFile
-        }
-
-        val exportCommands = buildVariables(envParams).joinToString(separator = "\n")
-        val script = getExecuteScript(context, cmds, tag)
-
-        val content = buildString {
-            if (exportCommands.isNotEmpty()) {
-                append(exportCommands).append('\n')
-            }
-            append(script)
-            append("\nexit\n")
-        }
-
-        try {
-            dataOutputStream.write(content.toByteArray(Charsets.UTF_8))
-            dataOutputStream.flush()
-        } catch (e: Exception) {
-            Log.e("ShellEnvironment", "Failed to write shell commands", e)
-        }
-    }
 }

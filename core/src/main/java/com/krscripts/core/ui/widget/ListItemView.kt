@@ -50,12 +50,12 @@ open class ListItemView(
 
     open fun updateViewByShell() {
         if (config.descSh.isNotEmpty()) {
-            config.desc = ScriptEnvironment.executeResultRoot(context, config.descSh, config)
+            config.desc = ScriptEnvironment.execute(context, config.descSh, config)
             desc = config.desc
         }
 
         if (config.summarySh.isNotEmpty()) {
-            config.summary = ScriptEnvironment.executeResultRoot(context, config.summarySh, config)
+            config.summary = ScriptEnvironment.execute(context, config.summarySh, config)
             summary = config.summary
         }
     }

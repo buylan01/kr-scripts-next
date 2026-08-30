@@ -172,7 +172,7 @@ class SplashActivity : AppCompatActivity() {
                 process = if (isRoot == true) ShellExecutor.superUserRuntime else ShellExecutor.runtime
 
                 DataOutputStream(process.outputStream).use { outputStream ->
-                    ScriptEnvironment.executeShell(
+                    ScriptEnvironment.executeAsync(
                         context,
                         outputStream,
                         config.beforeStartSh,

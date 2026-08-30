@@ -10,7 +10,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.core.downloader.Downloader
 import com.krscripts.core.executor.AssetsExtractor
 import com.krscripts.core.executor.ScriptEnvironment
-import com.krscripts.core.executor.ScriptEnvironment.executeResultRoot
+import com.krscripts.core.executor.ScriptEnvironment.execute
 import com.krscripts.core.model.NodeInfoBase
 import com.krscripts.core.shell.KeepShellPublic.checkRoot
 import com.krscripts.core.shell.ShellEvent
@@ -92,7 +92,7 @@ class WebViewInjector(
         @JavascriptInterface
         fun executeShell(script: String?): String {
             if (!script.isNullOrEmpty()) {
-                return executeResultRoot(context, script, virtualRootNode)
+                return execute(context, script, virtualRootNode)
             }
             return ""
         }
@@ -122,7 +122,7 @@ class WebViewInjector(
 
                 setHandler(process, callbackFunction, shellEventSource) { }
 
-                ScriptEnvironment.executeShell(
+                ScriptEnvironment.executeAsync(
                     context,
                     dataOutputStream,
                     script,
