@@ -43,7 +43,8 @@ open class KrActivity: AppCompatActivity() {
                 }
 
                 pageConfigPath.isNotEmpty() -> {
-                    PageConfigReader(context.applicationContext, pageConfigPath, parent?.pageConfigDir).readConfigXml()
+                    val parent = pageConfigDir.substringBeforeLast("/")
+                    PageConfigReader(context.applicationContext, pageConfigPath, parent).readConfigXml()
                 }
 
                 else -> null

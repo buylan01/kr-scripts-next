@@ -19,8 +19,8 @@ class IconPathAnalysis {
         if (path.startsWith("http://") || path.startsWith("https://")) {
             return loadNetworkDrawable(context, path)
         }
-        val inputStream = PathAnalysis(context, configDir).parsePath(path)
-        return inputStream?.use {
+        val resolved = PathResolver(context, configDir).resolvePath(path)
+        return resolved?.inputStream?.use {
             BitmapFactory.decodeStream(it).toDrawable(context.resources)
         }
     }

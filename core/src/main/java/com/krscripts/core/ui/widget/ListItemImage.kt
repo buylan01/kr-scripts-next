@@ -13,8 +13,9 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.RelativeCornerSize
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.krscripts.core.R
-import com.krscripts.core.config.PathAnalysis
+import com.krscripts.core.config.PathResolver
 import com.krscripts.core.model.ImageNode
+import com.krscripts.core.util.PathUtil
 
 class ListItemImage(
     context: Context,
@@ -47,9 +48,14 @@ class ListItemImage(
 
         imageView?.apply {
 
-            val icon = if (config.image.startsWith("http")) {
+            val isNetworkImage = PathUtil.isNetworkUri(config.image)
+            val icon = if (isNetworkImage)
                 config.image
-            } else PathAnalysis(context, config.pageConfigDir).resolveUri(config.image)
+            else {
+                val resolver = PathResolver(context, config.pageConfigDir).resolvePath(config.image)
+                resolver?.inputStream?.close()
+                resolver?.absolutePath
+            }
             load(icon) {
                 crossfade(true)
                 memoryCachePolicy(CachePolicy.ENABLED)

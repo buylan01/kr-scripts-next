@@ -62,11 +62,10 @@ class PageConfigReader {
             return readConfigXml(pageConfigStream!!)
         }
         try {
-            val pathAnalysis = PathAnalysis(context, parentDir)
-            pathAnalysis.parsePath(pageConfig).run {
-                val fileInputStream = this ?: return ConfigNode()
-                pageConfigAbsPath = pathAnalysis.getCurrentAbsPath()
-                return readConfigXml(fileInputStream)
+            val pathResolver = PathResolver(context, parentDir)
+            pathResolver.resolvePath(pageConfig)?.run {
+                pageConfigAbsPath = this.absolutePath
+                return readConfigXml(this.inputStream)
             }
         } catch (ex: Exception) {
             reportParseFailure(ex)

@@ -14,7 +14,8 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.RelativeCornerSize
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.krscripts.core.R
-import com.krscripts.core.config.PathAnalysis
+import com.krscripts.core.config.PathResolver
+import com.krscripts.core.util.PathUtil
 
 object IconHelper {
     fun applyIcon(
@@ -32,9 +33,14 @@ object IconHelper {
             view.visibility = View.VISIBLE
         }
 
-        val icon = if (iconPath.startsWith("http")) {
+        val isNetworkImage = PathUtil.isNetworkUri(iconPath)
+        val icon = if (isNetworkImage)
             iconPath
-        } else PathAnalysis(context, configPath).resolveUri(iconPath)
+        else {
+            val resolver = PathResolver(context, configPath).resolvePath(iconPath)
+            resolver?.inputStream?.close()
+            resolver?.absolutePath
+        }
 
         view.load(icon) {
             crossfade(true)
