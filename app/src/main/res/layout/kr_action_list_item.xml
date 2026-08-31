@@ -15,7 +15,8 @@
         android:src="@drawable/baseline_shortcut_24"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?colorOutlineVariant" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@id/kr_icon"
