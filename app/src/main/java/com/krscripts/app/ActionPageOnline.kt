@@ -22,16 +22,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.app.databinding.ActivityActionPageOnlineBinding
+import com.krscripts.app.model.PageNode
+import com.krscripts.app.ui.PageMenuLoader
+import com.krscripts.app.ui.dialog.DialogHelper
+import com.krscripts.app.ui.param.FileChooserRender
+import com.krscripts.app.ui.param.FileChooserRender.FileSelectedInterface
+import com.krscripts.app.ui.param.FileChooserRender.FileSelectedInterface.Companion.TYPE_FILE
 import com.krscripts.app.util.chooseFilePath
 import com.krscripts.app.util.handleFileSelectorResult
-import com.krscripts.core.R
-import com.krscripts.core.WebViewInjector
-import com.krscripts.core.model.PageNode
-import com.krscripts.core.ui.PageMenuLoader
-import com.krscripts.core.ui.dialog.DialogHelper
-import com.krscripts.core.ui.param.FileChooserRender
-import com.krscripts.core.ui.param.FileChooserRender.FileSelectedInterface
-import com.krscripts.core.ui.param.FileChooserRender.FileSelectedInterface.Companion.TYPE_FILE
 
 class ActionPageOnline : KrActivity() {
 
@@ -63,7 +61,7 @@ class ActionPageOnline : KrActivity() {
         }
 
         binding.toolbar.apply {
-            setTitle(com.krscripts.app.R.string.app_name)
+            setTitle(R.string.app_name)
             setNavigationOnClickListener {
                 finish()
             }

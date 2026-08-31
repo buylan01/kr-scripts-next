@@ -1,8 +1,8 @@
 package com.krscripts.app
 
 import android.content.Context
-import com.krscripts.core.executor.ScriptEnvironment
-import com.krscripts.core.model.PageNode
+import com.krscripts.app.executor.ScriptEnvironment
+import com.krscripts.app.model.PageNode
 import java.nio.charset.Charset
 
 

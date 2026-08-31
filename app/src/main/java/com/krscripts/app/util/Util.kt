@@ -5,9 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.core.net.toUri
 import com.krscripts.app.ActivityFileSelector
-import com.krscripts.core.shared.FilePathResolver
-import com.krscripts.core.ui.param.FileChooserRender
+import com.krscripts.app.R
+import com.krscripts.app.shared.FilePathResolver
+import com.krscripts.app.ui.param.FileChooserRender
+
+fun Context.startActivityLink(url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    } catch (_: Exception) {
+        Toast.makeText(this, getString(R.string.kr_slice_activity_fail), Toast.LENGTH_SHORT).show()
+    }
+}
 
 private fun Activity.startFileSelector(extension: String? = null, mode: Int = ActivityFileSelector.MODE_FILE) {
     try {

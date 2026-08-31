@@ -15,12 +15,12 @@ import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.app.databinding.ActivitySplashBinding
-import com.krscripts.core.executor.ScriptEnvironment
-import com.krscripts.core.shell.KeepShellPublic
-import com.krscripts.core.shell.ShellExecutor
-import com.krscripts.core.ui.dialog.DialogHelper
-import com.krscripts.core.util.PermissionUtil.checkAccessFiles
-import com.krscripts.core.util.PermissionUtil.requestAccessFilesDialog
+import com.krscripts.app.executor.ScriptEnvironment
+import com.krscripts.app.shell.KeepShellPublic
+import com.krscripts.app.shell.ShellExecutor
+import com.krscripts.app.ui.dialog.DialogHelper
+import com.krscripts.app.util.PermissionUtil.checkAccessFiles
+import com.krscripts.app.util.PermissionUtil.requestAccessFilesDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -230,7 +230,7 @@ class SplashActivity : AppCompatActivity() {
                 (context as? Activity)?.finishAffinity()
             }
         if (!context.resources.getBoolean(R.bool.force_root)) {
-            builder.setNeutralButton(com.krscripts.core.R.string.btn_skip) { dialog, _ ->
+            builder.setNeutralButton(com.krscripts.app.R.string.btn_skip) { dialog, _ ->
                 dialog.dismiss()
                 prefs.edit { putBoolean("skip_root", true) }
                 onSkip()

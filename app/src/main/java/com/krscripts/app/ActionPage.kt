@@ -11,21 +11,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.krscripts.app.databinding.ActivityActionPageBinding
+import com.krscripts.app.executor.ScriptEnvironment
+import com.krscripts.app.model.ActionAfterExecution
+import com.krscripts.app.model.AutoRunTask
+import com.krscripts.app.model.ClickableNode
+import com.krscripts.app.model.KrScriptActionHandler
+import com.krscripts.app.model.PageMenuOption
+import com.krscripts.app.model.PageNode
+import com.krscripts.app.model.RunnableNode
+import com.krscripts.app.shortcut.ActionShortcutManager
+import com.krscripts.app.ui.ActionListFragment
+import com.krscripts.app.ui.PageMenuLoader
+import com.krscripts.app.ui.param.FileChooserRender
 import com.krscripts.app.util.chooseFilePath
-import com.krscripts.core.R
-import com.krscripts.core.TryOpenActivity
-import com.krscripts.core.executor.ScriptEnvironment
-import com.krscripts.core.model.ActionAfterExecution
-import com.krscripts.core.model.AutoRunTask
-import com.krscripts.core.model.ClickableNode
-import com.krscripts.core.model.KrScriptActionHandler
-import com.krscripts.core.model.PageMenuOption
-import com.krscripts.core.model.PageNode
-import com.krscripts.core.model.RunnableNode
-import com.krscripts.core.shortcut.ActionShortcutManager
-import com.krscripts.core.ui.ActionListFragment
-import com.krscripts.core.ui.PageMenuLoader
-import com.krscripts.core.ui.param.FileChooserRender
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,7 +66,7 @@ open class ActionPage : KrActivity() {
         }
 
         binding.toolbar.apply {
-            setTitle(com.krscripts.app.R.string.app_name)
+            setTitle(R.string.app_name)
             setNavigationOnClickListener {
                 finish()
             }
@@ -252,7 +250,7 @@ open class ActionPage : KrActivity() {
                             autoRunTask
                         )
                         supportFragmentManager.beginTransaction()
-                            .replace(com.krscripts.app.R.id.main_list, fragment)
+                            .replace(R.id.main_list, fragment)
                             .commitAllowingStateLoss()
                         hideDialog()
                         actionsLoaded = true

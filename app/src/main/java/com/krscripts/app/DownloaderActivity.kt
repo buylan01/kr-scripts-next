@@ -15,10 +15,10 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.krscripts.app.databinding.ActivityDownloaderBinding
-import com.krscripts.core.downloader.Downloader
-import com.krscripts.core.shared.FilePathResolver
-import com.krscripts.core.util.PermissionUtil.checkAccessFiles
-import com.krscripts.core.util.PermissionUtil.requestAccessFilesDialog
+import com.krscripts.app.downloader.Downloader
+import com.krscripts.app.shared.FilePathResolver
+import com.krscripts.app.util.PermissionUtil.checkAccessFiles
+import com.krscripts.app.util.PermissionUtil.requestAccessFilesDialog
 import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
@@ -85,13 +85,13 @@ class DownloaderActivity : AppCompatActivity() {
             val myClipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val myClip = ClipData.newPlainText("text", binding.krDownloadName.text.toString())
             myClipboard.setPrimaryClip(myClip)
-            Toast.makeText(this@DownloaderActivity, getString(com.krscripts.core.R.string.copy_success), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@DownloaderActivity, getString(com.krscripts.app.R.string.copy_success), Toast.LENGTH_SHORT).show()
         }
         binding.krDownloadUrlCopy.setOnClickListener {
             val myClipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val myClip = ClipData.newPlainText("text", binding.krDownloadUrl.text.toString())
             myClipboard.setPrimaryClip(myClip)
-            Toast.makeText(this@DownloaderActivity, getString(com.krscripts.core.R.string.copy_success), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@DownloaderActivity, getString(com.krscripts.app.R.string.copy_success), Toast.LENGTH_SHORT).show()
         }
 
         val handler = Handler(Looper.getMainLooper())
@@ -117,7 +117,7 @@ class DownloaderActivity : AppCompatActivity() {
                             if (!absPath.isNullOrEmpty()) {
                                 fileName = absPath
                             }
-                        } catch (_: java.lang.Exception) {
+                        } catch (_: Exception) {
                         }
                     }
 
@@ -125,7 +125,7 @@ class DownloaderActivity : AppCompatActivity() {
                         binding.krDownloadName.text = fileName
                         binding.krDownloadProgress.progress = ratio
                         binding.krDownloadProgress.isIndeterminate = false
-                        setTitle(com.krscripts.core.R.string.kr_download_downloading)
+                        setTitle(com.krscripts.app.R.string.kr_download_downloading)
                         downloader.saveTaskStatus(taskAliasId, ratio)
                     }
 
@@ -135,7 +135,7 @@ class DownloaderActivity : AppCompatActivity() {
                             downloader.saveTaskCompleted(downloadId, path)
 
                             handler.post {
-                                setTitle(com.krscripts.core.R.string.kr_download_completed)
+                                setTitle(com.krscripts.app.R.string.kr_download_completed)
                                 binding.krDownloadProgress.visibility = View.GONE
                                 stopWatchDownloadProgress()
 

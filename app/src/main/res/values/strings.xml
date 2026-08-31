@@ -1,4 +1,68 @@
 <resources>
+    <string name="btn_confirm">确定</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_skip">跳过</string>
+    <string name="btn_exit">退出</string>
+    <string name="onloading">正在加载数据…</string>
+    <string name="kr_shell_completed">脚本运行结束</string>
+    <string name="kr_shell_error">运行结束，但出现错误</string>
+    <string name="btn_copy_output">复制输出</string>
+    <string name="copy_success">输出日志已复制到剪贴板</string>
+    <string name="copy_fail">复制失败</string>
+    <string name="do_not_empty">不可为空</string>
+    <string name="kr_param_load">获取状态</string>
+    <string name="kr_param_options_load">加载候选列表 </string>
+    <string name="kr_params_render">渲染界面……</string>
+    <string name="kr_please_choose_folder">请选择目录</string>
+    <string name="kr_please_choose_file">请选择文件</string>
+    <string name="kr_please_choose_app">请选择应用</string>
+    <string name="kr_please_input_color">请输入颜色</string>
+    <string name="kr_please_select">请选择</string>
+    <string name="kr_download_create_fail">创建下载任务失败</string>
+    <string name="kr_download_create_success">开始下载文件</string>
+    <string name="kr_download_confirm">是否下载文件</string>
+    <string name="kr_download_completed">文件下载成功</string>
+    <string name="kr_download_downloading">文件下载中</string>
+    <string name="kr_color_picker">请选择颜色</string>
+    <string name="kr_invalid_color">输入的色值无效，仅支持类似 #FFFFFFFF 的格式</string>
+
+
+    <string name="kr_shortcut_create_fail">快捷方式创建失败</string>
+    <string name="kr_shortcut_create_success">已发送创建快捷方式申请</string>
+    <string name="kr_shortcut_create">添加快捷方式</string>
+    <string formatted="false" name="kr_shortcut_create_desc">你希望将“%s”添加到桌面，方便快速使用吗？</string>
+    <string name="kr_ushortcut_nsupported">该功能不支持添加快捷方式</string>
+    <string name="kr_script_task_notification">后台任务通知</string>
+    <string name="kr_bg_task_start">后台任务开始运行</string>
+    <string name="kr_script_task_running">开始运行</string>
+    <string name="kr_script_task_has_error">出现错误</string>
+    <string name="kr_script_task_finished">任务结束</string>
+    <string name="kr_bg_task_start_desc">你可以通过系统的通知中心，查看任务运行进度和日志</string>
+    <string name="kr_slice_script_result">脚本输出内容</string>
+    <string name="kr_slice_activity_fail">无法打开活动~</string>
+
+    <string name="kr_page_before_load">准备解析配置</string>
+    <string name="kr_page_loading">解析配置中</string>
+    <string name="kr_page_after_load">配置解析完成</string>
+    <string name="kr_page_load_fail">页面加载失败</string>
+    <string name="kr_page_load_success">页面加载成功</string>
+    <string name="kr_auto_run_item_losted">指定项已丢失</string>
+    <string name="kr_hidden_task_running">已有相同任务在运行</string>
+    <string name="kr_lock_message">此功能已被锁定</string>
+    <string name="kr_sdk_too_low">系统版本过低</string>
+    <string name="kr_sdk_overtop">系统版本过高</string>
+    <string formatted="false" name="kr_sdk_message">此功能只在SDK%d ~ %d的系统运行</string>
+    <string name="kr_sdk_discrepancy">系统版本不符</string>
+    <string formatted="false" name="kr_sdk_discrepancy_message">此功能只在SDK%d的系统运行</string>
+    <string name="picker_not_item">暂无可用选项！</string>
+    <string name="picker_select_none">未选中任何一项！</string>
+    <string name="kr_stop">停止</string>
+    <string name="execute_wait">正在执行，请稍等…</string>
+    <string name="item_chooser_search_hint">搜索</string>
+
+    <string name="kr_hint_text">请输入文本</string>
+    <string name="kr_hint_number">请输入数字</string>
+
     <string name="kr_script_config">kr-script.conf</string>
     <string name="app_name">Kr Scripts</string>
     <string name="pop_before_start">准备中…</string>
@@ -6,13 +70,11 @@
     <string name="pop_permission_checking">检查并获取必需权限…</string>
     <string name="error_root_title">权限警告</string>
     <string name="error_root_message">未能获得ROOT授权，如果你的手机已经ROOT，请在管理器中为本应用授权</string>
-    <string name="btn_exit">退出</string>
     <string name="btn_retry">重试</string>
     <string name="please_wait">请稍等</string>
     <string name="resource_reference_desc">通过输出带有指向资源地址的字符串引用资源</string>
     <string name="downloader_title">下载</string>
     <string name="page_load_failed">页面%1$d 加载失败</string>
-    <string name="copy_success">复制成功</string>
     <string name="title_activity_file_selector">请选择文件</string>
     <string name="title_activity_folder_selector">请长按选择目录</string>
     <string name="framework_author">作者: 嘟嘟ski, buylan\n贡献者: MT启明星</string>
