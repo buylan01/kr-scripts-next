@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.krscripts.app.R
+import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.databinding.KrParamRowBinding
 import com.krscripts.app.model.ActionParamInfo
 import com.krscripts.app.model.SelectItem
@@ -60,7 +61,10 @@ class ParamLayoutRender(
         }
     }
 
-    fun renderList(actionParamInfos: ArrayList<ActionParamInfo>, fileChooser: FileChooserRender.FileChooserInterface?) {
+    fun renderList(
+        actionParamInfos: ArrayList<ActionParamInfo>,
+        startFilePicker: (FilePickerRequest) -> Unit
+    ) {
         for (actionParamInfo in actionParamInfos) {
             val options = actionParamInfo.optionsFromShell
             val render: ParamRenderer =
@@ -80,7 +84,7 @@ class ParamLayoutRender(
                         // SeekBar
                         "seekbar" -> SliderRender(actionParamInfo, context)
                         // FileSelector
-                        "file", "folder" -> FileChooserRender(actionParamInfo, context, fileChooser)
+                        "file", "folder" -> FileChooserRender(actionParamInfo, context, startFilePicker)
                         // AppsSelector
                         "app", "packages" -> AppChooserRender(actionParamInfo, context)
                         // ColorPicker
@@ -153,7 +157,7 @@ class ParamLayoutRender(
         val params = HashMap<String, String>()
         for (renderer in renderers) {
 
-            var value: String? = null
+            var value: String?
             try {
                 value = renderer.getValue()
             } catch (e: Exception) {

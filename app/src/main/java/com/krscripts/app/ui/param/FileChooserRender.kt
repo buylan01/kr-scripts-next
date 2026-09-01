@@ -8,34 +8,16 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.krscripts.app.R
+import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.model.ActionParamInfo
+import com.krscripts.app.model.FileType
 
 class FileChooserRender(
     override var actionParamInfo: ActionParamInfo,
     private var context: Context,
-    private var fileChooser: FileChooserInterface?
+    private var startFilePicker: (FilePickerRequest) -> Unit
 ): ParamRenderer {
     private var editText: TextInputEditText? = null
-
-    interface FileChooserInterface {
-        fun openFileChooser(fileSelectedInterface: FileSelectedInterface): Boolean
-    }
-
-    interface FileSelectedInterface {
-        companion object {
-            val TYPE_FILE: Int
-                get() = 0
-            val TYPE_FOLDER: Int
-                get() = 1
-        }
-
-        fun onFileSelected(path: String?) { }
-        fun onFileSelected(path: Uri?) { }
-        fun mimeType():String?
-        fun suffix():String?
-        fun type(): Int
-    }
-
 
     fun setEditTextReadOnly(view: TextInputEditText) {
         view.setCursorVisible(false)
@@ -68,43 +50,30 @@ class FileChooserRender(
                 endIconDrawable =
                     AppCompatResources.getDrawable(context, R.drawable.baseline_folder_24)
                 setEndIconOnClickListener {
-                    fileChooser?.openFileChooser(object : FileSelectedInterface {
-                        override fun onFileSelected(path: String?) {
-                            if (path.isNullOrEmpty()) {
-                                if (type() == FileSelectedInterface.TYPE_FOLDER) {
-                                    inputLayout.hint =
-                                        context.getString(R.string.kr_please_choose_folder)
-                                } else {
-                                    inputLayout.hint =
-                                        context.getString(R.string.kr_please_choose_file)
-                                }
-                                setText("")
-                            } else {
-                                setText(path)
-                            }
-                        }
+                    val type = when (actionParamInfo.type) {
+                        "folder" -> FileType.FOLDER
+                        else -> FileType.FILE
+                    }
 
-                        override fun mimeType(): String? {
-                            if (actionParamInfo.mime.isNotEmpty()) {
-                                return actionParamInfo.mime
-                            }
-                            return null
-                        }
+                    fun onSelected(uri: Uri) {
+                        val filePath: String? = uri.path
+                        setText(filePath)
+                    }
 
-                        override fun suffix(): String? {
-                            if (actionParamInfo.suffix.isNotEmpty()) {
-                                return actionParamInfo.suffix
-                            }
-                            return null
-                        }
-
-                        override fun type(): Int {
-                            return when (actionParamInfo.type) {
-                                "folder" -> FileSelectedInterface.TYPE_FOLDER
-                                else -> FileSelectedInterface.TYPE_FILE
-                            }
-                        }
-                    })
+                    val data = if (actionParamInfo.suffix.isNotEmpty() || actionParamInfo.type == "folder") {
+                        FilePickerRequest.InternalPicker(
+                            fileType = type,
+                            extension = actionParamInfo.suffix,
+                            onSelected = { onSelected(it) }
+                        )
+                    } else {
+                        FilePickerRequest.SystemPicker(
+                            fileType = type,
+                            mime = actionParamInfo.mime,
+                            onSelected = { onSelected(it) }
+                        )
+                    }
+                    startFilePicker(data)
                 }
             }
 
