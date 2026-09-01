@@ -1,28 +1,30 @@
 package com.krscripts.app
 
 import android.app.Activity
-import android.content.Intent
+import android.net.Uri
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.krscripts.app.config.IconPathAnalysis
 import com.krscripts.app.config.PageConfigReader
 import com.krscripts.app.config.PageConfigSh
+import com.krscripts.app.contracts.FilePickerContract
+import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.model.ActionAfterExecution
 import com.krscripts.app.model.ConfigNode
 import com.krscripts.app.model.ExecutionMode
+import com.krscripts.app.model.FileType
 import com.krscripts.app.model.PageMenuOption
 import com.krscripts.app.model.PageNode
+import com.krscripts.app.shared.FilePathResolver
 import com.krscripts.app.shell.ShellHiddenTask
 import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogLogFragment
 import com.krscripts.app.ui.dialog.ProgressBarDialog
-import com.krscripts.app.ui.param.FileChooserRender
-import com.krscripts.app.util.chooseFilePath
-import com.krscripts.app.util.handleFileSelectorResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +34,16 @@ open class KrActivity: AppCompatActivity() {
     protected val progressBarDialog = ProgressBarDialog(this)
     protected var menuExtra: MutableMap<Int, PageMenuOption> = mutableMapOf()
     protected var menuHandler: String? = null
-    protected var fileSelectorInterface: FileChooserRender.FileSelectedInterface? = null
+    private var pendingFileRequest: FilePickerRequest? = null
+
+    private val launcher = registerForActivityResult(FilePickerContract()) { result ->
+        val request = pendingFileRequest
+        pendingFileRequest = null
+        val uri = result.uri?.let { FilePathResolver().getPath(this, it)?.toUri() }
+        if (uri != null && request != null) {
+            request.onSelected(uri)
+        }
+    }
 
     protected suspend fun PageNode.getConfig(context: Activity, parent: PageNode? = null): ConfigNode? {
         return withContext(Dispatchers.IO) {
@@ -115,37 +126,39 @@ open class KrActivity: AppCompatActivity() {
     }
 
     protected fun menuItemChooseFile(menuOption: PageMenuOption) {
-        fileSelectorInterface = object: FileChooserRender.FileSelectedInterface{
-            override fun onFileSelected(path: String?) {
-                if (path != null) {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        menuItemExecute(menuOption, HashMap<String, String>().apply{
-                            put("state", menuOption.key)
-                            put("menu_id", menuOption.key)
-                            put("file", path)
-                            put("folder", path)
-                        })
-                    }
-                }
-            }
+        val type = when (menuOption.type) {
+            "folder" -> FileType.FOLDER
+            else -> FileType.FILE
+        }
 
-            override fun mimeType(): String? {
-                return menuOption.mime.ifEmpty { null }
-            }
-
-            override fun suffix(): String? {
-                return menuOption.suffix.ifEmpty { null }
-            }
-
-            override fun type(): Int {
-                return when(menuOption.type) {
-                    "folder" -> FileChooserRender.FileSelectedInterface.TYPE_FOLDER
-                    "file" -> FileChooserRender.FileSelectedInterface.TYPE_FILE
-                    else -> FileChooserRender.FileSelectedInterface.TYPE_FILE
+        fun onSelected(uri: Uri) {
+            val path = uri.path
+            if (path != null) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    menuItemExecute(menuOption, HashMap<String, String>().apply{
+                        put("state", menuOption.key)
+                        put("menu_id", menuOption.key)
+                        put("file", path)
+                        put("folder", path)
+                    })
                 }
             }
         }
-        fileSelectorInterface?.let { chooseFilePath(it) }
+
+        val data = if (menuOption.suffix.isNotEmpty() || menuOption.type == "folder") {
+            FilePickerRequest.InternalPicker(
+                fileType = type,
+                extension = menuOption.suffix,
+                onSelected = { onSelected(it) }
+            )
+        } else {
+            FilePickerRequest.SystemPicker(
+                fileType = type,
+                mime = menuOption.mime,
+                onSelected = { onSelected(it) }
+            )
+        }
+        launcher.launch(data)
     }
 
     protected fun createOptionsMenu(
@@ -193,11 +206,5 @@ open class KrActivity: AppCompatActivity() {
                 setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_menu_24))
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        handleFileSelectorResult(this, resultCode, requestCode, data, fileSelectorInterface)
-        fileSelectorInterface = null
-        super.onActivityResult(requestCode, resultCode, data)
     }
 }
