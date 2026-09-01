@@ -256,20 +256,19 @@ open class ActionPage : KrActivity() {
                         actionsLoaded = true
                     }
                 } ?: if (loadFail.isNotEmpty()) {
-                        showDialog(getString(R.string.kr_page_load_fail))
-                        ScriptEnvironment.execute(activity, loadFail, this)
-                        hideDialog()
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                this@ActionPage,
-                                getString(R.string.kr_page_load_fail),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        hideDialog()
-                        finish()
+                    showDialog(getString(R.string.kr_page_load_fail))
+                    ScriptEnvironment.execute(activity, loadFail, this)
+                    hideDialog()
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ActionPage,
+                            getString(R.string.kr_page_load_fail),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    hideDialog()
+                }
             }
         }
     }
