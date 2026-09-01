@@ -3,8 +3,8 @@ package com.krscripts.app
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.view.KeyEvent
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +34,8 @@ class ActivityFileSelector : AppCompatActivity() {
     private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         loadData()
     }
+
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,15 +77,18 @@ class ActivityFileSelector : AppCompatActivity() {
                 }
             }
         }
-    }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && adapterFileSelector != null && adapterFileSelector!!.goParent()) {
-            return true
-        } else {
-            setResult(RESULT_CANCELED, Intent())
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (adapterFileSelector?.hasParent == true) {
+                    adapterFileSelector?.goParent()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
         }
-        return super.onKeyDown(keyCode, event)
+        onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onResume() {
