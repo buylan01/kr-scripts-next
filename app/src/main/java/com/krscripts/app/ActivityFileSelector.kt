@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.krscripts.app.databinding.ActivityFileSelectorBinding
@@ -22,8 +23,6 @@ class ActivityFileSelector : AppCompatActivity() {
     companion object {
         const val MODE_FILE = 0
         const val MODE_FOLDER = 1
-        const val ACTION_FILE_PATH_CHOOSER = 65400
-        const val ACTION_FILE_PATH_CHOOSER_INNER = 65300
     }
 
     private var adapterFileSelector: AdapterFileSelector? = null
@@ -104,7 +103,13 @@ class ActivityFileSelector : AppCompatActivity() {
                 val onSelected =  Runnable {
                     val file: File? = adapterFileSelector!!.selectedFile
                     if (file != null) {
-                        this.setResult(RESULT_OK, Intent().putExtra("file", file.absolutePath))
+                        this.setResult(
+                            RESULT_OK,
+                            Intent().apply {
+                                setData(file.toUri())
+                                putExtra("file", file.absolutePath)
+                            }
+                        )
                         this.finish()
                     }
                 }
