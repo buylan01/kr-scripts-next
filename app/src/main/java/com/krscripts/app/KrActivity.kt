@@ -158,6 +158,7 @@ open class KrActivity: AppCompatActivity() {
                 onSelected = { onSelected(it) }
             )
         }
+        pendingFileRequest = data
         launcher.launch(data)
     }
 
