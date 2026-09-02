@@ -13,6 +13,7 @@ class FilePickerContract : ActivityResultContract<FilePickerRequest, FilePickerR
             is FilePickerRequest.SystemPicker -> {
                 Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, input.isMultiple)
                     type = input.mime
                 }
             }
@@ -20,6 +21,7 @@ class FilePickerContract : ActivityResultContract<FilePickerRequest, FilePickerR
                 Intent(context, ActivityFileSelector::class.java).apply {
                     putExtra("extension", input.extension)
                     putExtra("mode", input.fileType.ordinal)
+                    putExtra("multiple", input.isMultiple)
                 }
             }
         }

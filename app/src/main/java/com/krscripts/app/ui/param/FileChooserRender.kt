@@ -64,12 +64,14 @@ class FileChooserRender(
                         FilePickerRequest.InternalPicker(
                             fileType = type,
                             extension = actionParamInfo.suffix,
+                            isMultiple = actionParamInfo.multiple,
                             onSelected = { onSelected(it) }
                         )
                     } else {
                         FilePickerRequest.SystemPicker(
                             fileType = type,
                             mime = actionParamInfo.mime,
+                            isMultiple = actionParamInfo.multiple,
                             onSelected = { onSelected(it) }
                         )
                     }

@@ -29,6 +29,8 @@ class ActivityFileSelector : AppCompatActivity() {
     var extension = ""
     var mode = MODE_FILE
 
+    private var isMultiple: Boolean = false
+
     private lateinit var binding: ActivityFileSelectorBinding
 
     private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -76,6 +78,7 @@ class ActivityFileSelector : AppCompatActivity() {
                     title = getString(R.string.title_activity_folder_selector)
                 }
             }
+            isMultiple = getBoolean("multiple", false)
         }
 
         backPressedCallback = object : OnBackPressedCallback(true) {

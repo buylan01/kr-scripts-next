@@ -10,11 +10,13 @@ data class FilePickerResult(
 sealed class FilePickerRequest {
     abstract val source: Source
     abstract val fileType: FileType
+    abstract val isMultiple: Boolean
     abstract val onSelected: (Uri) -> Unit
 
     data class SystemPicker(
         override val fileType: FileType,
         override val onSelected: (Uri) -> Unit,
+        override val isMultiple: Boolean = false,
         val mime: String
     ) : FilePickerRequest() {
         override val source = Source.SYSTEM
@@ -23,6 +25,7 @@ sealed class FilePickerRequest {
     data class InternalPicker(
         override val fileType: FileType,
         override val onSelected: (Uri) -> Unit,
+        override val isMultiple: Boolean = false,
         val extension: String
     ) : FilePickerRequest() {
         override val source = Source.INTERNAL

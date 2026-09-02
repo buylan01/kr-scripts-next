@@ -149,6 +149,7 @@ class ActionPageOnline : KrActivity() {
                 val type = when(fileChooserParams?.mode) {
                     FileChooserParams.MODE_OPEN -> FileType.FILE
                     FileChooserParams.MODE_OPEN_FOLDER -> FileType.FOLDER
+                    FileChooserParams.MODE_SAVE -> FileType.FOLDER
                     else -> FileType.FILE
                 }
 
@@ -157,6 +158,7 @@ class ActionPageOnline : KrActivity() {
                     onSelected = {
                         filePathCallback?.onReceiveValue(arrayOf(it))
                     },
+                    isMultiple = fileChooserParams?.mode == FileChooserParams.MODE_OPEN_MULTIPLE,
                     mime = fileChooserParams?.acceptTypes?.firstOrNull() ?: "*/*"
                 )
 
