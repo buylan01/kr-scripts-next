@@ -3,12 +3,13 @@ package com.krscripts.app
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.view.KeyEvent
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.krscripts.app.databinding.ActivityFileSelectorBinding
@@ -22,19 +23,21 @@ class ActivityFileSelector : AppCompatActivity() {
     companion object {
         const val MODE_FILE = 0
         const val MODE_FOLDER = 1
-        const val ACTION_FILE_PATH_CHOOSER = 65400
-        const val ACTION_FILE_PATH_CHOOSER_INNER = 65300
     }
 
     private var adapterFileSelector: AdapterFileSelector? = null
     var extension = ""
     var mode = MODE_FILE
 
+    private var isMultiple: Boolean = false
+
     private lateinit var binding: ActivityFileSelectorBinding
 
     private val manageFileRequester = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         loadData()
     }
+
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,16 +78,20 @@ class ActivityFileSelector : AppCompatActivity() {
                     title = getString(R.string.title_activity_folder_selector)
                 }
             }
+            isMultiple = getBoolean("multiple", false)
         }
-    }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && adapterFileSelector != null && adapterFileSelector!!.goParent()) {
-            return true
-        } else {
-            setResult(RESULT_CANCELED, Intent())
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (adapterFileSelector?.hasParent == true) {
+                    adapterFileSelector?.goParent()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
         }
-        return super.onKeyDown(keyCode, event)
+        onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onResume() {
@@ -104,7 +111,13 @@ class ActivityFileSelector : AppCompatActivity() {
                 val onSelected =  Runnable {
                     val file: File? = adapterFileSelector!!.selectedFile
                     if (file != null) {
-                        this.setResult(RESULT_OK, Intent().putExtra("file", file.absolutePath))
+                        this.setResult(
+                            RESULT_OK,
+                            Intent().apply {
+                                setData(file.toUri())
+                                putExtra("file", file.absolutePath)
+                            }
+                        )
                         this.finish()
                     }
                 }

@@ -29,7 +29,8 @@ class AdapterFileSelector private constructor(
 
     private var items: List<Item> = emptyList()
     private var currentDir: File = rootDir
-    private var hasParent: Boolean = false
+    var hasParent: Boolean = false
+        private set
 
     private var rootDirPath: String = rootDir.absolutePath
     private val extension: String? = extension?.let { if (it.startsWith(".")) it else ".$it" }

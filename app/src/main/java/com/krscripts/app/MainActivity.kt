@@ -27,8 +27,6 @@ import com.krscripts.app.model.PageNode
 import com.krscripts.app.model.RunnableNode
 import com.krscripts.app.ui.ActionListFragment
 import com.krscripts.app.ui.dialog.DialogHelper
-import com.krscripts.app.ui.param.FileChooserRender
-import com.krscripts.app.util.chooseFilePath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -174,11 +172,6 @@ class MainActivity : KrActivity() {
 
             override fun onSubPageClick(pageNode: PageNode) {
                 openPage(pageNode)
-            }
-
-            override fun openFileChooser(fileSelectedInterface: FileChooserRender.FileSelectedInterface): Boolean {
-                fileSelectorInterface = fileSelectedInterface
-                return chooseFilePath(fileSelectedInterface)
             }
         }
     }

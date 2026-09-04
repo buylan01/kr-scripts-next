@@ -21,26 +21,24 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.krscripts.app.contracts.FilePickerContract
+import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.databinding.ActivityActionPageOnlineBinding
+import com.krscripts.app.model.FileType
 import com.krscripts.app.model.PageNode
 import com.krscripts.app.ui.PageMenuLoader
 import com.krscripts.app.ui.dialog.DialogHelper
-import com.krscripts.app.ui.param.FileChooserRender
-import com.krscripts.app.ui.param.FileChooserRender.FileSelectedInterface
-import com.krscripts.app.ui.param.FileChooserRender.FileSelectedInterface.Companion.TYPE_FILE
-import com.krscripts.app.util.chooseFilePath
-import com.krscripts.app.util.handleFileSelectorResult
 
 class ActionPageOnline : KrActivity() {
 
     private lateinit var binding: ActivityActionPageOnlineBinding
     private var pageConfigCompat: PageNode? = null
+    private var pendingFileRequest: FilePickerRequest? = null
 
-    private var fileChooser = object : FileChooserRender.FileChooserInterface {
-        override fun openFileChooser(fileSelectedInterface: FileSelectedInterface): Boolean {
-            fileSelectorInterface = fileSelectedInterface
-            return chooseFilePath(fileSelectedInterface)
-        }
+    private val launcher = registerForActivityResult(FilePickerContract()) { result ->
+        val request = pendingFileRequest
+        pendingFileRequest = null
+        result.uri?.let { request?.onSelected(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,19 +146,25 @@ class ActionPageOnline : KrActivity() {
                 filePathCallback: ValueCallback<Array<Uri>>?,
                 fileChooserParams: FileChooserParams?
             ): Boolean {
-                return fileChooser.openFileChooser(object : FileSelectedInterface {
-                    override fun type(): Int = TYPE_FILE
-                    override fun suffix(): String? = null
-                    override fun mimeType(): String = "*/*"
+                val type = when(fileChooserParams?.mode) {
+                    FileChooserParams.MODE_OPEN -> FileType.FILE
+                    FileChooserParams.MODE_OPEN_FOLDER -> FileType.FOLDER
+                    FileChooserParams.MODE_SAVE -> FileType.FOLDER
+                    else -> FileType.FILE
+                }
 
-                    override fun onFileSelected(path: Uri?) {
-                        if (path == null) {
-                            filePathCallback?.onReceiveValue(null)
-                            return
-                        }
-                        filePathCallback?.onReceiveValue(arrayOf(path))
-                    }
-                })
+                val data = FilePickerRequest.SystemPicker(
+                    fileType = type,
+                    onSelected = {
+                        filePathCallback?.onReceiveValue(arrayOf(it))
+                    },
+                    isMultiple = fileChooserParams?.mode == FileChooserParams.MODE_OPEN_MULTIPLE,
+                    mime = fileChooserParams?.acceptTypes?.firstOrNull() ?: "*/*"
+                )
+
+                pendingFileRequest = data
+                launcher.launch(data)
+                return true
             }
 
             override fun onJsAlert(
@@ -251,11 +255,5 @@ class ActionPageOnline : KrActivity() {
         } else {
             return super.onKeyDown(keyCode, event)
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        handleFileSelectorResult(this, resultCode, requestCode, data, fileSelectorInterface, true)
-        fileSelectorInterface = null
-        super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
@@ -17,6 +18,8 @@ import androidx.lifecycle.lifecycleScope
 import com.krscripts.app.R
 import com.krscripts.app.TryOpenActivity
 import com.krscripts.app.config.IconPathAnalysis
+import com.krscripts.app.contracts.FilePickerContract
+import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.executor.ScriptEnvironment
 import com.krscripts.app.model.ActionNode
 import com.krscripts.app.model.ActionParamInfo
@@ -31,6 +34,7 @@ import com.krscripts.app.model.PickerNode
 import com.krscripts.app.model.RunnableNode
 import com.krscripts.app.model.SelectItem
 import com.krscripts.app.model.SwitchNode
+import com.krscripts.app.shared.FilePathResolver
 import com.krscripts.app.shell.ShellBackground
 import com.krscripts.app.shell.ShellHiddenTask
 import com.krscripts.app.shortcut.ActionShortcutManager
@@ -38,7 +42,6 @@ import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogItemChooser
 import com.krscripts.app.ui.dialog.DialogLogFragment
 import com.krscripts.app.ui.dialog.ProgressBarDialog
-import com.krscripts.app.ui.param.FileChooserRender
 import com.krscripts.app.ui.param.ParamLayoutRender
 import com.krscripts.app.ui.widget.ListItemGroup
 import com.krscripts.app.util.startActivityLink
@@ -47,6 +50,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
+
+    private var pendingFileRequest: FilePickerRequest? = null
+
+    private val launcher = registerForActivityResult(FilePickerContract()) { result ->
+        val request = pendingFileRequest
+        pendingFileRequest = null
+        val uri = result.uri?.let { FilePathResolver().getPath(requireContext(), it)?.toUri() }
+        if (uri != null && request != null) {
+            request.onSelected(uri)
+        }
+    }
+
     companion object {
         fun create(
             actionInfos: ArrayList<NodeInfoBase>?,
@@ -359,26 +374,18 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                     }
 
                     withContext(Dispatchers.Main) {
-                        progressBarDialog.showDialog(
-                            requireContext().getString(R.string.kr_params_render)
-                        )
+                        progressBarDialog.showDialog(requireContext().getString(R.string.kr_params_render))
+
                         val render = ParamLayoutRender(linearLayout, requireActivity())
                         render.renderList(
                             actionParamInfos,
-                            object : FileChooserRender.FileChooserInterface {
-                                override fun openFileChooser(fileSelectedInterface: FileChooserRender.FileSelectedInterface): Boolean {
-                                    return if (krScriptActionHandler == null) {
-                                        false
-                                    } else {
-                                        krScriptActionHandler!!.openFileChooser(
-                                            fileSelectedInterface
-                                        )
-                                    }
-                                }
-                            })
+                            startFilePicker = {
+                                pendingFileRequest = it
+                                launcher.launch(it)
+                            }
+                        )
                         progressBarDialog.hideDialog()
 
-                        // 自定义参数输入界面
                         val customRunner = krScriptActionHandler?.openParamsPage(
                             action,
                             linearLayout
