@@ -1,5 +1,5 @@
 [versions]
-agp = "9.3.2"
+agp = "9.4.0"
 appcompat = "1.7.1"
 coil = "3.6.0"
 constraintlayout = "2.2.1"
