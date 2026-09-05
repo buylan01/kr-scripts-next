@@ -1,10 +1,22 @@
 # Kr Scripts Next
 
-## 简介
-- 利用本框架，通过 `xml + shell` 快速创建具有ROOT权限的玩机工具
-- 如果你对`linux shell`脚本语法有一定了解，上手将会非常迅速
-- 大多数情况下，只需要修改应用`assets`中的静态文件，即可完成功定义和修改
-- 而不需要修改和编译`Java、Kotlin`代码
+XML-driven UI & shell-powered logic.
 
-## 界面展示
-![截图](/docs/screenshots/screenshot.jpg)
+![GitHub Release](https://img.shields.io/github/v/release/buylan01/kr-scripts-next)
+ ![GitHub Actions CI Status](https://img.shields.io/github/actions/workflow/status/buylan01/kr-scripts-next/android.yml) ![License](https://img.shields.io/github/license/buylan01/kr-scripts-next)
+
+## Features
+
+1. **XML-defined UI**
+   Write interfaces using plain-text XML layout files stored in APK assets, similar to native `layout.xml`, readable and editable without binary compilation.
+2. **Shell-powered logic**
+      Bind Android shell scripts/commands to UI events such as click, press, or  toggle. Logic is executed directly via shell when the event fires.
+
+## Usage
+
+- [Get Started](https://buylan01.github.io/kr-scripts-next/Intro.html)
+- [Migrate from KrScripts](https://buylan01.github.io/kr-scripts-next/Migration.html)
+
+## Preview
+
+![preview](/docs/screenshots/screenshot.jpg)
