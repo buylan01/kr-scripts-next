@@ -44,12 +44,12 @@ class PageConfigReader {
 
     constructor(
         context: Context,
-        pageConfig: String,
-        parentDir: String? = null
+        configPath: String,
+        configParent: String? = null
     ) {
         this.context = context
-        this.pageConfig = pageConfig
-        this.parentDir = parentDir ?: ""
+        this.pageConfig = configPath
+        this.parentDir = configParent ?: ""
     }
 
     constructor(context: Context, pageConfigStream: InputStream) {
@@ -386,8 +386,8 @@ class PageConfigReader {
             "desc" -> descNode(node, parser)
             "summary" -> summaryNode(node, parser)
             "resource" -> resourceNode(parser)
-            "html" -> node.onlineHtmlPage = parser.nextText()
-            "config" -> node.pageConfigPath = parser.nextText()
+            "html" -> node.htmlPage = parser.nextText()
+            "config" -> node.configPath = parser.nextText()
             "handler-sh", "handler", "set", "getstate", "script" -> node.pageHandlerSh = parser.nextText()
             "lock", "lock-state" -> node.lockShell = parser.nextText()
             "option", "page-option", "menu", "menu-item" -> {
@@ -429,13 +429,13 @@ class PageConfigReader {
     }
 
     private fun pageNode(page: PageNode, parser: XmlPullParser): PageNode {
-        parser.attr("config")?.let { page.pageConfigPath = it }
-        parser.attr("html")?.let { page.onlineHtmlPage = it }
+        parser.attr("config")?.let { page.configPath = it }
+        parser.attr("html")?.let { page.htmlPage = it }
         parser.attrAny("before-load", "before-read")?.let { page.beforeRead = it }
         parser.attrAny("after-load", "after-read")?.let { page.afterRead = it }
         parser.attrAny("load-ok", "load-success")?.let { page.loadSuccess = it }
         parser.attrAny("load-fail", "load-error")?.let { page.loadFail = it }
-        parser.attr("config-sh")?.let { page.pageConfigSh = it }
+        parser.attr("config-sh")?.let { page.configShell = it }
         parser.attrAny("link", "href")?.let { page.link = it }
         parser.attrAny("activity", "a", "intent")?.let { page.activity = it }
         parser.attrAny("option-sh", "option-su", "options-sh")?.let { page.pageMenuOptionsSh = it }

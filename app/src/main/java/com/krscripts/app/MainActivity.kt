@@ -96,7 +96,7 @@ class MainActivity : KrActivity() {
         binding.toolbar.menu.clear()
         pageConfigCache.forEachIndexed { index, (page, config) ->
             createOptionsMenu(binding.toolbar.menu, binding.fab, config.pageMenuOptions)
-            val menuName = config.title ?: page.pageConfigPath.substringAfterLast('/')
+            val menuName = config.title ?: page.configPath.substringAfterLast('/')
             navMenu.add(menuName).apply {
                 setIcon(R.drawable.baseline_bookmark_24)
                 setOnMenuItemClickListener {

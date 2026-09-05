@@ -48,13 +48,12 @@ open class KrActivity: AppCompatActivity() {
     protected suspend fun PageNode.getConfig(context: Activity, parent: PageNode? = null): ConfigNode? {
         return withContext(Dispatchers.IO) {
             when {
-                pageConfigSh.isNotEmpty() -> {
-                    PageConfigSh(context, pageConfigSh, parent).getConfig()
+                configShell.isNotEmpty() -> {
+                    PageConfigSh(context, configShell, parent).getConfig()
                 }
 
-                pageConfigPath.isNotEmpty() -> {
-                    val parent = pageConfigDir.substringBeforeLast("/")
-                    PageConfigReader(context.applicationContext, pageConfigPath, parent).readConfigXml()
+                configPath.isNotEmpty() -> {
+                    PageConfigReader(context, configPath, pageConfigPath).readConfigXml()
                 }
 
                 else -> null

@@ -118,7 +118,7 @@ object ScriptEnvironment {
 
         val script = buildString {
             if (!nodeInfoBase?.currentPageConfigPath.isNullOrEmpty()) {
-                val configDir = nodeInfoBase.pageConfigDir
+                val configDir = nodeInfoBase.pageConfigPath
                 val configFile = nodeInfoBase.currentPageConfigPath
                 appendExport("PAGE_CONFIG_DIR", configDir)
                 appendExport("PAGE_CONFIG_FILE", configFile)
@@ -153,7 +153,7 @@ object ScriptEnvironment {
         val envParams = params ?: HashMap()
 
         nodeInfo?.let {
-            val configDir = it.pageConfigDir
+            val configDir = it.pageConfigPath
             val configFile = it.currentPageConfigPath
             envParams["PAGE_CONFIG_DIR"] = configDir
             envParams["PAGE_CONFIG_FILE"] = configFile

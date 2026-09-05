@@ -9,16 +9,16 @@ class OpenPageHelper(private var activity: Activity) {
     fun openPage(pageNode: PageNode) {
         try {
             val intent = when {
-                pageNode.onlineHtmlPage.isNotEmpty() -> {
+                pageNode.htmlPage.isNotEmpty() -> {
                     Intent(activity, ActionPageOnline::class.java)
-                        .putExtra("config", pageNode.onlineHtmlPage)
+                        .putExtra("config", pageNode.htmlPage)
                 }
 
-                pageNode.pageConfigSh.isNotEmpty() -> {
+                pageNode.configShell.isNotEmpty() -> {
                     Intent(activity, ActionPage::class.java)
                 }
 
-                pageNode.pageConfigPath.isNotEmpty() -> {
+                pageNode.configPath.isNotEmpty() -> {
                     Intent(activity, ActionPage::class.java)
                 }
 

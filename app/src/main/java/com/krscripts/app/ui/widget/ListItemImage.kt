@@ -52,7 +52,7 @@ class ListItemImage(
             val icon = if (isNetworkImage)
                 config.image
             else {
-                val resolver = PathResolver(context, config.pageConfigDir).resolvePath(config.image)
+                val resolver = PathResolver(context, config.pageConfigPath).resolvePath(config.image)
                 resolver?.inputStream?.close()
                 resolver?.absolutePath
             }

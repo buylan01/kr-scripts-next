@@ -97,7 +97,7 @@ class ActionPageOnline : KrActivity() {
                         PageNode::class.java
                     ) else @Suppress("DEPRECATION") extras.getSerializable("page") as PageNode
                     menuHandler = pageConfigCompat?.pageHandlerSh
-                    initWebview(pageConfigCompat?.onlineHtmlPage)
+                    initWebview(pageConfigCompat?.htmlPage)
                 }
                 extras.containsKey("config") -> initWebview(extras.getString("config"))
                 extras.containsKey("url") -> initWebview(extras.getString("url"))

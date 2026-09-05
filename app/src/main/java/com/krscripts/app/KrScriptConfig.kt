@@ -75,10 +75,10 @@ class KrScriptConfig {
                 val pathConfig = configInfo!![PAGE_LIST_CONFIG]
 
                 shConfig?.split(",")?.forEach { shItem ->
-                    pageNodes.add(PageNode("").apply { pageConfigSh = shItem.trim() })
+                    pageNodes.add(PageNode("").apply { configShell = shItem.trim() })
                 }
                 pathConfig?.split(",")?.forEach { pathItem ->
-                    pageNodes.add(PageNode("").apply { pageConfigPath = pathItem.trim() })
+                    pageNodes.add(PageNode("").apply { configPath = pathItem.trim() })
                 }
             }
             return pageNodes

@@ -5,7 +5,10 @@ import java.io.Serializable
 import java.util.UUID
 
 open class NodeInfoBase(val currentPageConfigPath: String) : Serializable {
-    val pageConfigDir = normalizedConfigPath()
+
+    // The current path storing page config
+    // It is NOT the same as configPath
+    val pageConfigPath = normalizedConfigPath()
 
     private fun normalizedConfigPath(): String {
         val path = currentPageConfigPath

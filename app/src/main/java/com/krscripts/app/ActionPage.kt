@@ -101,7 +101,7 @@ open class ActionPage : KrActivity() {
                     }
                 }
 
-                if (page.onlineHtmlPage.isNotEmpty()) {
+                if (page.htmlPage.isNotEmpty()) {
                     try {
                         startActivity(Intent(this, ActionPageOnline::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -127,7 +127,7 @@ open class ActionPage : KrActivity() {
             }
         }
 
-        if (pageConfigCompat.pageConfigPath.isEmpty() && pageConfigCompat.pageConfigSh.isEmpty()) {
+        if (pageConfigCompat.configPath.isEmpty() && pageConfigCompat.configShell.isEmpty()) {
             setResult(2)
             finish()
         }

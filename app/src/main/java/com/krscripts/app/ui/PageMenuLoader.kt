@@ -17,7 +17,7 @@ class PageMenuLoader(private val applicationContext: Context, private val pageNo
                         if (result != "error") {
                             val items = result.split("\n")
                             for (item in items) {
-                                val option = PageMenuOption(pageConfigPath)
+                                val option = PageMenuOption(configPath)
                                 if (item.contains("|")) {
                                     item.split("|").run {
                                         option.key = this[0]

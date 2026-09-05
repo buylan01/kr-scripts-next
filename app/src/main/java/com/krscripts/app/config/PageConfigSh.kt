@@ -8,16 +8,16 @@ import java.io.ByteArrayInputStream
 
 class PageConfigSh(
     private var activity: Activity,
-    private var pageConfigSh: String,
-    private var parentConfig: PageNode?
+    private var configShell: String,
+    private var configParent: PageNode?
 ) {
 
     fun getConfig(): ConfigNode? {
-        val result = ScriptEnvironment.execute(activity, pageConfigSh, parentConfig).trim()
+        val result = ScriptEnvironment.execute(activity, configShell, configParent).trim()
 
         return when {
             result.endsWith(".xml") -> {
-                PageConfigReader(activity, result, parentConfig?.pageConfigDir).readConfigXml()
+                PageConfigReader(activity, result, configParent?.pageConfigPath).readConfigXml()
             }
             result.startsWith("<?xml") && result.endsWith(">") -> {
                 val inputStream = ByteArrayInputStream(result.toByteArray())

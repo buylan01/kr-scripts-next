@@ -50,7 +50,7 @@ open class ListItemClickable(
                 context = context,
                 view = this,
                 iconPath = config.iconPath,
-                configPath = config.pageConfigDir,
+                configPath = config.pageConfigPath,
                 clip = config.iconClip,
             )
         }

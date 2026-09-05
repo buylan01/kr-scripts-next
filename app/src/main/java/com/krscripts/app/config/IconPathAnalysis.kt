@@ -51,7 +51,7 @@ class IconPathAnalysis {
     ): Drawable? {
         val result = loadDrawable(
             context,
-            clickableNode.pageConfigDir,
+            clickableNode.pageConfigPath,
             clickableNode.logoPath.ifEmpty { clickableNode.iconPath }
         )
 
