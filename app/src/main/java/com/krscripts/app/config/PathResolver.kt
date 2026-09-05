@@ -29,8 +29,8 @@ class PathResolver(
 
         val absolutePath = resolveAbsolutePath(filePath)
         return when {
-            absolutePath.startsWith(ASSETS_PATH_PERFIX) -> openAssetsFile(absolutePath, filePath)?.let {
-                Resolved(it, absolutePath)
+            absolutePath.startsWith(ASSETS_PATH_PERFIX) -> {
+                openAssetsFile(absolutePath, filePath)
             }
             else -> openDiskFile(absolutePath)
         }
@@ -39,15 +39,15 @@ class PathResolver(
     private fun openAssetsFile(
         assetsPath: String,
         originPath: String
-    ): InputStream? {
+    ): Resolved? {
         if (!assetsPath.startsWith(ASSETS_PATH_PERFIX)) return null
         val relativePath = assetsPath.removePrefix(ASSETS_PATH_PERFIX)
         return try {
-            context.assets.open(relativePath)
+            Resolved(context.assets.open(relativePath), assetsPath)
         } catch (_: FileNotFoundException) {
             try {
                 val normalized = PathUtil.normalizePath(originPath)
-                context.assets.open(normalized)
+                Resolved(context.assets.open(normalized), originPath)
             } catch (_: FileNotFoundException) {
                 null
             }
