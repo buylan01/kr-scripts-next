@@ -5,13 +5,16 @@ import android.net.Uri
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import coil3.load
+import coil3.request.crossfade
+import coil3.request.error
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.krscripts.app.config.IconPathAnalysis
 import com.krscripts.app.config.PageConfigReader
 import com.krscripts.app.config.PageConfigSh
+import com.krscripts.app.config.PathResolver
 import com.krscripts.app.contracts.FilePickerContract
 import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.model.ActionAfterExecution
@@ -25,6 +28,7 @@ import com.krscripts.app.shell.ShellHiddenTask
 import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogLogFragment
 import com.krscripts.app.ui.dialog.ProgressBarDialog
+import com.krscripts.app.util.PathUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -186,24 +190,26 @@ open class KrActivity: AppCompatActivity() {
                 onMenuItemClick(menuOption)
             }
 
-            if (menuOption.type == "file" && menuOption.iconPath.isEmpty()) {
-                setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_folder_24))
-            } else if (menuOption.iconPath.isNotEmpty()) {
-                lifecycleScope.launch {
-                    val icon = IconPathAnalysis().loadLogo(context, menuOption, false)
-                    if (icon != null) {
-                        setImageDrawable(icon)
+            val iconResolved = when {
+                menuOption.type == "file" && menuOption.iconPath.isEmpty() ->
+                    AppCompatResources.getDrawable(context, R.drawable.baseline_folder_24)
+
+                menuOption.iconPath.isNotEmpty() -> {
+                    if (PathUtil.isNetworkUri(menuOption.iconPath)) {
+                        menuOption.iconPath
                     } else {
-                        setImageDrawable(
-                            ContextCompat.getDrawable(
-                                context,
-                                R.drawable.baseline_menu_24
-                            )
-                        )
+                        PathResolver(context, menuOption.pageConfigPath)
+                            .resolvePath(menuOption.iconPath)
+                            ?.absolutePath
                     }
                 }
-            } else {
-                setImageDrawable(ContextCompat.getDrawable(context, R.drawable.baseline_menu_24))
+
+                else -> AppCompatResources.getDrawable(context, R.drawable.baseline_menu_24)
+            }
+
+            load(iconResolved) {
+                crossfade(true)
+                error(R.drawable.baseline_menu_24)
             }
         }
     }
