@@ -6,7 +6,6 @@ import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 import java.io.OutputStream
 import java.nio.charset.Charset
-import java.util.Locale
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -41,18 +40,11 @@ class KeepShell(private var rootMode: Boolean = true) {
     private var enterLockTime = 0L
 
     fun checkRoot(): Boolean {
-        val r = doCmdSync(checkRootState).lowercase(Locale.getDefault())
-        return if (r == "error" || r.contains("permission denied") || r.contains("not allowed") || r == "not found") {
-            if (rootMode) {
-                tryExit()
-            }
-            false
-        } else if (r.contains("success")) {
+        val result = doCmdSync(scriptCheckRoot)
+        return if (result == "root") {
             true
         } else {
-            if (rootMode) {
-                tryExit()
-            }
+            if (rootMode) tryExit()
             false
         }
     }
@@ -69,7 +61,7 @@ class KeepShell(private var rootMode: Boolean = true) {
                 reader = p!!.inputStream.bufferedReader()
                 if (rootMode) {
                     out?.run {
-                        write(checkRootState.toByteArray(Charset.defaultCharset()))
+                        write(scriptCheckRoot.toByteArray(Charset.defaultCharset()))
                         flush()
                     }
                 }
@@ -161,21 +153,13 @@ class KeepShell(private var rootMode: Boolean = true) {
     companion object {
         private const val LOCK_TIMEOUT = 10000L
         private const val TAG_START = "|SH>>|"
-        private const val TAG_END = "|<<SH|"
-        private val checkRootState = $$"""
-            if [ "$(id -u)" = "0" ] || [ "$UID" = "0" ] || [ "$(whoami)" = "root" ] || [ "$(set | grep 'USER_ID=0')" == "USER_ID=0" ]; then
-                echo "success"
+        private const val TAG_END = "|<<S1H|"
+        private val scriptCheckRoot = """
+            if [ "$(id -u)" = "0" ]; then
+                echo "root"
             else
-                if [[ -d /cache ]]; then
-                    echo 1 > /cache/vtools_root
-                    if [[ -f /cache/vtools_root ]] && [[ $(cat /cache/vtools_root) == '1' ]]; then
-                        echo "success"
-                        rm -rf /cache/vtools_root
-                        return
-                    fi
-                fi
-                exit 1
+                echo "non-root"
             fi
-            """.trimIndent()
+        """.trimIndent()
     }
 }
