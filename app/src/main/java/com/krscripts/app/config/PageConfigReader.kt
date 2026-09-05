@@ -29,7 +29,6 @@ import com.krscripts.app.model.SwitchNode
 import com.krscripts.app.model.TextNode
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
-import java.util.Locale.getDefault
 
 /**
  * Created by Hello on 2018/04/01.
@@ -273,7 +272,7 @@ class PageConfigReader {
         return value == "1" || value == "true" || extraTokens.contains(value)
     }
 
-    private fun lower(value: String) = value.lowercase(getDefault()).trim { it <= ' ' }
+    private fun lower(value: String) = value.lowercase().trim { it <= ' ' }
 
     private val scriptResultCache = HashMap<String, String>()
 
@@ -353,7 +352,7 @@ class PageConfigReader {
                     if (info.mime.isEmpty()) info.mime = Suffix2Mime().toMime(suffix)
                     info.suffix = suffix
                 }
-                "mime" -> info.mime = attrValue.lowercase(getDefault())
+                "mime" -> info.mime = attrValue.lowercase()
                 "readonly" -> info.readonly = isTruthy(lower(attrValue), "readonly")
                 "maxlength" -> info.maxLength = attrValue.toInt()
                 "min" -> info.min = attrValue.toInt()
@@ -413,7 +412,7 @@ class PageConfigReader {
                 if (option.mime.isEmpty()) option.mime = Suffix2Mime().toMime(suffix)
                 option.suffix = suffix
             }
-            parser.attr("mime")?.let { option.mime = it.lowercase(getDefault()) }
+            parser.attr("mime")?.let { option.mime = it.lowercase() }
             readRunnableNode(parser, option)
 
             option.title = parser.nextText()
@@ -523,7 +522,7 @@ class PageConfigReader {
     private fun rowNode(textNode: TextNode, parser: XmlPullParser) {
         val textRow = TextNode.TextRow()
         for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i).lowercase(getDefault())
+            val attrName = parser.getAttributeName(i).lowercase()
             val attrValue = parser.getAttributeValue(i)
             try {
                 when (attrName) {
