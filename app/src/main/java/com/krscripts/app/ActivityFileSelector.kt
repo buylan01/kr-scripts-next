@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.krscripts.app.databinding.ActivityFileSelectorBinding
 import com.krscripts.app.ui.adapter.AdapterFileSelector
 import com.krscripts.app.ui.dialog.ProgressBarDialog
@@ -47,9 +48,15 @@ class ActivityFileSelector : AppCompatActivity() {
         binding = ActivityFileSelectorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.fileSelector) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fileList) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
@@ -121,13 +128,20 @@ class ActivityFileSelector : AppCompatActivity() {
                         this.finish()
                     }
                 }
-                adapterFileSelector = if (mode == MODE_FOLDER) {
-                    AdapterFileSelector.folderChooser(sdcard, onSelected, ProgressBarDialog(this))
-                } else {
-                    AdapterFileSelector.fileChooser(sdcard, onSelected, ProgressBarDialog(this), extension)
-                }
 
-                binding.fileSelectorList.adapter = adapterFileSelector
+                adapterFileSelector =
+                    AdapterFileSelector(
+                        rootDir = sdcard,
+                        fileSelected = onSelected,
+                        progressBarDialog = ProgressBarDialog(this),
+                        extension = extension,
+                        folderChooserMode = (mode == MODE_FOLDER)
+                    )
+
+                binding.fileList.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = adapterFileSelector
+                }
             }
         } else {
             requestAccessFilesDialog(this, manageFileRequester) {

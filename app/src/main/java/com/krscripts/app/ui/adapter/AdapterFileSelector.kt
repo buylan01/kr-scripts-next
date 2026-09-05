@@ -5,10 +5,10 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.krscripts.app.R
 import com.krscripts.app.ui.dialog.DialogHelper
@@ -19,13 +19,13 @@ import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
-class AdapterFileSelector private constructor(
+class AdapterFileSelector(
     rootDir: File,
     private val fileSelected: Runnable,
     private val progressBarDialog: ProgressBarDialog,
     extension: String?,
     private var folderChooserMode: Boolean = false
-) : BaseAdapter() {
+) : RecyclerView.Adapter<AdapterFileSelector.ViewHolder>() {
 
     private var items: List<Item> = emptyList()
     private var currentDir: File = rootDir
@@ -44,7 +44,7 @@ class AdapterFileSelector private constructor(
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    private class ViewHolder(view: View) {
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(R.id.ItemIcon)
         val title: TextView = view.findViewById(R.id.ItemTitle)
         val text: TextView = view.findViewById(R.id.ItemText)
@@ -94,19 +94,28 @@ class AdapterFileSelector private constructor(
                     .thenBy { it.name.lowercase(Locale.ROOT) }
             )
 
-            val newItems = mutableListOf<Item>()
-            if (newHasParent) {
-                newItems.add(Item.ParentDir(parent))
+            val newItems = buildList {
+                if (newHasParent) {
+                    add(Item.ParentDir(parent))
+                }
+                addAll(sorted.map { Item.FileItem(it) })
             }
-            newItems.addAll(sorted.map { Item.FileItem(it) })
 
             mainHandler.post {
 
                 if (Thread.currentThread().isInterrupted) return@post
+                val oldSize = items.size
                 hasParent = newHasParent
                 currentDir = dir
                 items = newItems
-                notifyDataSetChanged()
+
+                if (oldSize > 0) {
+                    notifyItemRangeRemoved(0, oldSize)
+                }
+                if (items.isNotEmpty()) {
+                    notifyItemRangeInserted(0, items.size)
+                }
+
                 progressBarDialog.hideDialog()
             }
         }
@@ -120,24 +129,18 @@ class AdapterFileSelector private constructor(
         return false
     }
 
-    override fun getCount(): Int = items.size
-
-    override fun getItem(position: Int): Any = items[position]
+    override fun getItemCount(): Int = items.size
 
     override fun getItemId(position: Int): Long = 0L
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view: View
-        val holder: ViewHolder
-        if (convertView == null) {
-            view = LayoutInflater.from(parent.context).inflate(R.layout.file_list_item, parent, false)
-            holder = ViewHolder(view)
-            view.tag = holder
-        } else {
-            view = convertView
-            holder = convertView.tag as ViewHolder
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.file_list_item, parent, false)
+        val holder = ViewHolder(view)
+        return holder
+    }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val view = holder.itemView
         when (
             val item = items[position]
         ) {
@@ -156,7 +159,7 @@ class AdapterFileSelector private constructor(
                     view.setOnClickListener { onDirectoryClick(view, file) }
                     view.setOnLongClickListener(
                         if (folderChooserMode) {
-                            { onFileLongClick(view, file, "选定目录？") }
+                            { onFileLongClick(view, file) }
                         } else null
                     )
                 } else {
@@ -169,7 +172,6 @@ class AdapterFileSelector private constructor(
                 holder.title.text = file.name
             }
         }
-        return view
     }
 
     private fun onDirectoryClick(view: View, dir: File) {
@@ -189,8 +191,8 @@ class AdapterFileSelector private constructor(
         confirmSelection(view, file, "选定文件？")
     }
 
-    private fun onFileLongClick(view: View, file: File, title: String): Boolean {
-        confirmSelection(view, file, title)
+    private fun onFileLongClick(view: View, file: File): Boolean {
+        confirmSelection(view, file, "选定目录？")
         return true
     }
 
@@ -211,37 +213,6 @@ class AdapterFileSelector private constructor(
             bytes < 1024L * 1024L -> String.format(Locale.getDefault(), "%.2fKB", bytes / 1024.0)
             bytes < 1024L * 1024L * 1024L -> String.format(Locale.getDefault(), "%.2fMB", bytes / (1024.0 * 1024.0))
             else -> String.format(Locale.getDefault(), "%.2fGB", bytes / (1024.0 * 1024.0 * 1024.0))
-        }
-    }
-
-    companion object {
-        fun folderChooser(
-            rootDir: File,
-            fileSelected: Runnable,
-            progressBarDialog: ProgressBarDialog
-        ): AdapterFileSelector {
-            return AdapterFileSelector(
-                rootDir = rootDir,
-                fileSelected = fileSelected,
-                progressBarDialog = progressBarDialog,
-                extension = null,
-                folderChooserMode = true
-            )
-        }
-
-        fun fileChooser(
-            rootDir: File,
-            fileSelected: Runnable,
-            progressBarDialog: ProgressBarDialog,
-            extension: String?
-        ): AdapterFileSelector {
-            return AdapterFileSelector(
-                rootDir = rootDir,
-                fileSelected = fileSelected,
-                progressBarDialog = progressBarDialog,
-                extension = extension,
-                folderChooserMode = false
-            )
         }
     }
 }
