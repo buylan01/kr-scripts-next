@@ -128,9 +128,8 @@ open class ActionPage : KrActivity(), PageFragmentHost {
         }
 
         if (savedInstanceState == null) {
-            fragment = PageFragment(
+            fragment = PageFragment.newInstance(
                 pageConfig = pageConfigCompat,
-                host = this,
                 autoRunItemId = autoRunItemId
             )
             supportFragmentManager.beginTransaction()

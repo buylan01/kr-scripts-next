@@ -187,9 +187,8 @@ class MainActivity : KrActivity(), PageFragmentHost {
         }
 
         override fun createFragment(position: Int): Fragment {
-            val fragment = PageFragment(
+            val fragment = PageFragment.newInstance(
                 pageConfig = configCache[position],
-                host = this@MainActivity,
                 pageId = position
             )
             return fragment

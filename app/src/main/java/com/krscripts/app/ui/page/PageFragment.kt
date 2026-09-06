@@ -2,6 +2,7 @@ package com.krscripts.app.ui.page
 
 import android.app.Activity
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -51,12 +52,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageFragment(
-    private val pageConfig: PageNode,
-    private val host: PageFragmentHost?,
-    private val autoRunItemId: String? = null,
-    private val pageId: Int = 0
-) : Fragment(), PageLayoutRender.OnItemClickListener {
+class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
+
+    private var pageConfig: PageNode? = null
+    private var host: PageFragmentHost? = null
+    private var autoRunItemId: String? = null
+    private var pageId: Int = 0
+
+    companion object {
+        fun newInstance(
+            pageConfig: PageNode,
+            autoRunItemId: String? = null,
+            pageId: Int = 0
+        ): PageFragment {
+            val fragment = PageFragment()
+            val args = Bundle()
+            args.putSerializable("pageConfig", pageConfig)
+            args.putString("autoRunItemId", autoRunItemId)
+            args.putInt("pageId", pageId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     private var pendingFileRequest: FilePickerRequest? = null
     private val launcher = registerForActivityResult(FilePickerContract()) { result ->
@@ -76,6 +93,24 @@ class PageFragment(
 
     fun update() {
         loadContent()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        host = context as? PageFragmentHost
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            @Suppress("DEPRECATION")
+            pageConfig = it.getSerializable("pageConfig") as? PageNode
+            autoRunItemId = it.getString("autoRunItemId")
+            pageId = it.getInt("pageId", 0)
+        }
+        if (pageConfig == null) {
+            throw IllegalStateException("PageFragment requires a PageNode argument")
+        }
     }
 
     override fun onCreateView(
@@ -105,7 +140,7 @@ class PageFragment(
         rootGroup = ListItemGroup(this.requireContext(), true, GroupNode(""))
 
         lifecycleScope.launch {
-            loadPageConfig(pageConfig)
+            loadPageConfig(pageConfig!!)
             if (actionInfos != null) {
                 PageLayoutRender(
                     this@PageFragment.requireContext(),
