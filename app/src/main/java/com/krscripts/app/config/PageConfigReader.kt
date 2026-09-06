@@ -65,7 +65,7 @@ class PageConfigReader {
             return pathResolver.resolvePath(pageConfig)?.run {
                 pageConfigAbsPath = this.absolutePath
                 readConfigXml(this.inputStream)
-            } ?: ConfigNode()
+            }
         } catch (ex: Exception) {
             reportParseFailure(ex)
         }
