@@ -213,19 +213,13 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                         hideDialog()
                         actionsLoaded = true
                     }
-                } ?: if (loadFail.isNotEmpty()) {
-                    showDialog(getString(R.string.kr_page_load_fail))
-                    ScriptEnvironment.execute(activity, loadFail, this)
-                    hideDialog()
-                } else {
+                } ?: run {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            activity,
-                            getString(R.string.kr_page_load_fail),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        loadingHelper.postFailed(getString(R.string.kr_page_load_fail))
                     }
-                    hideDialog()
+                    if (loadFail.isNotEmpty()) {
+                        ScriptEnvironment.execute(activity, loadFail, this)
+                    }
                 }
             }
     }

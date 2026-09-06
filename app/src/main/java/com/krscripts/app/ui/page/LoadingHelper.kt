@@ -31,6 +31,11 @@ open class LoadingHelper(
         loadingIndicator = null
     }
 
+    fun postFailed(message: String) {
+        showDialog(message)
+        loadingIndicator?.visibility = View.GONE
+    }
+
     fun showDialog(text: String = "加载中…", delayMillis: Long = 300L) {
 
         if (loadingIndicator != null && loadingText != null) {
