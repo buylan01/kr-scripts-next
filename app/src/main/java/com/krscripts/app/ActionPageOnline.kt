@@ -210,6 +210,11 @@ class ActionPageOnline : KrActivity() {
                 super.onProgressChanged(view, newProgress)
                 binding.progressBar.progress = newProgress
             }
+
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                super.onReceivedTitle(view, title)
+                binding.toolbar.title = title
+            }
         }
 
         binding.krOnlineWebview.webViewClient = object : WebViewClient() {
