@@ -1,9 +1,10 @@
 package com.krscripts.app
 
-import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
@@ -12,26 +13,24 @@ import coil3.load
 import coil3.request.crossfade
 import coil3.request.error
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.krscripts.app.config.PageConfigReader
-import com.krscripts.app.config.PageConfigSh
+import com.krscripts.app.config.IconPathAnalysis
 import com.krscripts.app.config.PathResolver
 import com.krscripts.app.contracts.FilePickerContract
 import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.model.ActionAfterExecution
-import com.krscripts.app.model.ConfigNode
+import com.krscripts.app.model.ClickableNode
 import com.krscripts.app.model.ExecutionMode
 import com.krscripts.app.model.FileType
 import com.krscripts.app.model.PageMenuOption
-import com.krscripts.app.model.PageNode
 import com.krscripts.app.shared.FilePathResolver
 import com.krscripts.app.shell.ShellHiddenTask
+import com.krscripts.app.shortcut.ActionShortcutManager
 import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogLogFragment
 import com.krscripts.app.ui.dialog.ProgressBarDialog
 import com.krscripts.app.util.PathUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 open class KrActivity: AppCompatActivity() {
 
@@ -49,18 +48,29 @@ open class KrActivity: AppCompatActivity() {
         }
     }
 
-    protected suspend fun PageNode.getConfig(context: Activity, parent: PageNode? = null): ConfigNode? {
-        return withContext(Dispatchers.IO) {
-            when {
-                configShell.isNotEmpty() -> {
-                    PageConfigSh(context, configShell, parent).getConfig()
+    protected fun createShortcut(
+        intent: Intent?,
+        node: ClickableNode
+    ) {
+        if (intent != null) {
+            DialogHelper.openConfirmAlert(
+                this,
+                getString(R.string.kr_shortcut_create),
+                String.format(getString(R.string.kr_shortcut_create_desc), node.title)
+            ) {
+                lifecycleScope.launch {
+                    val result = ActionShortcutManager(this@KrActivity)
+                        .addShortcut(
+                            intent,
+                            IconPathAnalysis().loadLogo(this@KrActivity, node),
+                            node
+                        )
+                    Toast.makeText(
+                        this@KrActivity,
+                        if (result) R.string.kr_shortcut_create_success else R.string.kr_shortcut_create_fail,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-                configPath.isNotEmpty() -> {
-                    PageConfigReader(context, configPath, pageConfigPath).readConfigXml()
-                }
-
-                else -> null
             }
         }
     }

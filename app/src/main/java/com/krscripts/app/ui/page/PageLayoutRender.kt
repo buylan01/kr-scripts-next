@@ -1,4 +1,4 @@
-package com.krscripts.app.ui
+package com.krscripts.app.ui.page
 
 import android.content.Context
 import android.os.Handler

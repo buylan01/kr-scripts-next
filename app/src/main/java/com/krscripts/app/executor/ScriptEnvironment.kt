@@ -12,9 +12,8 @@ import com.krscripts.app.shared.FileWrite.getPrivateFileDir
 import com.krscripts.app.shared.FileWrite.getPrivateFilePath
 import com.krscripts.app.shared.FileWrite.writePrivateFile
 import com.krscripts.app.shared.FileWrite.writePrivateShellFile
-import com.krscripts.app.shell.KeepShell
+import com.krscripts.app.shell.KeepShellPublic
 import com.krscripts.app.shell.KeepShellPublic.checkRoot
-import com.krscripts.app.shell.KeepShellPublic.getDefaultInstance
 import com.krscripts.app.shell.ShellTranslation
 import com.krscripts.app.util.MD5
 import java.io.DataOutputStream
@@ -28,7 +27,6 @@ object ScriptEnvironment {
     private var environmentPath = ""
     private var TOOLKIT_DIR: String? = ""
     private var rooted = false
-    private var privateShell: KeepShell? = null
     @SuppressLint("StaticFieldLeak")
     private var shellTranslation: ShellTranslation? = null
     @SuppressLint("StaticFieldLeak")
@@ -91,8 +89,6 @@ object ScriptEnvironment {
                 putString("toolkitDir", toolkitDir)
             }
 
-            privateShell = if (rooted) getDefaultInstance() else KeepShell(false)
-
             return isInitialed
         } catch (_: Exception) {
             return false
@@ -137,7 +133,7 @@ object ScriptEnvironment {
             append("${if (rooted) "" else "sh " }$environmentPath \"$path\"")
         }
 
-        val cmdResult = privateShell!!.doCmdSync(script)
+        val cmdResult = KeepShellPublic.doCmdSync(script)
         return shellTranslation?.resolveRow(cmdResult) ?: cmdResult
     }
 

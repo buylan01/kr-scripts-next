@@ -1,6 +1,5 @@
 package com.krscripts.app
 
-import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -9,30 +8,26 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.krscripts.app.databinding.ActivityActionPageBinding
 import com.krscripts.app.executor.ScriptEnvironment
 import com.krscripts.app.model.ActionAfterExecution
-import com.krscripts.app.model.AutoRunTask
 import com.krscripts.app.model.ClickableNode
-import com.krscripts.app.model.KrScriptActionHandler
+import com.krscripts.app.model.ConfigNode
 import com.krscripts.app.model.PageMenuOption
 import com.krscripts.app.model.PageNode
 import com.krscripts.app.model.RunnableNode
 import com.krscripts.app.shortcut.ActionShortcutManager
-import com.krscripts.app.ui.ActionListFragment
-import com.krscripts.app.ui.PageMenuLoader
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.krscripts.app.ui.page.PageFragment
+import com.krscripts.app.ui.page.PageFragmentHost
+import com.krscripts.app.ui.page.PageMenuLoader
 
 
-open class ActionPage : KrActivity() {
+open class ActionPage : KrActivity(), PageFragmentHost {
 
-    private var actionsLoaded = false
     private lateinit var pageConfigCompat: PageNode
     private var autoRunItemId: String? = null
     private lateinit var binding: ActivityActionPageBinding
+    private var fragment: PageFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +50,7 @@ open class ActionPage : KrActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            v.setPadding(systemBars.left, 0, systemBars.right, 0)
             insets
         }
 
@@ -132,137 +127,57 @@ open class ActionPage : KrActivity() {
             finish()
         }
 
-        loadPageConfig()
-    }
-
-    private var actionShortClickHandler = object : KrScriptActionHandler {
-        override fun onActionCompleted(runnableNode: RunnableNode) {
-            if (runnableNode.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
-                finishAndRemoveTask()
-            } else if (runnableNode.reloadPage) {
-                loadPageConfig()
-            }
-        }
-
-        override fun createShortcut(clickableNode: ClickableNode, createShortcutHandler: KrScriptActionHandler.CreateShortcutHandler) {
-            val page = clickableNode as? PageNode
-                ?: if (clickableNode is RunnableNode) {
-                    pageConfigCompat
-                } else {
-                    return
-                }
-
-            val intent = Intent()
-
-            intent.component = ComponentName(this@ActionPage.applicationContext, ActionPage::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            if (clickableNode is RunnableNode) {
-                intent.putExtra("autoRunItemId", clickableNode.key)
-            }
-
-            intent.putExtra("page", page)
-
-            createShortcutHandler.onCreateShortcut(clickableNode, intent)
-        }
-
-        override fun onSubPageClick(pageNode: PageNode) {
-            OpenPageHelper(this@ActionPage).openPage(pageNode)
+        if (savedInstanceState == null) {
+            fragment = PageFragment(
+                pageConfig = pageConfigCompat,
+                host = this,
+                autoRunItemId = autoRunItemId
+            )
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_list, fragment!!)
+                .commitNow()
         }
     }
 
-    private suspend fun showDialog(msg: String) = withContext(Dispatchers.Main) {
-        progressBarDialog.showDialog(msg)
-    }
+    override fun onPageConfigLoaded(pageNode: PageNode, config: ConfigNode, pageId: Int) {
+        val menuOptions: ArrayList<PageMenuOption> = ArrayList()
 
-    private suspend fun hideDialog() = withContext(Dispatchers.Main) {
-        progressBarDialog.hideDialog()
-    }
-
-    private fun loadPageConfig() {
-        val activity = this
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            pageConfigCompat.run {
-                if (beforeRead.isNotEmpty()) {
-                    showDialog(getString(R.string.kr_page_before_load))
-                    ScriptEnvironment.execute(activity, beforeRead, this)
-                }
-
-                showDialog(getString(R.string.kr_page_loading))
-
-                val config = getConfig(this@ActionPage, this)
-
-                if (afterRead.isNotEmpty()) {
-                    showDialog(getString(R.string.kr_page_after_load))
-                    ScriptEnvironment.execute(activity, afterRead, this)
-                }
-
-                config?.let { config ->
-                    if (loadSuccess.isNotEmpty()) {
-                        showDialog(getString(R.string.kr_page_load_success))
-                        ScriptEnvironment.execute(activity, loadSuccess, this)
-                    }
-
-                    withContext(Dispatchers.Main) {
-                        val autoRunTask = if (actionsLoaded) null else object : AutoRunTask {
-                            override val key = autoRunItemId
-                            override fun onCompleted(result: Boolean?) {
-                                if (result != true) {
-                                    Toast.makeText(
-                                        this@ActionPage,
-                                        getString(R.string.kr_auto_run_item_losted),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-
-                        val menuOptions: ArrayList<PageMenuOption> = ArrayList()
-
-                        PageMenuLoader(applicationContext, pageConfigCompat).load()?.let {
-                            menuOptions.addAll(it)
-                        }
-
-                        config.pageMenuOptions.let {
-                            menuOptions.addAll(it)
-                        }
-
-                        binding.toolbar.menu.clear()
-                        createOptionsMenu(binding.toolbar.menu, binding.actionPageFab, menuOptions)
-
-                        menuHandler = if (config.pageHandlerSh.isNullOrEmpty()) {
-                            pageConfigCompat.pageHandlerSh
-                        } else {
-                            (if (pageConfigCompat.pageHandlerSh.isNotEmpty()) "echo 已忽略引用处handler" else "") + config.pageHandlerSh
-                        }
-
-                        val fragment = ActionListFragment.create(
-                            config.content,
-                            actionShortClickHandler,
-                            autoRunTask
-                        )
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_list, fragment)
-                            .commitAllowingStateLoss()
-                        hideDialog()
-                        actionsLoaded = true
-                    }
-                } ?: if (loadFail.isNotEmpty()) {
-                    showDialog(getString(R.string.kr_page_load_fail))
-                    ScriptEnvironment.execute(activity, loadFail, this)
-                    hideDialog()
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@ActionPage,
-                            getString(R.string.kr_page_load_fail),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    hideDialog()
-                }
-            }
+        PageMenuLoader(applicationContext, pageConfigCompat).load()?.let {
+            menuOptions.addAll(it)
         }
+
+        config.pageMenuOptions.let {
+            menuOptions.addAll(it)
+        }
+
+        binding.toolbar.menu.clear()
+        createOptionsMenu(binding.toolbar.menu, binding.actionPageFab, menuOptions)
+
+        menuHandler = if (config.pageHandlerSh.isNullOrEmpty()) {
+            pageConfigCompat.pageHandlerSh
+        } else {
+            (if (pageConfigCompat.pageHandlerSh.isNotEmpty()) "echo 已忽略引用处handler" else "") + config.pageHandlerSh
+        }
+    }
+
+    override fun openSubPage(pageNode: PageNode) {
+        OpenPageHelper(this).openPage(pageNode)
+    }
+
+    override fun createShortcut(
+        clickableNode: ClickableNode,
+        intent: Intent
+    ) {
+        createShortcut(intent, clickableNode)
+    }
+
+    override fun onRunnableNodeCompleted(runnableNode: RunnableNode) {
+        if (runnableNode.afterExecution == ActionAfterExecution.FINISH_ACTIVITY) {
+            finish()
+        }
+    }
+
+    override fun onReload() {
+        fragment?.update()
     }
 }

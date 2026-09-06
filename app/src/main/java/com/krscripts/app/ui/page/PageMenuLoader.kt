@@ -1,4 +1,4 @@
-package com.krscripts.app.ui
+package com.krscripts.app.ui.page
 
 import android.content.Context
 import com.krscripts.app.executor.ScriptEnvironment
@@ -27,6 +27,7 @@ class PageMenuLoader(private val applicationContext: Context, private val pageNo
                                     option.key = item
                                     option.title = item
                                 }
+                                menuOptions?.add(option)
                             }
                         }
                     } else if (pageMenuOptions != null) {

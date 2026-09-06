@@ -1,5 +1,7 @@
-package com.krscripts.app.ui
+package com.krscripts.app.ui.page
 
+import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -15,9 +17,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.krscripts.app.ActionPage
 import com.krscripts.app.R
 import com.krscripts.app.TryOpenActivity
-import com.krscripts.app.config.IconPathAnalysis
+import com.krscripts.app.config.PageConfigReader
+import com.krscripts.app.config.PageConfigSh
 import com.krscripts.app.contracts.FilePickerContract
 import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.executor.ScriptEnvironment
@@ -25,9 +29,9 @@ import com.krscripts.app.model.ActionNode
 import com.krscripts.app.model.ActionParamInfo
 import com.krscripts.app.model.AutoRunTask
 import com.krscripts.app.model.ClickableNode
+import com.krscripts.app.model.ConfigNode
 import com.krscripts.app.model.ExecutionMode
 import com.krscripts.app.model.GroupNode
-import com.krscripts.app.model.KrScriptActionHandler
 import com.krscripts.app.model.NodeInfoBase
 import com.krscripts.app.model.PageNode
 import com.krscripts.app.model.PickerNode
@@ -37,11 +41,9 @@ import com.krscripts.app.model.SwitchNode
 import com.krscripts.app.shared.FilePathResolver
 import com.krscripts.app.shell.ShellBackground
 import com.krscripts.app.shell.ShellHiddenTask
-import com.krscripts.app.shortcut.ActionShortcutManager
 import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogItemChooser
 import com.krscripts.app.ui.dialog.DialogLogFragment
-import com.krscripts.app.ui.dialog.ProgressBarDialog
 import com.krscripts.app.ui.param.ParamLayoutRender
 import com.krscripts.app.ui.widget.ListItemGroup
 import com.krscripts.app.util.startActivityLink
@@ -49,10 +51,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
+class PageFragment(
+    private val pageConfig: PageNode,
+    private val host: PageFragmentHost?,
+    private val autoRunItemId: String? = null,
+    private val pageId: Int = 0
+) : Fragment(), PageLayoutRender.OnItemClickListener {
 
     private var pendingFileRequest: FilePickerRequest? = null
-
     private val launcher = registerForActivityResult(FilePickerContract()) { result ->
         val request = pendingFileRequest
         pendingFileRequest = null
@@ -62,98 +68,152 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         }
     }
 
-    companion object {
-        fun create(
-            actionInfos: ArrayList<NodeInfoBase>?,
-            krScriptActionHandler: KrScriptActionHandler? = null,
-            autoRunTask: AutoRunTask? = null,
-            fitNavigationBar: Boolean = true
-        ): ActionListFragment {
-            val fragment = ActionListFragment()
-            fragment.setListData(actionInfos, krScriptActionHandler, autoRunTask)
-            fragment.fitNavigationBar = fitNavigationBar
-            return fragment
-        }
-    }
-
     private var actionInfos: ArrayList<NodeInfoBase>? = null
-
-    private lateinit var progressBarDialog: ProgressBarDialog
-    private var krScriptActionHandler: KrScriptActionHandler? = null
+    private lateinit var loadingHelper: LoadingHelper
     private var autoRunTask: AutoRunTask? = null
-    private var fitNavigationBar = true
-
-    fun update(
-        newItems: ArrayList<NodeInfoBase>?,
-        newHandler: KrScriptActionHandler? = null,
-        newAutoRunTask: AutoRunTask? = null
-    ) {
-        if (newItems.isNullOrEmpty()) return
-
-        actionInfos = newItems
-        krScriptActionHandler = newHandler ?: this.krScriptActionHandler
-        autoRunTask = newAutoRunTask ?: this.autoRunTask
-
-        val scrollView = view?.findViewById<NestedScrollView>(R.id.kr_content) ?: return
-
-        scrollView.removeAllViews()
-        rootGroup = ListItemGroup(requireContext(), true, GroupNode(""))
-        PageLayoutRender(requireContext(), newItems, this, rootGroup)
-        scrollView.addView(rootGroup.getView())
-
-        triggerAction(autoRunTask)
-    }
-
-    private fun setListData(
-        actionInfos: ArrayList<NodeInfoBase>?,
-        krScriptActionHandler: KrScriptActionHandler? = null,
-        autoRunTask: AutoRunTask? = null
-    ) {
-        if (actionInfos != null) {
-            this.actionInfos = actionInfos
-            this.krScriptActionHandler = krScriptActionHandler
-            this.autoRunTask = autoRunTask
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.kr_action_list_fragment, container, false)
-    }
-
-
+    private var actionsLoaded = false
     private lateinit var rootGroup: ListItemGroup
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.alpha = 0f
-        super.onViewCreated(view, savedInstanceState)
-        this.progressBarDialog = ProgressBarDialog(this.requireActivity())
 
+    fun update() {
+        loadContent()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_page, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadingHelper = LoadingHelper(view.findViewById(R.id.loading_container))
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.page_content)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(0, 0, 0, systemBars.bottom)
+            insets
+        }
+
+        loadContent()
+    }
+
+    private fun loadContent() {
+        val contentView = view?.findViewById<NestedScrollView?>(R.id.page_content)
+
+        contentView?.alpha = 0f
         rootGroup = ListItemGroup(this.requireContext(), true, GroupNode(""))
 
-        if (actionInfos != null) {
-            PageLayoutRender(this.requireContext(), actionInfos!!, this, rootGroup)
-            val layout = rootGroup.getView()
+        lifecycleScope.launch {
+            loadPageConfig(pageConfig)
+            if (actionInfos != null) {
+                PageLayoutRender(
+                    this@PageFragment.requireContext(),
+                    actionInfos!!,
+                    this@PageFragment,
+                    rootGroup
+                )
+                val layout = rootGroup.getView()
 
-            val rootView = (this.view?.findViewById<NestedScrollView?>(R.id.kr_content))
-
-            if (fitNavigationBar) {
-                ViewCompat.setOnApplyWindowInsetsListener(rootView as View) { v, insets ->
-                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    v.setPadding(0, 0, 0, systemBars.bottom)
-                    insets
-                }
+                contentView?.removeAllViews()
+                contentView?.addView(layout)
+                triggerAction(autoRunTask)
             }
 
-            rootView?.removeAllViews()
-            rootView?.addView(layout)
-            triggerAction(autoRunTask)
+            contentView?.animate()?.alpha(1f)?.setDuration(220)?.start()
         }
-
-        view.animate()
-            .alpha(1f)
-            .setDuration(220)
-            .start()
     }
+
+    private suspend fun showDialog(msg: String) = withContext(Dispatchers.Main) {
+        loadingHelper.showDialog(msg)
+    }
+
+    private suspend fun hideDialog() = withContext(Dispatchers.Main) {
+        loadingHelper.hideDialog()
+    }
+
+    private suspend fun loadPageConfig(
+        pageConfig: PageNode
+    ) = withContext(Dispatchers.IO){
+        val activity = this@PageFragment.requireActivity()
+            pageConfig.run {
+                if (beforeRead.isNotEmpty()) {
+                    showDialog(getString(R.string.kr_page_before_load))
+                    ScriptEnvironment.execute(activity, beforeRead, this)
+                }
+
+                showDialog(getString(R.string.kr_page_loading))
+
+                val config = getConfig(activity, this)
+
+                if (afterRead.isNotEmpty()) {
+                    showDialog(getString(R.string.kr_page_after_load))
+                    ScriptEnvironment.execute(activity, afterRead, this)
+                }
+
+                config?.let { config ->
+                    if (loadSuccess.isNotEmpty()) {
+                        showDialog(getString(R.string.kr_page_load_success))
+                        ScriptEnvironment.execute(activity, loadSuccess, this)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        val autoRunTask = if (actionsLoaded) null else object : AutoRunTask {
+                            override val key = autoRunItemId
+                            override fun onCompleted(result: Boolean?) {
+                                if (result != true) {
+                                    Toast.makeText(
+                                        activity,
+                                        getString(R.string.kr_auto_run_item_losted),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+
+                        host?.onPageConfigLoaded(pageConfig, config, pageId)
+
+                        this@PageFragment.autoRunTask = autoRunTask
+                        this@PageFragment.actionInfos = config.content
+                        hideDialog()
+                        actionsLoaded = true
+                    }
+                } ?: if (loadFail.isNotEmpty()) {
+                    showDialog(getString(R.string.kr_page_load_fail))
+                    ScriptEnvironment.execute(activity, loadFail, this)
+                    hideDialog()
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.kr_page_load_fail),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    hideDialog()
+                }
+            }
+    }
+
+    private suspend fun PageNode.getConfig(context: Activity, parent: PageNode? = null): ConfigNode? {
+        return withContext(Dispatchers.IO) {
+            when {
+                configShell.isNotEmpty() -> {
+                    PageConfigSh(context, configShell, parent).getConfig()
+                }
+
+                configPath.isNotEmpty() -> {
+                    PageConfigReader(context, configPath, pageConfigPath).readConfigXml()
+                }
+
+                else -> null
+            }
+        }
+    }
+
+    // ----------------------
+    //    ActionPageContent
+    // ----------------------
 
     private fun triggerAction(autoRunTask: AutoRunTask?) {
         autoRunTask?.run {
@@ -219,7 +279,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                 TryOpenActivity(context, item.activity).tryOpen()
             }
             else -> {
-                krScriptActionHandler?.onSubPageClick(item)
+                host?.openSubPage(item)
             }
         }
     }
@@ -235,30 +295,26 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                 getString(R.string.kr_ushortcut_nsupported)
             )
         } else {
-            krScriptActionHandler?.createShortcut(clickableNode, object : KrScriptActionHandler.CreateShortcutHandler {
-                override fun onCreateShortcut(clickableNode: ClickableNode, intent: Intent?) {
-                    if (intent != null) {
-                        DialogHelper.openConfirmAlert(context,
-                                getString(R.string.kr_shortcut_create),
-                                String.format(getString(R.string.kr_shortcut_create_desc), clickableNode.title)
-                        ) {
-                            lifecycleScope.launch {
-                                val result = ActionShortcutManager(context)
-                                    .addShortcut(
-                                        intent,
-                                        IconPathAnalysis().loadLogo(context, clickableNode),
-                                        clickableNode
-                                    )
-                                    Toast.makeText(
-                                        context,
-                                        if (result) R.string.kr_shortcut_create_success else R.string.kr_shortcut_create_fail,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                            }
-                        }
-                    }
+            var page = clickableNode as? PageNode
+            if (page == null) {
+                if (clickableNode is RunnableNode) {
+                    page = pageConfig
+                } else {
+                    return
                 }
-            })
+            }
+
+            val intent = Intent()
+
+            intent.component = ComponentName(this@PageFragment.requireContext().applicationContext, ActionPage::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            if (clickableNode is RunnableNode) {
+                intent.putExtra("autoRunItemId", clickableNode.key)
+            }
+
+            intent.putExtra("page", page)
+            host?.createShortcut(clickableNode, intent)
         }
     }
 
@@ -286,7 +342,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         paramInfo.optionsSh = item.optionsSh
         paramInfo.separator = item.separator
 
-        progressBarDialog.showDialog(getString(R.string.kr_param_options_load))
+        loadingHelper.showDialog(getString(R.string.kr_param_options_load))
 
         lifecycleScope.launch(Dispatchers.IO) {
             // 获取当前值
@@ -301,7 +357,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             }
 
             withContext(Dispatchers.IO) {
-                progressBarDialog.hideDialog()
+                loadingHelper.hideDialog()
 
                 if (optionsSorted != null) {
                     DialogItemChooser(optionsSorted, item.multiple, onConfirm = { items, _ ->
@@ -328,7 +384,8 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                         }
                     }).show(requireActivity().supportFragmentManager, "picker-item-chooser")
                 } else {
-                    Toast.makeText(context, getString(R.string.picker_not_item), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.picker_not_item), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }.start()
@@ -356,25 +413,25 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                 val linearLayout =
                     layoutInflater.inflate(R.layout.kr_params_list, null) as LinearLayout
 
-                progressBarDialog.showDialog(this.requireContext().getString(R.string.onloading))
+                loadingHelper.showDialog(this.requireContext().getString(R.string.onloading))
                 lifecycleScope.launch(Dispatchers.IO) {
                     for (actionParamInfo in actionParamInfos) {
                         withContext(Dispatchers.Main) {
-                            progressBarDialog.showDialog(requireContext().getString(R.string.kr_param_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
+                            loadingHelper.showDialog(requireContext().getString(R.string.kr_param_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
                         }
                         if (actionParamInfo.valueShell != null) {
                             actionParamInfo.valueFromShell =
                                 executeScriptGetResult(actionParamInfo.valueShell!!, action)
                         }
                         withContext(Dispatchers.Main) {
-                            progressBarDialog.showDialog(requireContext().getString(R.string.kr_param_options_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
+                            loadingHelper.showDialog(requireContext().getString(R.string.kr_param_options_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
                         }
                         actionParamInfo.optionsFromShell =
                             getParamOptions(actionParamInfo, action) // 获取参数的可用选项
                     }
 
                     withContext(Dispatchers.Main) {
-                        progressBarDialog.showDialog(requireContext().getString(R.string.kr_params_render))
+                        loadingHelper.showDialog(requireContext().getString(R.string.kr_params_render))
 
                         val render = ParamLayoutRender(linearLayout, requireActivity())
                         render.renderList(
@@ -384,12 +441,20 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                                 launcher.launch(it)
                             }
                         )
-                        progressBarDialog.hideDialog()
+                        loadingHelper.hideDialog()
 
-                        val customRunner = krScriptActionHandler?.openParamsPage(
-                            action,
-                            linearLayout
-                        ) {
+                        // 内置的参数输入界面
+                        val isLongList = (action.params != null && action.params!!.size > 4)
+                        val dialogView = LayoutInflater.from(context).inflate(
+                            if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small,
+                            null
+                        )
+                        val center =
+                            dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
+                        center.removeAllViews()
+                        center.addView(linearLayout)
+
+                        val onConfirm = {
                             try {
                                 val params = render.readParamsValue()
                                 actionExecute(action, script, params, onFinish)
@@ -402,62 +467,37 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                             }
                         }
 
-                        // 内置的参数输入界面
-                        if (customRunner != true) {
-                            val isLongList = (action.params != null && action.params!!.size > 4)
-                            val dialogView = LayoutInflater.from(context).inflate(
-                                if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small,
-                                null
+                        if (isLongList) {
+                            DialogHelper.showFullScreenDialog(
+                                context = requireActivity(),
+                                view = dialogView,
+                                title = action.title,
+                                message = "",
+                                onConfirm = onConfirm
                             )
-                            val center = dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
-                            center.removeAllViews()
-                            center.addView(linearLayout)
+                        } else {
+                            DialogHelper.showDialog(
+                                context = requireActivity(),
+                                view = dialogView,
+                                title = action.title,
+                                message = "",
+                                onConfirm = onConfirm
+                            )
+                        }
 
-                            val onConfirm = {
-                                try {
-                                    val params = render.readParamsValue()
-                                    actionExecute(action, script, params, onFinish)
-                                } catch (ex: Exception) {
-                                    Toast.makeText(
-                                        context,
-                                        ex.message,
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            }
+                        val warn = dialogView.findViewById<TextView>(R.id.warn)
+                        val desc = dialogView.findViewById<TextView>(R.id.desc)
 
-                            if (isLongList) {
-                                DialogHelper.showFullScreenDialog(
-                                    context = requireActivity(),
-                                    view = dialogView,
-                                    title = action.title,
-                                    message = "",
-                                    onConfirm = onConfirm
-                                )
-                            } else {
-                                DialogHelper.showDialog(
-                                    context = requireActivity(),
-                                    view = dialogView,
-                                    title = action.title,
-                                    message = "",
-                                    onConfirm = onConfirm
-                                )
-                            }
+                        if (action.warning.isEmpty()) {
+                            warn.visibility = View.GONE
+                        } else {
+                            warn.text = action.warning
+                        }
 
-                            val warn = dialogView.findViewById<TextView>(R.id.warn)
-                            val desc = dialogView.findViewById<TextView>(R.id.desc)
-
-                            if (action.warning.isEmpty()) {
-                                warn.visibility = View.GONE
-                            } else {
-                                warn.text = action.warning
-                            }
-
-                            if (action.desc.isEmpty()) {
-                                desc.visibility = View.GONE
-                            } else {
-                                desc.text = action.desc
-                            }
+                        if (action.desc.isEmpty()) {
+                            desc.visibility = View.GONE
+                        } else {
+                            desc.text = action.desc
                         }
                     }
                 }.start()
@@ -546,6 +586,12 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
         return ScriptEnvironment.execute(this.requireContext(), shellScript, nodeInfoBase)
     }
 
+    private fun onRunnableNodeComplete(nodeInfo: RunnableNode) {
+        if (nodeInfo.reloadPage) {
+            update()
+        }
+        host?.onRunnableNodeCompleted(nodeInfo)
+    }
 
     private var runningTasks = mutableListOf<String>()
     private fun actionExecute(
@@ -563,7 +609,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                     script = script,
                     params = params,
                     onFinish = onFinish,
-                    onDismiss = { krScriptActionHandler?.onActionCompleted(nodeInfo) }
+                    onDismiss = { onRunnableNodeComplete(nodeInfo) }
                 )
                 dialog.isCancelable = false
                 dialog.show(parentFragmentManager, null)
@@ -572,7 +618,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
             ExecutionMode.BACKGROUND -> {
                 ShellBackground.startTask(context, script, params, nodeInfo) {
                     onFinish()
-                    krScriptActionHandler?.onActionCompleted(nodeInfo)
+                    onRunnableNodeComplete(nodeInfo)
                 }
             }
 
@@ -585,7 +631,7 @@ class ActionListFragment : Fragment(), PageLayoutRender.OnItemClickListener {
                     ShellHiddenTask.startTask(context, script, params, nodeInfo) {
                         onFinish()
                         runningTasks.remove(index)
-                        krScriptActionHandler?.onActionCompleted(nodeInfo)
+                        onRunnableNodeComplete(nodeInfo)
                     }
                 }
             }

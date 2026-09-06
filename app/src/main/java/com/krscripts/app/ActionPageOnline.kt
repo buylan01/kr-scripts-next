@@ -26,8 +26,8 @@ import com.krscripts.app.contracts.FilePickerRequest
 import com.krscripts.app.databinding.ActivityActionPageOnlineBinding
 import com.krscripts.app.model.FileType
 import com.krscripts.app.model.PageNode
-import com.krscripts.app.ui.PageMenuLoader
 import com.krscripts.app.ui.dialog.DialogHelper
+import com.krscripts.app.ui.page.PageMenuLoader
 
 class ActionPageOnline : KrActivity() {
 
