@@ -15,9 +15,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
-import androidx.fragment.app.DialogFragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.krscripts.app.R
 import com.krscripts.app.databinding.KrDialogLogBinding
@@ -33,7 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class DialogLogFragment : DialogFragment() {
+class DialogLogFragment : BottomSheetDialogFragment() {
     private var _binding: KrDialogLogBinding? = null
     private val binding get() = _binding!!
     private var nodeInfo: RunnableNode? = null
@@ -184,7 +185,11 @@ class DialogLogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return Dialog(requireActivity(), R.style.dialog_full_screen)
+        val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        bottomSheetDialog.apply {
+            behavior.skipCollapsed = true
+        }
+        return  bottomSheetDialog
     }
 
     private fun initView(nodeInfo: RunnableNode) {

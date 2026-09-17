@@ -1,17 +1,17 @@
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="500dp"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:paddingBottom="8dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:paddingTop="32dp"
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingStart="18dp"
-        android:paddingTop="8dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical">
 
@@ -62,7 +62,7 @@
         app:trackStopIndicatorSize="0dp"
         app:indicatorColor="?colorPrimaryVariant" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/log_containter"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -80,28 +80,28 @@
             android:padding="12dp"
             android:textIsSelectable="true"
             android:textSize="12sp" />
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:orientation="horizontal"
-        android:paddingEnd="16dp">
+        android:layout_marginEnd="16dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_copy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="@string/btn_copy_output"
-            style="@style/Widget.Material3.Button.TextButton" />
+            style="@style/Widget.Material3.Button.TextButton.Dialog" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_exit"
-            android:minWidth="64dp"
-            style="@style/Widget.Material3.Button.TextButton" />
+            style="@style/Widget.Material3.Button.TonalButton"/>
     </LinearLayout>
 </LinearLayout>
