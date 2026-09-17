@@ -18,7 +18,7 @@ class DialogAppChooser(
     private var packages: ArrayList<AdapterAppChooser.AppInfo>,
     private val multiple: Boolean = false,
     private var onConfirm: ((List<AdapterAppChooser.AppInfo>) -> Unit)? = null
-) : DialogFullScreen(R.layout.dialog_item_chooser) {
+) : DialogSheet(R.layout.dialog_item_chooser) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

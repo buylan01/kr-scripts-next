@@ -18,17 +18,13 @@ import com.krscripts.app.ui.adapter.AdapterItemChooser
 class DialogItemChooser(
     private var items: List<SelectItem>,
     private val multiple: Boolean = false,
-    private var onConfirm: ((selected: List<SelectItem>, status: BooleanArray) -> Unit)? = null,
-    showAsSmall: Boolean? = null
-) : DialogFullScreen(
-    (if (items.size > 7 && showAsSmall != true) {
-        R.layout.dialog_item_chooser
-    } else {
-        R.layout.dialog_item_chooser_small
-    })
-) {
+    private var onConfirm: ((selected: List<SelectItem>, status: BooleanArray) -> Unit)? = null
+) : DialogSheet(R.layout.dialog_item_chooser) {
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val isLongList = items.size > 5
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -46,7 +42,7 @@ class DialogItemChooser(
         val selectAll = view.findViewById<CompoundButton?>(R.id.select_all)
         val selectAllGroup = view.findViewById<RelativeLayout>(R.id.select_all_block)
         selectAll?.let {
-            if (multiple) {
+            if (multiple && isLongList) {
                 val adapter = (recyclerView.adapter as AdapterItemChooser?)
                 selectAllGroup.visibility = View.VISIBLE
                 selectAll.isChecked = items.filter { it.selected }.size == items.size
@@ -68,7 +64,7 @@ class DialogItemChooser(
         // 长列表才有搜索
 
         val searchView = view.findViewById<SearchView>(R.id.search_view)
-        if (items.size > 5) {
+        if (isLongList) {
             searchView.isVisible = true
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = false
