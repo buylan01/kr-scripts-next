@@ -8,7 +8,7 @@ import coil3.load
 import coil3.request.CachePolicy
 import coil3.request.crossfade
 import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.loadingindicator.LoadingIndicator
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.RelativeCornerSize
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -25,7 +25,7 @@ class ListItemImage(
 
     private val imageView = layout.findViewById<ShapeableImageView?>(R.id.image_item)
     private val textView = layout.findViewById<TextView?>(R.id.textView)
-    private val progressBar = layout.findViewById<CircularProgressIndicator?>(R.id.progressBar)
+    private val loadingIndicator = layout.findViewById<LoadingIndicator?>(R.id.loading_indicator)
 
     init {
 
@@ -61,9 +61,9 @@ class ListItemImage(
                 memoryCachePolicy(CachePolicy.ENABLED)
                 diskCachePolicy(CachePolicy.DISABLED)
                 listener(
-                    onStart = { progressBar?.visibility = View.VISIBLE },
+                    onStart = { loadingIndicator?.visibility = View.VISIBLE },
                     onSuccess = { _, result ->
-                        progressBar?.visibility = View.GONE
+                        loadingIndicator?.visibility = View.GONE
                         val bitmap = result.image
                         imageView.layoutParams?.let { lp ->
                             lp.height = setHeight ?: (imageView.width * bitmap.height / bitmap.width)
@@ -71,7 +71,7 @@ class ListItemImage(
                         }
                     },
                     onError = { _, _ ->
-                        progressBar?.visibility = View.GONE
+                        loadingIndicator?.visibility = View.GONE
                         textView?.apply {
                             visibility = View.VISIBLE
                             text = "无法加载图片"
