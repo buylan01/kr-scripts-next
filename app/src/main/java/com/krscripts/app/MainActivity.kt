@@ -104,6 +104,7 @@ class MainActivity : KrActivity(), PageFragmentHost {
                 }
             }
         }
+        binding.toolbar.addInfoMenuItem()
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -169,7 +170,7 @@ class MainActivity : KrActivity(), PageFragmentHost {
         }
     }
 
-    inner class PageFragmentAdapter(
+    class PageFragmentAdapter(
         activity: FragmentActivity,
         private val configCache: List<PageNode>
     ) : FragmentStateAdapter(activity) {
