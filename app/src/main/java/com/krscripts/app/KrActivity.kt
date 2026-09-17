@@ -205,6 +205,7 @@ open class KrActivity: AppCompatActivity() {
                     AppCompatResources.getDrawable(context, R.drawable.baseline_folder_24)
 
                 menuOption.iconPath.isNotEmpty() -> {
+                    imageTintList = null
                     if (PathUtil.isNetworkUri(menuOption.iconPath)) {
                         menuOption.iconPath
                     } else {
