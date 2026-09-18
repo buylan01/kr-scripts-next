@@ -93,8 +93,8 @@
 
     <group>
         <action>
-            <title>大杂烩</title>
-            <desc>以全屏弹窗显示</desc>
+            <title>过多参数</title>
+            <desc>以动作弹窗显示</desc>
             <param name="a" label="选框" type="bool" />
             <param name="b" label="开关" type="switch" />
             <param name="c" label="文本" />

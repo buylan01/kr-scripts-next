@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.krscripts.app.ActionPage
 import com.krscripts.app.R
 import com.krscripts.app.TryOpenActivity
@@ -472,17 +473,16 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                         )
                         loadingHelper.hideDialog()
 
-                        // 内置的参数输入界面
+                        // Layout dialog
                         val isLongList = (action.params != null && action.params!!.size > 4)
-                        val dialogView = LayoutInflater.from(context).inflate(
-                            if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small,
-                            null
-                        )
-                        val center =
-                            dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
-                        center.removeAllViews()
-                        center.addView(linearLayout)
+                        val dialogLayoutId = if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small
+                        val dialogView = LayoutInflater.from(context).inflate(dialogLayoutId, null)
 
+                        val paramsContainer = dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
+                        paramsContainer.removeAllViews()
+                        paramsContainer.addView(linearLayout)
+
+                        // Build up and show dialog
                         val onConfirm = {
                             try {
                                 val params = render.readParamsValue()
@@ -496,26 +496,9 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                             }
                         }
 
-                        if (isLongList) {
-                            DialogHelper.showFullScreenDialog(
-                                context = requireActivity(),
-                                view = dialogView,
-                                title = action.title,
-                                message = "",
-                                onConfirm = onConfirm
-                            )
-                        } else {
-                            DialogHelper.showDialog(
-                                context = requireActivity(),
-                                view = dialogView,
-                                title = action.title,
-                                message = "",
-                                onConfirm = onConfirm
-                            )
-                        }
-
                         val warn = dialogView.findViewById<TextView>(R.id.warn)
                         val desc = dialogView.findViewById<TextView>(R.id.desc)
+                        val title = dialogView.findViewById<TextView?>(R.id.title)
 
                         if (action.warning.isEmpty()) {
                             warn.visibility = View.GONE
@@ -527,6 +510,39 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                             desc.visibility = View.GONE
                         } else {
                             desc.text = action.desc
+                        }
+
+                        if (action.title.isEmpty() && isLongList) {
+                            title?.visibility = View.GONE
+                        } else {
+                            title?.text = action.title
+                        }
+
+                        if (isLongList) {
+
+                            val confirmButtom = dialogView.findViewById<MaterialButton>(R.id.btn_confirm)
+                            val cancelButtom = dialogView.findViewById<MaterialButton>(R.id.btn_cancel)
+
+                            val dialog = DialogHelper.showFullScreenDialog(
+                                context = requireActivity(),
+                                view = dialogView
+                            )
+
+                            confirmButtom.setOnClickListener {
+                                onConfirm()
+                                dialog.dismiss()
+                            }
+                            cancelButtom.setOnClickListener {
+                                dialog.dismiss()
+                            }
+                        } else {
+                            DialogHelper.showDialog(
+                                context = requireActivity(),
+                                view = dialogView,
+                                title = action.title,
+                                message = "",
+                                onConfirm = onConfirm
+                            )
                         }
                     }
                 }.start()

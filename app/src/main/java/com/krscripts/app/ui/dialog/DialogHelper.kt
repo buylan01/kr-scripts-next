@@ -9,6 +9,8 @@ import android.os.Build
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.krscripts.app.R
 
@@ -138,33 +140,22 @@ class DialogHelper {
 
         fun showFullScreenDialog(
             context: Context,
-            view: View?,
-            cancelable: Boolean = true,
-            title: String,
-            message: String,
-            themeId: Int = R.style.dialog_full_screen,
-            confirmButton: DialogButton? = null,
-            dismissButton: DialogButton? = null,
-            onConfirm: Runnable? = null
+            view: View,
+            cancelable: Boolean = true
         ): Dialog {
-            val dialog = AlertDialog.Builder(context, themeId)
-                .setTitle(title)
-                .setView(view)
-                .setCancelable(cancelable)
-                .setNegativeButton(dismissButton?.text ?: "取消") { dialog, _ ->
-                    dismissButton?.onClick?.run()
-                    if (dismissButton?.dismiss != false) dialog.dismiss()
-                }
-                .setPositiveButton(confirmButton?.text ?: "确定") { dialog, _ ->
-                    confirmButton?.onClick?.run()
-                    onConfirm?.run()
-                    if (confirmButton?.dismiss != false) dialog.dismiss()
-                }
-                .create()
+            val dialog = BottomSheetDialog(context)
 
-            dialog.setCanceledOnTouchOutside(cancelable)
-
-            dialog.show()
+            dialog.apply {
+                setContentView(view)
+                setCancelable(cancelable)
+                setCanceledOnTouchOutside(cancelable)
+                behavior.apply {
+                    skipCollapsed = true
+                    state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                create()
+                show()
+            }
 
             return dialog
         }

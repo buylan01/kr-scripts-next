@@ -1,23 +1,5 @@
 <resources>
 
-    <style name="dialog_full_screen" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/TextAppearance.Material3.TitleMedium</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.Material3.BodySmall</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name="android:windowBackground">?colorSurface</item>
-        <item name="dialogCornerRadius">0dp</item>
-        <item name="android:windowMinWidthMajor">100%</item>
-        <item name="android:windowMinWidthMinor">100%</item>
-        <item name="android:windowLightStatusBar">true</item>
-    </style>
-
     <style name="CustomDialogThemeOverlay" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="materialAlertDialogTitleTextStyle">@style/TextAppearance.Material3.TitleLarge</item>
         <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.Material3.BodySmall</item>
