@@ -1,29 +1,20 @@
 <config>
-    <group title="裁剪">
-        <!--    clip 标签用来制定该项 icon 的圆角大小-->
-        <action clip="30" icon="icons/wifi.png">
+    <group>
+        <!-- clip 标签用来制定该项 icon 的圆角大小 -->
+        <action clip="30" icon="icons/icon.png">
             <title>圆角矩形</title>
         </action>
-        <action clip="circle" icon="icons/wifi.png">
+        <action clip="circle" icon="icons/icon.png">
             <title>圆形</title>
         </action>
-    </group>
 
-    <group title="网络图片">
-        <action id="web_ic" clip="30" icon="https://cdn-icons-png.flaticon.com/128/6422/6422199.png">
-            <title>图标喵</title>
+        <!-- 也可以使用网址，但务必以 "http" 或 "https" 开头 -->
+        <action icon="https://developers.google.cn/static/identity/images/g-logo.png"
+            id="web_ic">
+            <title>网络图标</title>
         </action>
-        <action id="web_ic_broken" icon="?">
+        <action icon="?" id="web_ic_broken">
             <title>坏图标</title>
         </action>
-        <image
-            src="https://www.dmoe.cc/random.php"
-            scale="centerInside"
-            clip="64" />
-        <image
-            src="https://www.dmoe.cc/random.php"
-            scale="centerCrop"
-            height="2560"
-            clip="128" />
     </group>
 </config>

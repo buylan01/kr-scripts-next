@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
+
+    <group>
+        <text>
+            <title>简介</title>
+            <desc>Picker (选择) 被点击时会打开列表进行选择, 在确认时运行命令并传入选中值</desc>
+        </text>
+    </group>
+
     <group>
         <picker>
             <title>单选</title>

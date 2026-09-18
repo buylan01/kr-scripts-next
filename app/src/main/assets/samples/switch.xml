@@ -1,53 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
+
+    <group>
+        <text>
+            <title>简介</title>
+            <desc>Switch (开关) 在按下后运行并将状态传给脚本，在初始化时执行一段脚本获取初始值</desc>
+        </text>
+    </group>
+
     <group title="基础用法">
         <switch>
-            <title>测试开关</title>
-            <desc>测试开关功能</desc>
+            <title>开关</title>
             <get>pref_get switch_a</get>
-            <set>pref_set switch_a $state</set>
+            <set>
+                echo 状态: $state
+                pref_set switch_a $state
+            </set>
         </switch>
     </group>
 
-    <group title="避免显示日志界面">
+    <group title="拓展">
         <!--
             对于不太可能出现错误，且不需要提示信息的操作，可以添加 shell="hidden" 属性
             这样，执行set指定的脚本时，就会隐藏日志输出界面
         -->
         <switch shell="hidden">
             <title>隐藏日志</title>
-            <desc>测试开关功能（设置 shell="hidden" 不显示日志输出界面）</desc>
+            <desc>设置 shell="hidden" (不会丢失错误信息)</desc>
             <get>pref_get switch_b</get>
             <set>pref_set switch_b $state</set>
-        </switch>
-
-        <switch shell="hidden">
-            <title>输出错误内容</title>
-            <desc>设置shell="hidden"后，错误信息依然会被提示</desc>
-            <get>pref_get switch_c</get>
-            <set>
-                pref_set switch_c $state
-                echo '我就是想显示个错误，咋的' 1>&amp;2</set>
-        </switch>
-
-        <switch shell="hidden">
-            <title>耗时操作</title>
-            <desc>开关将会在命令运行期间禁用</desc>
-            <get>pref_get switch_d</get>
-            <set>
-                sleep 2
-                pref_set switch_d $state
-            </set>
-        </switch>
-
-        <switch shell="hidden">
-            <title>自动关闭</title>
-            <desc>好玩儿</desc>
-            <get>pref_get switch_e</get>
-            <set>
-                sleep 0.1
-                pref_set switch_e 0
-            </set>
         </switch>
 
     </group>

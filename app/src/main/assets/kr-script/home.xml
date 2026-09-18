@@ -44,14 +44,15 @@
         <page config="samples/switch.xml" title="Switch（开关）" />
         <page config="samples/picker.xml" title="Picker（选择）" />
         <page config="samples/page.xml" title="Page（页面）" />
+        <page config="samples/image.xml" title="Image（图片）" />
         <page config="samples/text.xml" title="Text（文字）" />
     </group>
 
-    <group title="属性">
+    <group title="通用">
         <page config="samples/shortcut.xml" title="快捷方式" />
         <page config="samples/reload.xml" title="节点刷新" />
         <page config="samples/limit.xml" title="功能限制" />
-        <page config="samples/icons.xml" title="图标与图片" />
+        <page config="samples/icons.xml" title="节点图标" />
     </group>
 
     <group title="Web">

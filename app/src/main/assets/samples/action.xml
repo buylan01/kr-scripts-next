@@ -8,9 +8,9 @@
         </text>
     </group>
 
-    <group title="基本参数">
+    <group title="参数类型">
         <action>
-            <title>选择</title>
+            <title>从列表选择</title>
             <param name="single_short" title="单选" label="短列表" value="2">
                 <option value="1">选项 1</option>
                 <option value="2">选项 2</option>
@@ -47,7 +47,7 @@
         </action>
 
         <action>
-            <title>文本输入</title>
+            <title>文本和数字</title>
             <param name="input_text" title="文本框" label="文本" value="默认文本喵" />
             <param name="input_int" label="数字" max="10" min="0" type="int" />
             <param name="input_length" label="字数限制" maxlength="3" placeholder="只能输入三个字符" />
@@ -59,7 +59,7 @@
         </action>
 
         <action>
-            <title>滑块输入</title>
+            <title>滑块</title>
             <param name="input_seekbar" max="10" min="1" title="数字" type="seekbar" value="6" />
             <set>
                 echo '滑块数值为：' $input_seekbar
@@ -67,7 +67,7 @@
         </action>
 
         <action>
-            <title>布尔输入</title>
+            <title>开关</title>
             <param name="input_bool" label="选框" type="bool" />
             <param name="input_switch" label="开关" type="switch" />
             <set>
@@ -77,61 +77,13 @@
         </action>
 
         <action>
-            <title>要求非空参数</title>
-            <param name="input_text" title="文本框" required="1" />
-            <set>
-                echo '文本为：' $input_text
-            </set>
+            <title>颜色</title>
+            <param name="test" label="颜色" type="color" />
+            <set>echo '数值为：' $test</set>
         </action>
-        <action warning="不许输入喵">
-            <title>描述和警告</title>
-            <desc>描述和警告将内嵌在弹窗中</desc>
-            <param name="input_text" />
-            <set>echo 可恶</set>
-        </action>
-    </group>
 
-    <group>
         <action>
-            <title>过多参数</title>
-            <desc>以动作弹窗显示</desc>
-            <param name="a" label="选框" type="bool" />
-            <param name="b" label="开关" type="switch" />
-            <param name="c" label="文本" />
-            <param name="d" label="文本" />
-            <param name="e" label="数字" type="int" />
-            <param name="f" label="数字" type="int" />
-            <param name="g" max="10" min="1" type="seekbar" />
-            <set>echo 'O.o'</set>
-        </action>
-    </group>
-
-    <group title="文件选择">
-        <action>
-            <title>文件选择</title>
-            <param name="normal" type="file" value="test.txt" />
-            <param name="file_suffix" label="后缀 (zip)" type="file" suffix="zip" />
-            <param name="file_mime" label="mime 限制" type="file" mime="application/zip" />
-            <set>
-                echo '普通：' $normal
-                echo '后缀限制：' $file_suffix
-                echo 'mime 限制：' $file_mime
-            </set>
-        </action>
-        <action>
-            <title>文件夹选择</title>
-            <param name="normal" type="folder" value="/sdcard" />
-            <param label="可编辑" name="editable" type="folder" value="/sdcard" editable="true" />
-            <set>
-                echo '普通：' $normal
-                echo '可编辑：' $editable
-            </set>
-        </action>
-    </group>
-
-    <group title="应用选择">
-        <action>
-            <title>应用/包名选择</title>
+            <title>应用和包名</title>
 
             <param name="app_normal" type="app" />
 
@@ -163,13 +115,57 @@
                 echo '包名选择器：' $package_selector
             </set>
         </action>
+
+        <action>
+            <title>文件</title>
+            <param name="normal" type="file" value="test.txt" />
+            <param name="file_suffix" label="后缀 (zip)" type="file" suffix="zip" />
+            <param name="file_mime" label="mime 限制" type="file" mime="application/zip" />
+            <set>
+                echo '普通：' $normal
+                echo '后缀限制：' $file_suffix
+                echo 'mime 限制：' $file_mime
+            </set>
+        </action>
+
+        <action>
+            <title>文件夹</title>
+            <param name="normal" type="folder" value="/sdcard" />
+            <param label="可编辑" name="editable" type="folder" value="/sdcard" editable="true" />
+            <set>
+                echo '普通：' $normal
+                echo '可编辑：' $editable
+            </set>
+        </action>
     </group>
 
-    <group title="颜色选择">
+    <group title="拓展">
         <action>
-            <title>颜色输入</title>
-            <param name="test" label="颜色输入" type="color" />
-            <set>echo '数值为：' $test</set>
+            <title>要求非空参数</title>
+            <param name="input_text" title="文本框" required="1" />
+            <set>
+                echo '文本为：' $input_text
+            </set>
+        </action>
+
+        <action warning="不许输入喵">
+            <title>描述和警告</title>
+            <desc>描述和警告将内嵌在弹窗中</desc>
+            <param name="input_text" />
+            <set>echo 可恶</set>
+        </action>
+
+        <action>
+            <title>过多参数</title>
+            <desc>以动作弹窗显示</desc>
+            <param name="a" label="选框" type="bool" />
+            <param name="b" label="开关" type="switch" />
+            <param name="c" label="文本" />
+            <param name="d" label="文本" />
+            <param name="e" label="数字" type="int" />
+            <param name="f" label="数字" type="int" />
+            <param name="g" max="10" min="1" type="seekbar" />
+            <set>echo 'O.o'</set>
         </action>
     </group>
 </config>

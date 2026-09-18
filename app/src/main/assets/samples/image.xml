@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <group>
+        <text>
+            <title>简介</title>
+            <desc>Image (图片) 显示一个图片，并允许你在声明时裁减或缩放</desc>
+        </text>
+    </group>
+
+    <group>
+        <!-- clip 标签用来制定图片圆角大小，也可以是 "circle" -->
+        <!-- scale 标签用来制定图片缩放方式，一般用 centerCrop -->
+        <!-- 除了本地图片，也可以使用网址，但务必以 "http" 或 "https" 开头 -->
+        <image
+            src="icons/icon.png"
+            scale="fitXY"
+            height="512"
+            clip="256" />
+        <image
+            src="https://www.dmoe.cc/random.php"
+            scale="centerInside"
+            clip="64" />
+        <image
+            src="https://www.dmoe.cc/random.php"
+            scale="centerCrop"
+            height="2560"
+            clip="128" />
+    </group>
+</config>
