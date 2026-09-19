@@ -9,16 +9,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
+import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import com.krscripts.app.ActionPage
 import com.krscripts.app.R
 import com.krscripts.app.TryOpenActivity
@@ -38,7 +36,6 @@ import com.krscripts.app.model.NodeInfoBase
 import com.krscripts.app.model.PageNode
 import com.krscripts.app.model.PickerNode
 import com.krscripts.app.model.RunnableNode
-import com.krscripts.app.model.SelectItem
 import com.krscripts.app.model.SwitchNode
 import com.krscripts.app.shared.FilePathResolver
 import com.krscripts.app.shell.ShellBackground
@@ -47,6 +44,14 @@ import com.krscripts.app.ui.dialog.DialogHelper
 import com.krscripts.app.ui.dialog.DialogItemChooser
 import com.krscripts.app.ui.dialog.DialogLogFragment
 import com.krscripts.app.ui.param.ParamLayoutRender
+import com.krscripts.app.ui.param.ParamUtil
+import com.krscripts.app.ui.param.ParamsDialogFragment
+import com.krscripts.app.ui.param.ParamsDialogFragment.Companion.BUNDLE_KEY_PARAMS
+import com.krscripts.app.ui.param.ParamsDialogFragment.Companion.BUNDLE_KEY_STATUS
+import com.krscripts.app.ui.param.ParamsDialogFragment.Companion.REQUEST_KEY_PARAMS
+import com.krscripts.app.ui.param.ParamsDialogFragment.Companion.STATUS_CANCEL
+import com.krscripts.app.ui.param.ParamsDialogFragment.Companion.STATUS_CONFIRM
+import com.krscripts.app.ui.param.ParamsResult
 import com.krscripts.app.ui.widget.ListItemGroup
 import com.krscripts.app.util.startActivityLink
 import kotlinx.coroutines.Dispatchers
@@ -123,7 +128,7 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadingHelper = LoadingHelper(view.findViewById(R.id.loading_container))
+        loadingHelper = LoadingHelper(view.findViewById<ViewGroup>(R.id.loading_container))
 
         ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.page_content)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -381,7 +386,7 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
             }
 
             // 获取可选项（合并options-sh和静态options的结果）
-            val options = getParamOptions(paramInfo, item)
+            val options = ParamUtil.getParamOptions(requireContext(), paramInfo, item)
             val optionsSorted = options?.let {
                 ParamLayoutRender.applySelectedState(paramInfo, options)
             }
@@ -436,57 +441,36 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
     private fun actionExecute(action: ActionNode, onFinish: () -> Unit) {
         val script = action.script ?: ""
 
-        if (action.params != null) {
-            val actionParamInfos = action.params!!
-            if (actionParamInfos.isNotEmpty()) {
-                val layoutInflater = LayoutInflater.from(this.requireContext())
-                val linearLayout =
-                    layoutInflater.inflate(R.layout.kr_params_list, null) as LinearLayout
+        action.params?.let {
+            if (it.isNotEmpty()) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    val isLongList = it.size > 4
 
-                loadingHelper.showDialog(this.requireContext().getString(R.string.onloading))
-                lifecycleScope.launch(Dispatchers.IO) {
-                    for (actionParamInfo in actionParamInfos) {
-                        withContext(Dispatchers.Main) {
-                            loadingHelper.showDialog(requireContext().getString(R.string.kr_param_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
-                        }
-                        if (actionParamInfo.valueShell != null) {
-                            actionParamInfo.valueFromShell =
-                                executeScriptGetResult(actionParamInfo.valueShell!!, action)
-                        }
-                        withContext(Dispatchers.Main) {
-                            loadingHelper.showDialog(requireContext().getString(R.string.kr_param_options_load) + if (!actionParamInfo.label.isNullOrEmpty()) actionParamInfo.label else actionParamInfo.name)
-                        }
-                        actionParamInfo.optionsFromShell =
-                            getParamOptions(actionParamInfo, action) // 获取参数的可用选项
-                    }
+                    val dialog = ParamsDialogFragment.newInstance(
+                        paramNodes = it,
+                        parentNode = action,
+                        isDialog = !isLongList
+                    )
 
-                    withContext(Dispatchers.Main) {
-                        loadingHelper.showDialog(requireContext().getString(R.string.kr_params_render))
-
-                        val render = ParamLayoutRender(linearLayout, requireActivity())
-                        render.renderList(
-                            actionParamInfos,
-                            startFilePicker = {
-                                pendingFileRequest = it
-                                launcher.launch(it)
-                            }
-                        )
-                        loadingHelper.hideDialog()
-
-                        // Layout dialog
-                        val isLongList = (action.params != null && action.params!!.size > 4)
-                        val dialogLayoutId = if (isLongList) R.layout.kr_dialog_params else R.layout.kr_dialog_params_small
-                        val dialogView = LayoutInflater.from(context).inflate(dialogLayoutId, null)
-
-                        val paramsContainer = dialogView.findViewById<ViewGroup>(R.id.kr_params_container)
-                        paramsContainer.removeAllViews()
-                        paramsContainer.addView(linearLayout)
-
-                        // Build up and show dialog
-                        val onConfirm = {
+                    parentFragmentManager.setFragmentResultListener(
+                        REQUEST_KEY_PARAMS,
+                        viewLifecycleOwner
+                    ) { _, bundle ->
+                        if (
+                            bundle.getInt(
+                                BUNDLE_KEY_STATUS,
+                                STATUS_CANCEL
+                            ) != STATUS_CONFIRM
+                        ) {
+                            return@setFragmentResultListener
+                        } else {
                             try {
-                                val params = render.readParamsValue()
-                                actionExecute(action, script, params, onFinish)
+                                val params = BundleCompat.getParcelable(
+                                    bundle,
+                                    BUNDLE_KEY_PARAMS,
+                                    ParamsResult::class.java
+                                )
+                                actionExecute(action, script, params?.values, onFinish)
                             } catch (ex: Exception) {
                                 Toast.makeText(
                                     context,
@@ -495,61 +479,15 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                                 ).show()
                             }
                         }
-
-                        val warn = dialogView.findViewById<TextView>(R.id.warn)
-                        val desc = dialogView.findViewById<TextView>(R.id.desc)
-                        val title = dialogView.findViewById<TextView?>(R.id.title)
-
-                        if (action.warning.isEmpty()) {
-                            warn.visibility = View.GONE
-                        } else {
-                            warn.text = action.warning
-                        }
-
-                        if (action.desc.isEmpty()) {
-                            desc.visibility = View.GONE
-                        } else {
-                            desc.text = action.desc
-                        }
-
-                        if (action.title.isEmpty() && isLongList) {
-                            title?.visibility = View.GONE
-                        } else {
-                            title?.text = action.title
-                        }
-
-                        if (isLongList) {
-
-                            val confirmButtom = dialogView.findViewById<MaterialButton>(R.id.btn_confirm)
-                            val cancelButtom = dialogView.findViewById<MaterialButton>(R.id.btn_cancel)
-
-                            val dialog = DialogHelper.showFullScreenDialog(
-                                context = requireActivity(),
-                                view = dialogView
-                            )
-
-                            confirmButtom.setOnClickListener {
-                                onConfirm()
-                                dialog.dismiss()
-                            }
-                            cancelButtom.setOnClickListener {
-                                dialog.dismiss()
-                            }
-                        } else {
-                            DialogHelper.showDialog(
-                                context = requireActivity(),
-                                view = dialogView,
-                                title = action.title,
-                                message = "",
-                                onConfirm = onConfirm
-                            )
-                        }
                     }
-                }.start()
+
+                    dialog.show(parentFragmentManager, "params")
+                }
 
                 return
             }
         }
+
         actionExecute(action, script, null, onFinish)
     }
 
@@ -587,44 +525,6 @@ class PageFragment: Fragment(), PageLayoutRender.OnItemClickListener {
                 onExecute()
             }
         }
-    }
-
-    /**
-     * 获取Param的Options
-     */
-    private fun getParamOptions(actionParamInfo: ActionParamInfo, nodeInfoBase: NodeInfoBase): ArrayList<SelectItem>? {
-        val options = ArrayList<SelectItem>()
-        var shellResult = ""
-        if (!actionParamInfo.optionsSh.isEmpty()) {
-            shellResult = executeScriptGetResult(actionParamInfo.optionsSh, nodeInfoBase)
-        }
-
-        if (!(shellResult == "error" || shellResult == "null" || shellResult.isEmpty())) {
-            for (item in shellResult.split("\n")) {
-                if (item.contains('|')) {
-                    val data = item.split('|')
-                    val item = SelectItem(
-                        title = data[1],
-                        value = data[0]
-                    )
-                    options.add(item)
-                } else {
-                    val item = SelectItem(
-                        title = item,
-                        value = item
-                    )
-                    options.add(item)
-                }
-            }
-        } else if (actionParamInfo.options != null) {
-            for (option in actionParamInfo.options!!) {
-                options.add(option)
-            }
-        } else {
-            return null
-        }
-
-        return options
     }
 
     private fun executeScriptGetResult(shellScript: String, nodeInfoBase: NodeInfoBase): String {

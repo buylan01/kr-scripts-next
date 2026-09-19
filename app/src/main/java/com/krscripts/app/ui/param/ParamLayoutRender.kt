@@ -3,8 +3,8 @@ package com.krscripts.app.ui.param
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.krscripts.app.R
@@ -14,7 +14,7 @@ import com.krscripts.app.model.ActionParamInfo
 import com.krscripts.app.model.SelectItem
 
 class ParamLayoutRender(
-    private var linearLayout: LinearLayout,
+    private var view: ViewGroup,
     private val context: FragmentActivity
 ) {
     private val renderers = mutableListOf<ParamRenderer>()
@@ -131,7 +131,7 @@ class ParamLayoutRender(
             krParamDesc.text = desc.orEmpty()
 
             krParamInput.addView(inputView)
-            linearLayout.addView(root)
+            view.addView(root)
 
             (inputView.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER_VERTICAL
         }
@@ -153,7 +153,7 @@ class ParamLayoutRender(
         }
     }
 
-    fun readParamsValue(): HashMap<String, String> {
+    fun readParamsValue(): ParamsResult {
         val params = HashMap<String, String>()
         for (renderer in renderers) {
 
@@ -179,6 +179,6 @@ class ParamLayoutRender(
                 }
             }
         }
-        return params
+        return ParamsResult(params)
     }
 }

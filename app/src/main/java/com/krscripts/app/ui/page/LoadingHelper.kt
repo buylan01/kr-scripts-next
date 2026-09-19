@@ -3,12 +3,13 @@ package com.krscripts.app.ui.page
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import com.google.android.material.loadingindicator.LoadingIndicator
 import com.google.android.material.textview.MaterialTextView
 import com.krscripts.app.R
 
 open class LoadingHelper(
-    private val loadingContainer: View
+    private val loadingContainer: ViewGroup
 ) {
     private var loadingIndicator: LoadingIndicator? = null
     private var loadingText: MaterialTextView? = null
